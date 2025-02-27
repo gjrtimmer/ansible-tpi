@@ -20,7 +20,7 @@
     // removes restrictions on system calls the container can use
     // "--security-opt=seccomp=unconfined"
   ],
-  "onCreateCommand": ".devcontainer/scripts/onCreateCommand.sh",
+  "onCreateCommand": "chmod +x .devcontainer/scripts/onCreateCommand.sh && .devcontainer/scripts/onCreateCommand.sh",
   "workspaceMount": "source=${localWorkspaceFolder},target=/work,type=bind",
   "workspaceFolder": "/work",
   "mounts": [],

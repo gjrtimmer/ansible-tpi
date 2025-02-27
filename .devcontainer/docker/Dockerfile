@@ -9,6 +9,3 @@ RUN apt-get update && \
     pipx install --include-deps ansible
 
 WORKDIR /work
-
-RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/work/.devcontainer/.bash_history" && \
-    echo "$SNIPPET" >> "/home/vscode/.bashrc"

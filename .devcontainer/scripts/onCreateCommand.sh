@@ -6,14 +6,14 @@ DEVCON_DIR="$(dirname "${SCRIPT_DIR}")"
 CONFIG_DIR="${DEVCON_DIR}/config"
 
 # Configure inputrc
-ln -sf "${CONFIG_DIR}/inpurc" "${HOME}/.inputrc"
+ln -sf "${CONFIG_DIR}/inputrc" "${HOME}/.inputrc"
 
 # .bashrc
 if [[ ! -f "${DEVCON_DIR}/.bashrc" ]]; then
     cp "${HOME}/.bashrc" "${DEVCON_DIR}/.bashrc"
     
-    BASH_HISTORY="export PROMPT_COMMAND='history -a' && export HISTFILE=${DEVCON_DIR}/.bash_history"
-    echo "${SNIPPET}" >> "${DEVCON_DIR}/.bashrc"
+    echo "export PROMPT_COMMAND='history -a'" >> "${DEVCON_DIR}/.bashrc"
+    echo "export HISTFILE=${DEVCON_DIR}/.bash_history" >> "${DEVCON_DIR}/.bashrc"
 
     ln -sf "${DEVCON_DIR}/.bashrc" "${HOME}/.bashrc"
 fi
