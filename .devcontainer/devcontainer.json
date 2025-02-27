@@ -25,7 +25,11 @@
   "postStartCommand": "chmod +x .devcontainer/scripts/postStartCommand.sh && .devcontainer/scripts/postStartCommand.sh",
   "workspaceMount": "source=${localWorkspaceFolder},target=/work,type=bind",
   "workspaceFolder": "/work",
-  "mounts": [],
+  "mounts": [
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind,ro",
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh/config,target=/home/vscode/.ssh/config,type=bind",
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh/known_hosts,target=/home/vscode/.ssh/known_hosts,type=bind"
+  ],
   "customizations": {
     "vscode": {
       "extensions": [
