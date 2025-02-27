@@ -14,6 +14,5 @@ if [[ ! -f "${DEVCON_DIR}/.bashrc" ]]; then
     
     echo "export PROMPT_COMMAND='history -a'" >> "${DEVCON_DIR}/.bashrc"
     echo "export HISTFILE=${DEVCON_DIR}/.bash_history" >> "${DEVCON_DIR}/.bashrc"
-
-    ln -sf "${DEVCON_DIR}/.bashrc" "${HOME}/.bashrc"
 fi
+ln -sf "${DEVCON_DIR}/.bashrc" "${HOME}/.bashrc"

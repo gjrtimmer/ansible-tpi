@@ -11,3 +11,7 @@ git config --global --add safe.directory /work
 
 # Configure filemode
 git config core.filemode false
+
+if [[ ! -f "${DEVCON_DIR}/.bashrc" ]]; then
+    ln -sf "${DEVCON_DIR}/.bashrc" "${HOME}/.bashrc"
+fi
