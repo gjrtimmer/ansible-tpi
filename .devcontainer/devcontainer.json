@@ -1,36 +1,55 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/python
 {
-	"name": "Ansible TPI",
-	"build":{
-		
-	},
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"redhat.ansible",
-				"redhat.vscode-yaml",
-				"dhoeric.ansible-vault",
-				"yzhang.markdown-all-in-one",
-				"bierner.markdown-mermaid",
-				"DavidAnson.vscode-markdownlint",
-				"PKief.material-icon-theme",
-				"mrkaran.nomfmt",
-				"esbenp.prettier-vscode",
-				"jlcs-es.x509-parser"
-			]
-		}
-	}
+  "name": "Ansible TPI",
+  "build": {
+    "context": "..",
+    "dockerfile": "docker/Dockerfile"
+  },
+  "runArgs": [
+    // Set container name
+    "--name=ansible-tpi",
 
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+    // Condfigure Host network
+    "--network=host",
 
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "pip3 install --user -r requirements.txt",
+    // Disable SELinux
+    "--security-opt=label=disable"
 
-	// Configure tool-specific properties.
-	// "customizations": {},
+    // Disables Seccomp (System Call Filtering)
+    // removes restrictions on system calls the container can use
+    // "--security-opt=seccomp=unconfined"
+  ],
+  "onCreateCommand": ".devcontainer/scripts/onCreateCommand.sh",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/work,type=bind",
+  "workspaceFolder": "/work",
+  "mounts": [],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "redhat.ansible",
+        "redhat.vscode-yaml",
+        "dhoeric.ansible-vault",
+        "yzhang.markdown-all-in-one",
+        "bierner.markdown-mermaid",
+        "DavidAnson.vscode-markdownlint",
+        "PKief.material-icon-theme",
+        "mrkaran.nomfmt",
+        "esbenp.prettier-vscode",
+        "jlcs-es.x509-parser"
+      ]
+    }
+  }
 
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  // "forwardPorts": [],
+
+  // Use 'postCreateCommand' to run commands after the container is created.
+  // "postCreateCommand": "pip3 install --user -r requirements.txt",
+
+  // Configure tool-specific properties.
+  // "customizations": {},
+
+  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+  // "remoteUser": "root"
 }

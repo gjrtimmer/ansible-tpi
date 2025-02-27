@@ -1,0 +1,16 @@
+# .inputrc
+
+# Bash history completion
+# Source: https://stackoverflow.com/questions/1030182/how-do-i-change-bash-history-completion-to-complete-whats-already-on-the-line
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+
+# Bash CTRL to move cursor between words/strings
+# Default Ubuntu mapping
+# mappings for Ctrl-left-arrow and Ctrl-right-arrow for word moving
+"\e[1;5C": forward-word
+"\e[1;5D": backward-word
+"\e[5C": forward-word
+"\e[5D": backward-word
+"\e\e[C": forward-word
+"\e\e[D": backward-word
