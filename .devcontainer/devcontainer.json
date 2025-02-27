@@ -44,7 +44,8 @@
         "PKief.material-icon-theme",
         "mrkaran.nomfmt",
         "esbenp.prettier-vscode",
-        "jlcs-es.x509-parser"
+        "jlcs-es.x509-parser",
+        "ms-azuretools.vscode-docker"
       ]
     }
   }
