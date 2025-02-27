@@ -1,0 +1,14 @@
+{
+    "recommendations": [
+        "redhat.ansible",
+        "redhat.vscode-yaml",
+        "dhoeric.ansible-vault",
+        "yzhang.markdown-all-in-one",
+        "bierner.markdown-mermaid",
+        "DavidAnson.vscode-markdownlint",
+        "PKief.material-icon-theme",
+        "mrkaran.nomfmt",
+        "esbenp.prettier-vscode",
+        "jlcs-es.x509-parser"
+    ]
+}
