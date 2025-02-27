@@ -22,6 +22,7 @@
   ],
   "onCreateCommand": "chmod +x .devcontainer/scripts/onCreateCommand.sh && .devcontainer/scripts/onCreateCommand.sh",
   "postCreateCommand": "chmod +x .devcontainers/scripts/postCreateCommand.sh && .devcontainers/scripts/postCreateCommand.sh",
+  "postStartCommand": "chmod +x .devcontainers/scripts/postStartCommand.sh && .devcontainers/scripts/postStartCommand.sh",
   "workspaceMount": "source=${localWorkspaceFolder},target=/work,type=bind",
   "workspaceFolder": "/work",
   "mounts": [],
