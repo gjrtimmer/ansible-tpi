@@ -20,6 +20,7 @@
     // removes restrictions on system calls the container can use
     // "--security-opt=seccomp=unconfined"
   ],
+  "initializeCommand": "mkdir -p ${localEnv:HOME}${localEnv:USERPROFILE}/.ssh/tpi",
   "onCreateCommand": "chmod +x .devcontainer/scripts/onCreateCommand.sh && .devcontainer/scripts/onCreateCommand.sh",
   "postCreateCommand": "chmod +x .devcontainer/scripts/postCreateCommand.sh && .devcontainer/scripts/postCreateCommand.sh",
   "postStartCommand": "chmod +x .devcontainer/scripts/postStartCommand.sh && .devcontainer/scripts/postStartCommand.sh",
@@ -28,7 +29,8 @@
   "mounts": [
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind,ro",
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh/config,target=/home/vscode/.ssh/config,type=bind",
-    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh/known_hosts,target=/home/vscode/.ssh/known_hosts,type=bind"
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh/known_hosts,target=/home/vscode/.ssh/known_hosts,type=bind",
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh/tpi/,target=/home/vscode/.ssh/tpi/,type=bind"
   ],
   "customizations": {
     "vscode": {
