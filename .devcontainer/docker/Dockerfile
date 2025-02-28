@@ -5,6 +5,7 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     update-ca-certificates && \
-    pipx install --include-deps ansible
+    pipx install --include-deps ansible && \
+    pipx install ansible-lint
 
 WORKDIR /work
