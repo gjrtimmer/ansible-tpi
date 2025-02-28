@@ -1,0 +1,43 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "enabled": true,
+    "configMigration": true,
+    "configWarningReuseIssue": false,
+    "autoApprove": false,
+    "commitMessageLowerCase": "auto",
+    "commitMessageAction": "update",
+    "semanticCommits": "enabled",
+    "semanticCommitType": "chore",
+    "semanticCommitScope": "deps",
+    "rebaseWhen": "behind-base-branch",
+    "dependencyDashboard": true,
+    "dependencyDashboardAutoclose": true,
+    "extends": [
+        "config:recommended",
+        "group:monorepos",
+        "group:recommended",
+        "replacements:all",
+        "workarounds:all"
+    ],
+    "labels": [
+        "security"
+    ],
+    "automerge": false,
+    "schedule": [],
+    "dependencyDashboardApproval": false,
+    "rangeStrategy": "auto",
+    "commitMessageSuffix": "[SECURITY]",
+    "branchTopic": "{{{datasource}}}-{{{depName}}}-vulnerability",
+    "prCreation": "immediate",
+    "packageRules": [
+        {
+            "matchUpdateTypes": [
+                "minor",
+                "patch"
+            ],
+            "automerge": true,
+            "autoapprove": true
+        }
+    ],
+    "platformAutomerge": true
+}
