@@ -8,3 +8,5 @@ CONFIG_DIR="${DEVCON_DIR}/config"
 if [[ ! -f "${DEVCON_DIR}/.bashrc" ]]; then
     ln -sf "${DEVCON_DIR}/.bashrc" "${HOME}/.bashrc"
 fi
+
+echo "Container Create Completed"
