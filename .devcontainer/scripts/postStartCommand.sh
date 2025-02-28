@@ -11,7 +11,7 @@ echo "Configuring Git"
 git config --global --add safe.directory /work
 
 # Configure filemode
-git config core.filemode false
+#git config core.filemode false
 
 if [[ ! -f "${DEVCON_DIR}/.bashrc" ]]; then
     echo "Linking .bashrc"
