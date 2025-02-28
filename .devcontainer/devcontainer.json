@@ -30,8 +30,7 @@
     "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,ro",
     "source=${localEnv:HOME}/.ssh/config,target=/home/vscode/.ssh/config,type=bind",
     "source=${localEnv:HOME}/.ssh/known_hosts,target=/home/vscode/.ssh/known_hosts,type=bind",
-    "source=${localEnv:HOME}/.ssh/tpi/,target=/home/vscode/.ssh/tpi/,type=bind",
-    "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind"
+    "source=${localEnv:HOME}/.ssh/tpi/,target=/home/vscode/.ssh/tpi/,type=bind"
   ],
   "customizations": {
     "vscode": {
