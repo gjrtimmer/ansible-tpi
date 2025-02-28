@@ -7,3 +7,4 @@ collections:
 
 roles:
   - name: gjrtimmer.tpi_flash
+  - name: gjrtimmer.tpi_cli
