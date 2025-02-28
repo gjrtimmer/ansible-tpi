@@ -20,8 +20,7 @@
     // removes restrictions on system calls the container can use
     // "--security-opt=seccomp=unconfined"
   ],
-  "initializeCommand": "[ ! -d ${localEnv:HOME}${localEnv:USERPROFILE}/.ssh/tpi ] && mkdir -p ${localEnv:HOME}${localEnv:USERPROFILE}/.ssh/tpi; touch ${localEnv:HOME}${localEnv:USERPROFILE}/.ansible_vault_pass",
-  "onCreateCommand": "chmod +x .devcontainer/scripts/onCreateCommand.sh && .devcontainer/scripts/onCreateCommand.sh",
+  "initializeCommand": [".devcontainer/scripts/initialize"],
   "postCreateCommand": "chmod +x .devcontainer/scripts/postCreateCommand.sh && .devcontainer/scripts/postCreateCommand.sh",
   "postStartCommand": "chmod +x .devcontainer/scripts/postStartCommand.sh && .devcontainer/scripts/postStartCommand.sh",
   "workspaceMount": "source=${localWorkspaceFolder},target=/work,type=bind",

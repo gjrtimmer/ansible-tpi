@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# shellcheck shell=bash
+
+if [[ ! -d "${HOME}/.ssh/tpi" ]]; then
+    mkdir -p "${HOME}/.ssh/tpi"
+fi
+
+if [[ ! -f "${HOME}/.ssh/.ansible_vault_pass" ]]; then
+    touch "${HOME}/.ansible_vault_pass"
+fi
