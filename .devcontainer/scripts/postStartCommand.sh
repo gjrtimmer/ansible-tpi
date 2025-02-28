@@ -15,3 +15,6 @@ git config core.filemode false
 if [[ ! -f "${DEVCON_DIR}/.bashrc" ]]; then
     ln -sf "${DEVCON_DIR}/.bashrc" "${HOME}/.bashrc"
 fi
+
+# Install collections
+ansible-galaxy collection install --force -r requirements.yml
