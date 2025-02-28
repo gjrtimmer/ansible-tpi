@@ -3,3 +3,5 @@
 .devcontainer/.bashrc
 .devcontainer/.netrc
 .ansible/
+hosts.yml
+hosts
