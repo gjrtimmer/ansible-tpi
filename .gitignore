@@ -5,3 +5,4 @@
 .ansible/
 hosts.yml
 hosts
+.DS_Store
