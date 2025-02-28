@@ -20,7 +20,7 @@
     // removes restrictions on system calls the container can use
     // "--security-opt=seccomp=unconfined"
   ],
-  "initializeCommand": "mkdir -p ${localEnv:HOME}${localEnv:USERPROFILE}/.ssh/tpi",
+  "initializeCommand": "[ ! -d ${localEnv:HOME}${localEnv:USERPROFILE}/.ssh/tpi ] && mkdir -p ${localEnv:HOME}${localEnv:USERPROFILE}/.ssh/tpi",
   "onCreateCommand": "chmod +x .devcontainer/scripts/onCreateCommand.sh && .devcontainer/scripts/onCreateCommand.sh",
   "postCreateCommand": "chmod +x .devcontainer/scripts/postCreateCommand.sh && .devcontainer/scripts/postCreateCommand.sh",
   "postStartCommand": "chmod +x .devcontainer/scripts/postStartCommand.sh && .devcontainer/scripts/postStartCommand.sh",
