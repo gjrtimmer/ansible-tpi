@@ -2,3 +2,4 @@
 .devcontainer/.bash_history
 .devcontainer/.bashrc
 .devcontainer/.netrc
+.ansible/
