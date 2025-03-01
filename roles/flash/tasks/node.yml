@@ -1,0 +1,39 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: Set Node
+  ansible.builtin.set_fact:
+    node: "{{ hostvars[hostname] }}"
+
+- name: Show Node
+  tags: [never,debug]
+  ansible.builtin.debug:
+    var: node
+
+- name: Flash Node {{ hostname }}
+  when: flash_node | bool
+  block:
+    - name: Mark Retry
+      ansible.builtin.set_fact:
+        retry: "{{ retry | default(0) | int + 1 }}"
+
+    - name: Check BMC Status for {{ hostname }}
+      ansible.builtin.include_tasks: tasks/status.yml
+      vars:
+        host: "{{ hostvars[node.bmc]['ansible_host'] }}"
+        type: bmc
+
+    - name: Check Node Status for {{ hostname }}
+      ansible.builtin.include_tasks: tasks/status.yml
+      vars:
+        host: "{{ hostname }}"
+        type: node
+
+    - name: Flashing Node {{ hostname }}
+      when: flash_node | bool and ( (node_status_bmc and not node_status_node) or flash_force | bool )
+      ansible.builtin.include_tasks: tasks/flash.yml
+
+  rescue:
+    - name: Max Retries
+      when: retry | int >= 0
+      ansible.builtin.fail:
+        msg: "Failed to flash node {{ hostname }}"

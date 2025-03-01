@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: MIT-0
+---
+# Flash a node
+flash_node: false
+
+# Force flash a node
+flash_force: false
+
+# Flash through SDCard by default
+flash_sdcard: true
+
+# Image versions
+#
+# Rockchip version
+flash_version_rockchip: 2.4.0
+#
+# RK1 Image version
+flash_version_rk1: 24.04
+#
+# Raspberry Pi 4 Image version
+flash_version_cm4: 24.04.1

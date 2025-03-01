@@ -1,0 +1,48 @@
+#SPDX-License-Identifier: MIT-0
+---
+# Flash a node
+flash_node: false
+
+# Force flash a node
+flash_force: false
+
+# Flash through SDCard by default
+flash_sdcard: true
+
+# Image versions
+#
+# Rockchip version
+flash_version_rockchip: 2.4.0
+
+# RK1 Image version
+flash_version_rk1: 24.04
+
+# Raspberry Pi 4 Image version
+flash_version_cm4: 24.04.1
+
+# Image sources/targets
+flash:
+  image:
+    path: 
+      # Images will be downloaded and stored locally
+      # On Windows use WSL for using ansible
+      local: /tmp/tpi
+
+      # Images will be downloaded and stored on the BMC SDCard for faster flashing
+      remote: /mnt/sdcard/images
+
+    # RK1 image details
+    rk1:
+      url: https://github.com/Joshua-Riek/ubuntu-rockchip/releases/download/v{{ flash_version_rockchip }}
+      sha: 88584d5797bac01efd3bb1063935ce9f00947e4d4aa0c671d0a39ec8db6ca8f7
+      file: 
+        source: ubuntu-{{ flash_version_rk1 }}-preinstalled-server-arm64-turing-rk1.img.xz
+        target: ubuntu-{{ flash_version_rk1 }}-rk1.img.xz
+
+    # Raspberry Pi 4 image details
+    cm4:
+      url: https://cdimage.ubuntu.com/releases/{{ flash_version_cm4 }}/release
+      sha: e59925e211080b20f02e4504bb2c8336b122d0738668491986ee29a95610e5b1
+      file:
+        source: ubuntu-{{ flash_version_cm4 }}-preinstalled-server-arm64+raspi.img.xz
+        target: ubuntu-{{ flash_version_cm4 }}-cm4.img.xz

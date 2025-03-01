@@ -1,0 +1,41 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: TPI Check
+  delegate_to: localhost
+  block:
+    - name: Command Exists
+      ansible.builtin.shell: command -v tpi >/dev/null 2>&1
+      register: cmd_tpi_exists
+      check_mode: false
+      changed_when: false
+      failed_when: cmd_tpi_exists.rc != 0
+  rescue:
+    - name: Command Not Found
+      ansible.builtin.fail:
+        msg: "'tpi' command not found"
+      changed_when: false
+
+- name: Clear remote-image Marker
+  delegate_to: localhost
+  when: flash_node | bool and flash_sdcard | bool
+  ansible.builtin.file:
+    path: "{{ flash.image.path.local }}/remote_image_exists"
+    state: absent
+
+- name: Create Local Directory
+  delegate_to: localhost
+  when: flash_node | bool
+  ansible.builtin.file:
+    path: "{{ flash.image.path.local }}"
+    state: directory
+    mode: "0755"
+
+- name: Flash Nodes
+  when: >
+    inventory_hostname in groups['nodes'] and
+    inventory_hostname == hostvars[hostname].inventory_hostname and
+    ansible_limit | default('nodes,!tpi')
+  ansible.builtin.include_tasks: tasks/node.yml
+  with_items: "{{ groups['nodes'] }}"
+  loop_control:
+    loop_var: hostname

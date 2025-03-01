@@ -4,6 +4,3 @@ collections:
   - name: ansible.posix
   - name: community.crypto
   - name: community.general
-
-roles:
-  - name: gjrtimmer.tpi_flash

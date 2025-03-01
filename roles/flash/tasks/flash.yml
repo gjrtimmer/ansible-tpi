@@ -1,0 +1,105 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: Image RK1
+  ansible.builtin.set_fact:
+    image: "{{ flash.image.rk1 }}"
+  when: node.type|upper == 'RK1'
+
+- name: Image CM4
+  ansible.builtin.set_fact:
+    image: "{{ flash.image.cm4 }}"
+  when: node.type|upper == 'CM4'
+
+- name: Check remote-image marker
+  delegate_to: localhost
+  ansible.builtin.stat:
+    path: "{{ flash.image.path.local }}/remote_image_exists"
+  register: remote_image_marker_exists
+
+- name: Check Image on BMC
+  when: flash_sdcard | bool and not remote_image_marker_exists.stat.exists | bool
+  delegate_to: localhost
+  ansible.builtin.raw: "ssh {{ hostvars[node.bmc]['tpi_user'] }}@{{ hostvars[node.bmc]['ansible_host'] }} 'mkdir -p {{ flash.image.path.remote }} && [ -f {{ flash.image.path.remote }}/{{ image.file.target }} ]' && echo true || echo false"
+  register: remote_file_exists
+  changed_when: false
+
+- name: Place remote-image Marker
+  delegate_to: localhost
+  when: >
+    flash_sdcard | bool and 
+    ( 
+      not remote_image_marker_exists.stat.exists | bool 
+      and 
+      remote_file_exists.stdout_lines[0] | bool
+    )
+  ansible.builtin.file:
+    path: "{{ flash.image.path.local }}/remote_image_exists"
+    state: touch
+
+- name: Reload remote-image Marker
+  delegate_to: localhost
+  ansible.builtin.stat:
+    path: "{{ flash.image.path.local }}/remote_image_exists"
+  register: remote_image_marker_exists
+
+- name: Check Image Local
+  delegate_to: localhost
+  block:
+    - name: Check target directory
+      ansible.builtin.file:
+        path: "{{ flash.image.path.local }}"
+        state: directory
+        mode: "0755"
+      changed_when: false
+
+    - name: Check Image exists
+      ansible.builtin.stat:
+        path: "{{ flash.image.path.local }}/{{ image.file.target }}"
+      register: local_image_exists
+      changed_when: false
+
+- name: Download Image
+  delegate_to: localhost
+  when: >
+    not (flash_sdcard | bool and not remote_image_marker_exists.stat.exists | bool) and 
+    not (flash_sdcard | bool and not local_image_exists.stat.exists | bool)
+  ansible.builtin.get_url:
+    url: "{{ image.url }}/{{ image.file.source }}"
+    dest: "{{ flash.image.path.local }}/{{ image.file.target }}"
+    mode: "0644"
+
+- name: Copy Image to BMC SDCard
+  delegate_to: localhost
+  when: flash_sdcard | bool and not remote_image_marker_exists.stat.exists | bool
+  ansible.builtin.raw: "scp {{ flash.image.path.local }}/{{ image.file.target }} {{ hostvars[node.bmc]['tpi_user'] }}@{{ hostvars[node.bmc]['ansible_host'] }}:{{ flash.image.path.remote }}/{{ image.file.target }}"
+  changed_when: false
+
+- name: Ensure Shutdown Node {{ hostname }}
+  delegate_to: localhost
+  ansible.builtin.shell: "tpi --user {{ hostvars[node.bmc]['tpi_user'] }} --password {{ hostvars[node.bmc]['tpi_pass'] }} power off -n {{ node.slot }}"
+
+- name: Flash Node Remote {{ hostname }}
+  delegate_to: localhost
+  when: flash_node | bool and flash_sdcard | bool
+  ansible.builtin.shell: "tpi --user {{ hostvars[node.bmc]['tpi_user'] }} --password {{ hostvars[node.bmc]['tpi_pass'] }} flash --local --image-path {{ flash.image.path.remote }}/{{ image.file.target }} --sha256 {{ image.sha }} -n {{ node.slot }} > {{ flash.image.path.local}}/flash.{{ hostname}}.log 2>&1"
+  register: flash_report_remote
+
+- name: Show Flash Report {{ hostname }}
+  when: flash_node | bool and flash_sdcard | bool
+  ansible.builtin.debug:
+    var: flash_report_remote
+
+- name: Flash Node Local {{ hostname }}
+  delegate_to: localhost
+  when: flash_node | bool and not flash_sdcard | bool
+  ansible.builtin.shell: "tpi --user {{ hostvars[node.bmc]['tpi_user'] }} --password {{ hostvars[node.bmc]['tpi_pass'] }} flash --image-path {{ flash.image.path.remote }}/{{ image.file.target }} --sha256 {{ image.sha }} -n {{ node.slot }} > {{ flash.image.path.local}}/flash.{{ hostname}}.log 2>&1"
+  register: flash_report_local
+
+- name: Show Flash Report {{ hostname }}
+  when: flash_node | bool and not flash_sdcard | bool
+  ansible.builtin.debug:
+    var: flash_report_local
+
+- name: Ensure Shutdown Node {{ hostname }}
+  delegate_to: localhost
+  ansible.builtin.shell: "tpi --user {{ hostvars[node.bmc]['tpi_user'] }} --password {{ hostvars[node.bmc]['tpi_pass'] }} power off -n {{ node.slot }}"
