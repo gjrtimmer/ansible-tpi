@@ -1,0 +1,5 @@
+---
+tpi:
+  url:
+    linux: https://github.com/turing-machines/tpi/releases/latest/download/tpi-{{ architecture }}-unknown-{{ os }}-gnu.tar.gz
+    darwin: https://github.com/turing-machines/tpi/releases/latest/download/tpi-{{ architecture }}-apple-{{ os }}.tar.gz

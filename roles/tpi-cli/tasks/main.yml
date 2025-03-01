@@ -1,0 +1,57 @@
+# SPDX-License-Identifier: MIT-0
+---
+- name: Install TPI CLI
+  block:
+    - name: Check OS Type
+      ansible.builtin.shell: uname
+      ignore_errors: yes
+      changed_when: false
+      register: uname
+
+    - name: Set OS Type
+      ansible.builtin.set_fact:
+        os: "{{ uname.stdout | lower }}"
+
+    - name: Set Architecture x86_64
+      ansible.builtin.set_fact:
+        architecture: "{{ 'x86_64' if ansible_architecture == 'am64' else ansible_architecture }}"
+
+    - name: Set Architecture aarch64
+      ansible.builtin.set_fact:
+        architecture: "{{ 'aarch64' if ansible_architecture == 'arm64' else ansible_architecture }}"
+
+    - name: Set URL Linux
+      when: os == 'linux'
+      ansible.builtin.set_fact:
+        url: "{{ tpi.url.linux }}"
+
+    - name: Set URL Darwin
+      when: os == 'darwin'
+      ansible.builtin.set_fact:
+        url: "{{ tpi.url.darwin }}"
+
+    - name: Download
+      ansible.builtin.get_url:
+        url: "{{ url }}"
+        dest: /tmp/tpi-latest.tar.gz
+
+    - name: Install
+      become: true
+      check_mode: false
+      ansible.builtin.unarchive:
+        src: /tmp/tpi-latest.tar.gz
+        dest: /
+        keep_newer: false
+        include:
+          - ./usr/bin/tpi
+      register: install
+
+    - name: Remove temporary archive
+      ansible.builtin.file:
+        path: /tmp/tpi-latest.tar.gz
+        state: absent
+
+    - name: Remove temporary archive
+      ansible.builtin.file:
+        path: "{{ install.src }}"
+        state: absent

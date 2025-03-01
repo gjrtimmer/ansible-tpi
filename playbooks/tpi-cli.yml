@@ -1,0 +1,6 @@
+---
+- name: Install TPI CLI
+  hosts: "{{ ansible_limit|default('localhost,nodes,!tpi') }}"
+  gather_facts: true
+  roles:
+    - tpi-cli
