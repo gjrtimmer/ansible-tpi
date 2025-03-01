@@ -24,7 +24,7 @@ if [ ! -f "${PROJECT_DIR}/hosts.yml" ]; then
 fi
 
 # Install collections
-ansible-galaxy collection install --force -r requirements.yml
+ansible-galaxy collection install --force --collections-path .ansible/collections -r requirements.yml
 ansible-galaxy role install --force --roles-path .ansible/roles -r requirements.yml
 
 echo "Container Start Completed"
