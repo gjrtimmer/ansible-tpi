@@ -3,6 +3,7 @@
 .devcontainer/.bashrc
 .devcontainer/.netrc
 .ansible/
+.playground/
 hosts.yml
 hosts
 .DS_Store
