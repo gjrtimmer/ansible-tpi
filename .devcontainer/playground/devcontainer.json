@@ -1,0 +1,82 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/python
+{
+  "name": "Playground",
+  "build": {
+    "context": "..",
+    "dockerfile": "../docker/Dockerfile"
+  },
+  "runArgs": [
+    // Set container name
+    "--name=ansible-playground",
+
+    // Condfigure Host network
+    "--network=host",
+
+    // Disable SELinux
+    "--security-opt=label=disable",
+
+    // Privileged
+    // We are running this container in privileged mode
+    // because the container is capable of docker-in-docker to start
+    // an ansible playground
+    "--privileged",
+
+    // init
+    // Required because we are loading docker-in-docker into this container to ensure we ship it with a playground.
+    "--init"
+
+    // Disables Seccomp (System Call Filtering)
+    // removes restrictions on system calls the container can use
+    // "--security-opt=seccomp=unconfined"
+  ],
+  "initializeCommand": [".devcontainer/scripts/initialize"],
+  "postCreateCommand": ".devcontainer/scripts/postCreateCommand.sh",
+  "postStartCommand": ".devcontainer/scripts/postStartCommand.sh",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/work,type=bind",
+  "workspaceFolder": "/work",
+  "mounts": [
+    "source=${localEnv:HOME}/.ansible_vault_pass,target=/home/vscode/.ansible_vault_pass,type=bind",
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,ro",
+    "source=${localEnv:HOME}/.ssh/config,target=/home/vscode/.ssh/config,type=bind",
+    "source=${localEnv:HOME}/.ssh/known_hosts,target=/home/vscode/.ssh/known_hosts,type=bind",
+    "source=${localEnv:HOME}/.ssh/ansible/,target=/home/vscode/.ssh/ansible/,type=bind"
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "redhat.ansible",
+        "redhat.vscode-yaml",
+        "dhoeric.ansible-vault",
+        "yzhang.markdown-all-in-one",
+        "bierner.markdown-mermaid",
+        "DavidAnson.vscode-markdownlint",
+        "PKief.material-icon-theme",
+        "mrkaran.nomfmt",
+        "esbenp.prettier-vscode",
+        "jlcs-es.x509-parser",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "remoteEnv": {
+    "PATH": "${containerEnv:PATH}:/work/.bin",
+    "ANSIBLE_HOST_KEY_CHECKING": "False"
+  },
+  "remoteUser": "vscode"
+
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  // "forwardPorts": [],
+
+  // Use 'postCreateCommand' to run commands after the container is created.
+  // "postCreateCommand": "pip3 install --user -r requirements.txt",
+
+  // Configure tool-specific properties.
+  // "customizations": {},
+
+  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+  // "remoteUser": "root"
+}
