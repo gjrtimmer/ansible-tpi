@@ -13,6 +13,8 @@ git config --global --add safe.directory /work
 # Configure filemode
 #git config core.filemode false
 
+sudo chmod -x ${HOME}/.ansible_vault_pass
+
 if [[ ! -f "${DEVCON_DIR}/.bashrc" ]]; then
     echo "Linking .bashrc"
     ln -sf "${DEVCON_DIR}/.bashrc" "${HOME}/.bashrc"
