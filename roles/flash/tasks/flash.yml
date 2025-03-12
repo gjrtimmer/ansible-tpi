@@ -33,6 +33,7 @@
     )
   ansible.builtin.file:
     path: "{{ flash.image.path.local }}/remote_image_exists"
+    mode: "0755"
     state: touch
 
 - name: Reload remote-image Marker
