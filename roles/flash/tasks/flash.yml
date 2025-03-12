@@ -26,11 +26,10 @@
 - name: Place remote-image Marker
   delegate_to: localhost
   when: >
-    flash_sdcard | bool and 
-    ( 
-      not remote_image_marker_exists.stat.exists | bool 
-      and 
-      remote_file_exists.stdout_lines[0] | bool
+    flash_sdcard | bool and
+    (
+      not remote_image_marker_exists.stat.exists | bool
+      and remote_file_exists.stdout_lines[0] | bool
     )
   ansible.builtin.file:
     path: "{{ flash.image.path.local }}/remote_image_exists"
@@ -61,8 +60,10 @@
 - name: Download Image
   delegate_to: localhost
   when: >
-    not (flash_sdcard | bool and not remote_image_marker_exists.stat.exists | bool) and 
-    not (flash_sdcard | bool and not local_image_exists.stat.exists | bool)
+    (
+      not (flash_sdcard | bool and not remote_image_marker_exists.stat.exists | bool) and
+      not (flash_sdcard | bool and not local_image_exists.stat.exists | bool)
+    ) or not local_image_exists.stat.exists | bool
   ansible.builtin.get_url:
     url: "{{ image.url }}/{{ image.file.source }}"
     dest: "{{ flash.image.path.local }}/{{ image.file.target }}"
