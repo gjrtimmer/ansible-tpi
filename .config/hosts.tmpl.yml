@@ -1,6 +1,7 @@
-local:
+all:
   hosts:
     localhost:
+      ansible_connection: local
 
 tpi:
   hosts:
