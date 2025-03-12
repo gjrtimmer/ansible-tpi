@@ -78,13 +78,13 @@
 
 - name: Ensure Shutdown Node {{ hostname }}
   delegate_to: localhost
-  ansible.builtin.command: "tpi --user {{ hostvars[node.bmc]['tpi_user'] }} --password {{ hostvars[node.bmc]['tpi_pass'] }} power off -n {{ node.slot }}"
+  ansible.builtin.shell: "tpi --user {{ hostvars[node.bmc]['tpi_user'] }} --password {{ hostvars[node.bmc]['tpi_pass'] }} power off -n {{ node.slot }}"
   changed_when: true
 
 - name: Flash Node Remote {{ hostname }}
   delegate_to: localhost
   when: flash_node | bool and flash_sdcard | bool
-  ansible.builtin.command: "tpi --user {{ hostvars[node.bmc]['tpi_user'] }} --password {{ hostvars[node.bmc]['tpi_pass'] }} flash --local --image-path {{ flash.image.path.remote }}/{{ image.file.target }} --sha256 {{ image.sha }} -n {{ node.slot }} > {{ flash.image.path.local}}/flash.{{ hostname}}.log 2>&1"
+  ansible.builtin.shell: "tpi --user {{ hostvars[node.bmc]['tpi_user'] }} --password {{ hostvars[node.bmc]['tpi_pass'] }} flash --local --image-path {{ flash.image.path.remote }}/{{ image.file.target }} --sha256 {{ image.sha }} -n {{ node.slot }} > {{ flash.image.path.local}}/flash.{{ hostname}}.log 2>&1"
   register: flash_report_remote
   changed_when: true
 
@@ -96,7 +96,7 @@
 - name: Flash Node Local {{ hostname }}
   delegate_to: localhost
   when: flash_node | bool and not flash_sdcard | bool
-  ansible.builtin.command: "tpi --user {{ hostvars[node.bmc]['tpi_user'] }} --password {{ hostvars[node.bmc]['tpi_pass'] }} flash --image-path {{ flash.image.path.remote }}/{{ image.file.target }} --sha256 {{ image.sha }} -n {{ node.slot }} > {{ flash.image.path.local}}/flash.{{ hostname}}.log 2>&1"
+  ansible.builtin.shell: "tpi --user {{ hostvars[node.bmc]['tpi_user'] }} --password {{ hostvars[node.bmc]['tpi_pass'] }} flash --image-path {{ flash.image.path.remote }}/{{ image.file.target }} --sha256 {{ image.sha }} -n {{ node.slot }} > {{ flash.image.path.local}}/flash.{{ hostname}}.log 2>&1"
   register: flash_report_local
   changed_when: true
 
@@ -108,4 +108,4 @@
 - name: Ensure Shutdown Node {{ hostname }}
   delegate_to: localhost
   changed_when: true
-  ansible.builtin.command: "tpi --user {{ hostvars[node.bmc]['tpi_user'] }} --password {{ hostvars[node.bmc]['tpi_pass'] }} power off -n {{ node.slot }}"
+  ansible.builtin.shell: "tpi --user {{ hostvars[node.bmc]['tpi_user'] }} --password {{ hostvars[node.bmc]['tpi_pass'] }} power off -n {{ node.slot }}"
