@@ -29,5 +29,6 @@ nodes:
       root: /dev/nvme0n1
     node4:
       bmc: bmc
+      slot: 4
       type: RK1
       root: /dev/nvme0n1
