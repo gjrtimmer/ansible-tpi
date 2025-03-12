@@ -11,7 +11,7 @@
   register: host_check
 
 - name: Show status for {{ inventory_hostname }}
-  tags: [never,debug]
+  tags: [never, debug]
   ansible.builtin.debug:
     var: host_check
 

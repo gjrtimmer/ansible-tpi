@@ -5,7 +5,7 @@
     node: "{{ hostvars[hostname] }}"
 
 - name: Show Node
-  tags: [never,debug]
+  tags: [never, debug]
   ansible.builtin.debug:
     var: node
 
