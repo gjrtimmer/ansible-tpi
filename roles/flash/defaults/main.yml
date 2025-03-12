@@ -1,4 +1,4 @@
-#SPDX-License-Identifier: MIT-0
+# SPDX-License-Identifier: MIT-0
 ---
 # Flash a node
 flash_node: false
@@ -23,7 +23,7 @@ flash_version_cm4: 24.04.1
 # Image sources/targets
 flash:
   image:
-    path: 
+    path:
       # Images will be downloaded and stored locally
       # On Windows use WSL for using ansible
       local: /tmp/tpi
@@ -35,7 +35,7 @@ flash:
     rk1:
       url: https://github.com/Joshua-Riek/ubuntu-rockchip/releases/download/v{{ flash_version_rockchip }}
       sha: 88584d5797bac01efd3bb1063935ce9f00947e4d4aa0c671d0a39ec8db6ca8f7
-      file: 
+      file:
         source: ubuntu-{{ flash_version_rk1 }}-preinstalled-server-arm64-turing-rk1.img.xz
         target: ubuntu-{{ flash_version_rk1 }}-rk1.img.xz
 
