@@ -76,12 +76,12 @@
   ansible.builtin.raw: "scp {{ flash.image.path.local }}/{{ image.file.target }} {{ hostvars[node.bmc]['tpi_user'] }}@{{ hostvars[node.bmc]['ansible_host'] }}:{{ flash.image.path.remote }}/{{ image.file.target }}"
   changed_when: false
 
-- name: Ensure Shutdown Node {{ hostname }}
+- name: Ensure Shutdown Node {{ hostname }} # noqa command-instead-of-shell
   delegate_to: localhost
   ansible.builtin.shell: "tpi --user {{ hostvars[node.bmc]['tpi_user'] }} --password {{ hostvars[node.bmc]['tpi_pass'] }} power off -n {{ node.slot }}"
   changed_when: true
 
-- name: Flash Node Remote {{ hostname }}
+- name: Flash Node Remote {{ hostname }} # noqa command-instead-of-shell
   delegate_to: localhost
   when: flash_node | bool and flash_sdcard | bool
   ansible.builtin.shell: "tpi --user {{ hostvars[node.bmc]['tpi_user'] }} --password {{ hostvars[node.bmc]['tpi_pass'] }} flash --local --image-path {{ flash.image.path.remote }}/{{ image.file.target }} --sha256 {{ image.sha }} -n {{ node.slot }} > {{ flash.image.path.local }}/flash.{{ hostname }}.log 2>&1"
@@ -93,7 +93,7 @@
   ansible.builtin.debug:
     var: flash_report_remote
 
-- name: Flash Node Local {{ hostname }}
+- name: Flash Node Local {{ hostname }} # noqa command-instead-of-shell
   delegate_to: localhost
   when: flash_node | bool and not flash_sdcard | bool
   ansible.builtin.shell: "tpi --user {{ hostvars[node.bmc]['tpi_user'] }} --password {{ hostvars[node.bmc]['tpi_pass'] }} flash --image-path {{ flash.image.path.remote }}/{{ image.file.target }} --sha256 {{ image.sha }} -n {{ node.slot }} > {{ flash.image.path.local }}/flash.{{ hostname }}.log 2>&1"
@@ -105,7 +105,7 @@
   ansible.builtin.debug:
     var: flash_report_local
 
-- name: Ensure Shutdown Node {{ hostname }}
+- name: Ensure Shutdown Node {{ hostname }} # noqa command-instead-of-shell
   delegate_to: localhost
   changed_when: true
   ansible.builtin.shell: "tpi --user {{ hostvars[node.bmc]['tpi_user'] }} --password {{ hostvars[node.bmc]['tpi_pass'] }} power off -n {{ node.slot }}"
