@@ -1,3 +1,7 @@
+local:
+  hosts:
+    localhost:
+
 tpi:
   hosts:
     bmc: # Use this value in the node `bmc` key

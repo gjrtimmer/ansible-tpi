@@ -2,6 +2,10 @@
 #
 # Source: https://github.com/gjrtimmer/ansible-playground-docker
 #
+local:
+  hosts:
+    localhost:
+
 nodes:
   vars:
     ansible_connection: ssh
