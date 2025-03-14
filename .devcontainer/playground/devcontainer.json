@@ -36,11 +36,11 @@
   "workspaceMount": "source=${localWorkspaceFolder},target=/work,type=bind",
   "workspaceFolder": "/work",
   "mounts": [
-    "source=${localEnv:HOME}/.ansible_vault_pass,target=/home/vscode/.ansible_vault_pass,type=bind",
-    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,ro",
-    "source=${localEnv:HOME}/.ssh/config,target=/home/vscode/.ssh/config,type=bind",
-    "source=${localEnv:HOME}/.ssh/known_hosts,target=/home/vscode/.ssh/known_hosts,type=bind",
-    "source=${localEnv:HOME}/.ssh/ansible/,target=/home/vscode/.ssh/ansible/,type=bind"
+    "source=${localEnv:HOME}/.ansible_vault_pass,target=/home/vscode/.ansible_vault_pass,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,readonly,consistency=cached",
+    "source=${localEnv:HOME}/.ssh/config,target=/home/vscode/.ssh/config,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.ssh/known_hosts,target=/home/vscode/.ssh/known_hosts,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.ssh/ansible/,target=/home/vscode/.ssh/ansible/,type=bind,consistency=cached"
   ],
   "customizations": {
     "vscode": {
@@ -66,6 +66,7 @@
     "PATH": "${containerEnv:PATH}:/work/.bin",
     "ANSIBLE_HOST_KEY_CHECKING": "False"
   },
+  "containerUser": "vscode",
   "remoteUser": "vscode"
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
