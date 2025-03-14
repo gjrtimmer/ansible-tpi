@@ -13,6 +13,9 @@ git config --global --add safe.directory /work
 # Configure Ansible Vault Pass
 sudo chmod -x ${HOME}/.ansible_vault_pass
 
+# Configure ownership of SSH mount
+sudo chown vscode:vscode ~/.ssh
+
 if [[ ! -f "${DEVCON_DIR}/.bashrc" ]]; then
     echo "Linking .bashrc"
     ln -sf "${DEVCON_DIR}/.bashrc" "${HOME}/.bashrc"
