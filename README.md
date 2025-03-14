@@ -2,10 +2,6 @@
 
 This repository holds the Ansible configuration to manage your Turing PI.
 
-> IMPORTANT: SSH
->
-> To ensure everythings works your hosts `.ssh` folder is mounted Read/Write!
-
 - [Usage](#usage)
   - [Ansible Vault Password](#ansible-vault-password)
 - [Playbooks](#playbooks)
