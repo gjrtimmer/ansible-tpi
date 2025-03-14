@@ -2,9 +2,9 @@
 ---
 - name: Install TPI CLI
   block:
-    - name: Check OS Type
+    - name: Check OS Type # noqa command-instead-of-shell
       ansible.builtin.shell: uname
-      ignore_errors: yes
+      ignore_errors: true
       changed_when: false
       register: uname
 
@@ -34,6 +34,7 @@
       ansible.builtin.get_url:
         url: "{{ url }}"
         dest: /tmp/tpi-latest.tar.gz
+        mode: "0755"
 
     - name: Install
       become: true
