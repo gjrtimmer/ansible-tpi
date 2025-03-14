@@ -1,0 +1,8 @@
+---
+ssh:
+  bitsize: 4096
+  path: ~/.ssh/tpi
+
+users:
+  default: ubuntu
+  provision: ansible

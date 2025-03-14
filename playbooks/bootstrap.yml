@@ -1,0 +1,52 @@
+---
+- name: Configure SSH
+  hosts: "{{ ansible_limit | default('nodes, !tpi') }}"
+  gather_facts: false
+  tasks:
+    # We are using the elaborate structure, tasks>block>task,
+    # so that we can delegate to localhost and also access the
+    # tpi name, because we might be dealing with multiple Turing PIs
+    - name: Generate SSH Keys
+      tags: [ssh]
+      delegate_to: localhost
+      vars:
+        tpi_name: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['tpi']['name'] }}"
+      block:
+        - name: Generate SSH key "{{ tpi_name }}.{{ users.provision }}" # noqa name[template]
+          delegate_to: localhost
+          community.crypto.openssh_keypair:
+            path: "{{ ssh.path }}/{{ tpi_name }}.{{ users.provision }}.key"
+            type: rsa
+            size: "{{ ssh.bitsize }}"
+            state: present
+            force: false
+            comment: "ansible"
+
+        - name: Private key permission
+          ansible.builtin.file:
+            path: "{{ ssh.path }}/{{ tpi_name }}.{{ users.provision }}.key"
+            mode: "0600"
+
+        - name: Public key permission
+          ansible.builtin.file:
+            path: "{{ ssh.path }}/{{ tpi_name }}.{{ users.provision }}.key.pub"
+            mode: "0644"
+
+        - name: Generate SSH key "{{ ssh_key_ubuntu }}"
+          community.crypto.openssh_keypair:
+            path: "{{ ssh.path }}/{{ tpi_name }}.{{ users.default }}.key"
+            type: rsa
+            size: "{{ ssh.bitsize }}"
+            state: present
+            force: false
+            comment: "Deploy"
+
+        - name: Private key permission
+          ansible.builtin.file:
+            path: "{{ ssh.path }}/{{ tpi_name }}.{{ users.default }}.key"
+            mode: "0600"
+
+        - name: Public key permission
+          ansible.builtin.file:
+            path: "{{ ssh.path }}/{{ tpi_name }}.{{ users.default }}.key.pub"
+            mode: "0644"
