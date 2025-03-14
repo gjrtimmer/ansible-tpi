@@ -10,9 +10,7 @@ echo "Configuring Git"
 # shellcheck disable=SC2154
 git config --global --add safe.directory /work
 
-# Configure filemode
-#git config core.filemode false
-
+# Configure Ansible Vault Pass
 sudo chmod -x ${HOME}/.ansible_vault_pass
 
 if [[ ! -f "${DEVCON_DIR}/.bashrc" ]]; then
