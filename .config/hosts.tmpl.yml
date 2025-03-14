@@ -7,8 +7,18 @@ tpi:
   hosts:
     bmc: # Use this value in the node `bmc` key
       ansible_host: turingpi.local # <-- Change this
-      tpi_user: root
-      tpi_pass: turing # <-- Change this and use Ansible Vault
+      tpi:
+        # Name to identify this Turing PI
+        # Used in various places like ssh key filenames
+        # NO SPACES
+        name: tpi
+
+        # Username to login into the BMC
+        user: root
+
+        # Password to login into the BMC
+        # Change this if required; use Ansible Vault
+        pass: turing
 
 nodes:
   hosts:

@@ -39,8 +39,18 @@ tpi:
   hosts:
     bmc: # Use this value in the node `bmc` key
       ansible_host: 192.168.10.15 # <-- Change this
-      tpi_user: root
-      tpi_pass: turing # <-- Change this if required; use Ansible Vault
+      tpi:
+        # Name to identify this Turing PI
+        # Used in various places like ssh key filenames
+        # NO SPACES
+        name: tpi
+
+        # Username to login into the BMC
+        user: root
+
+        # Password to login into the BMC
+        # Change this if required; use Ansible Vault
+        pass: turing
 
 nodes:
   hosts:
@@ -72,12 +82,32 @@ tpi:
   hosts:
     tpi1_rk1: # Turing PI #1 with only RK1 modules, use this value in the node `bmc` key
       ansible_host: 192.168.10.15 # <-- Change this
-      tpi_user: root
-      tpi_pass: turing # <-- Change this if required; use Ansible Vault
+      tpi:
+        # Name to identify this Turing PI
+        # Used in various places like ssh key filenames
+        # NO SPACES
+        name: tpi
+
+        # Username to login into the BMC
+        user: root
+
+        # Password to login into the BMC
+        # Change this if required; use Ansible Vault
+        pass: turing
     tpi2_cm4: # Turing PI #2 with only CM4 modules, use this value in the node `bmc` key
       ansible_host: 192.168.10.35 # <-- Change this
-      tpi_user: root
-      tpi_pass: turing # <-- Change this if required; use Ansible Vault
+      tpi:
+        # Name to identify this Turing PI
+        # Used in various places like ssh key filenames
+        # NO SPACES
+        name: tpi2
+
+        # Username to login into the BMC
+        user: root
+
+        # Password to login into the BMC
+        # Change this if required; use Ansible Vault
+        pass: turing
 
 nodes:
   hosts:
