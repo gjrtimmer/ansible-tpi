@@ -11,22 +11,13 @@ This repository holds the Ansible configuration to manage your Turing PI.
 - [Playbooks](#playbooks)
 - [Roles](#roles)
 - [Provision New Server](#provision-new-server)
-  - [Use Existing SSH Keys](#use-existing-ssh-keys)
   - [Provision/Bootstrap Server](#provisionbootstrap-server)
     - [SSH Key Generation](#ssh-key-generation)
+    - [Use Existing SSH Keys](#use-existing-ssh-keys)
 
 ## Usage
 
 In order to use this repository the following requirements must be configured first.
-
-- [Usage](#usage)
-  - [Ansible Vault Password](#ansible-vault-password)
-- [Playbooks](#playbooks)
-- [Roles](#roles)
-- [Provision New Server](#provision-new-server)
-  - [Use Existing SSH Keys](#use-existing-ssh-keys)
-  - [Provision/Bootstrap Server](#provisionbootstrap-server)
-    - [SSH Key Generation](#ssh-key-generation)
 
 ### Ansible Vault Password
 
@@ -74,18 +65,6 @@ The following additional users are created.
 > The ssh keys are prefixed with the name configured in the hosts file under `tpi.name`.
 > This is the name given to the BMC by the user and used as a prefix.
 
-### Use Existing SSH Keys
-
-Copy your existing Public/Private SSH keys you want to use to the following locations.
-Where `{PREFIX}` is replaced with the name configured in `hosts.yml` as the `tpi.name`
-key of the BMC.
-
-Example; if the `tpi.name` key is `tpi`, then the private key for the `ansible` user
-will be expected at `~/.ssh/tpi/tpi.ansible.key`.
-
-- ~/.ssh/tpi/{PREFIX}.ansible.key
-- ~/.ssh/tpi/{PREFIX}.ansible.key.pub
-
 ### Provision/Bootstrap Server
 
 Run the following command to bootstrap a server, replace `{LIMIT}` with either a groupname
@@ -103,3 +82,12 @@ but limit it to only run with the tag `ssh`.
 ```shell
 ansible-playbook -l {LIMIT} -t ssh playbooks/bootstrap.yml
 ```
+
+#### Use Existing SSH Keys
+
+Copy your existing Public/Private SSH keys you want to use to the following locations.
+Where `{PREFIX}` is replaced with the name configured in `hosts.yml` as the `tpi.name`
+key of the BMC.
+
+Example; if the `tpi.name` key is `tpi`, then the private key for the `ansible` user
+will be expected at `~/.ssh/tpi/tpi.ansible.key`.

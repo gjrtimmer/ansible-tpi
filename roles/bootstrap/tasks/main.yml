@@ -1,0 +1,11 @@
+---
+- name: Generate SSH Keys
+  tags: [ssh]
+  vars:
+    tpi_name: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['tpi']['name'] }}"
+  loop:
+    - "{{ users.default }}"
+    - "{{ users.provision }}"
+  loop_control:
+    loop_var: user
+  ansible.builtin.include_tasks: ssh.yml

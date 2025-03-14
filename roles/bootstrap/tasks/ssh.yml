@@ -1,0 +1,65 @@
+---
+# We are generating keys in /home/vscode in the container
+# this is due to the fact that we might be dealing with a devcontainer
+# on a Windows host.
+#
+# In this case we have an issue because the /usr/bin/attr
+# which is responsible for file attributes returns an error due to the fact
+# that the filesystem on Windows does not support this.
+#
+# We are working around this because we NEED the generated SSH Key to be safely stored
+# on the host machine, so it is protected against any loss.
+#
+# The suppression on 'risky-file-permissions' warning of ansible is deliberate
+# this is to ensure correct copy to Windows hosts
+#
+- name: Check key exist {{ tpi_name }}.{{ user }} # noqa: name[template]
+  delegate_to: localhost
+  ansible.builtin.stat:
+    path: "{{ ssh.path }}/{{ tpi_name }}.{{ user }}.key"
+  register: key_user_stat
+
+- name: Generate SSH Key
+  delegate_to: localhost
+  when: not key_user_stat.stat.exists
+  block:
+    - name: Generate SSH key {{ tpi_name }}.{{ user }} # noqa: name[template]
+      community.crypto.openssh_keypair:
+        path: "/home/vscode/{{ tpi_name }}.{{ user }}.key"
+        type: rsa
+        size: "{{ ssh.bitsize }}"
+        state: present
+        force: "{{ ssh_overwrite }}"
+        comment: "ansible"
+
+    - name: Private key permission {{ tpi_name }}.{{ user }} # noqa: name[template]
+      ansible.builtin.file:
+        path: "/home/vscode/{{ tpi_name }}.{{ user }}.key"
+        mode: "0600"
+
+    - name: Public key permission {{ tpi_name }}.{{ user }} # noqa: name[template]
+      ansible.builtin.file:
+        path: "/home/vscode/{{ tpi_name }}.{{ user }}.key.pub"
+        mode: "0644"
+
+    - name: Copy private key to host {{ tpi_name }}.{{ user }} # noqa: name[template] risky-file-permissions
+      ansible.builtin.copy:
+        src: "/home/vscode/{{ tpi_name }}.{{ user }}.key"
+        dest: "{{ ssh.path }}/{{ tpi_name }}.{{ user }}.key"
+
+    - name: Copy public key to host {{ tpi_name }}.{{ user }} # noqa: name[template] risky-file-permissions
+      ansible.builtin.copy:
+        src: "/home/vscode/{{ tpi_name }}.{{ user }}.key.pub"
+        dest: "{{ ssh.path }}/{{ tpi_name }}.{{ user }}.key.pub"
+
+- name: Clean private key
+  delegate_to: localhost
+  ansible.builtin.file:
+    state: absent
+    path: "/home/vscode/{{ tpi_name }}.{{ users }}.key"
+
+- name: Clean public key
+  delegate_to: localhost
+  ansible.builtin.file:
+    state: absent
+    path: "/home/vscode/{{ tpi_name }}.{{ user }}.key.pub"
