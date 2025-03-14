@@ -6,7 +6,7 @@ This repository holds the Ansible configuration to manage your Turing PI.
   - [Ansible Vault Password](#ansible-vault-password)
 - [Playbooks](#playbooks)
 - [Roles](#roles)
-- [Provision New Server](#provision-new-server)
+- [Provision](#provision)
   - [Provision/Bootstrap Server](#provisionbootstrap-server)
     - [SSH Key Generation](#ssh-key-generation)
     - [Use Existing SSH Keys](#use-existing-ssh-keys)
@@ -14,6 +14,9 @@ This repository holds the Ansible configuration to manage your Turing PI.
 ## Usage
 
 In order to use this repository the following requirements must be configured first.
+
+- [Set Ansible Vault Password](#ansible-vault-password)
+- [Generate SSH keys](#ssh-key-generation)
 
 ### Ansible Vault Password
 
@@ -42,7 +45,7 @@ Read the documentation of the Role to get more information regarding configurati
 - [flash-nodes](./roles/flash/README.md)
 - [tpi-cli](./roles/tpi-cli/)
 
-## Provision New Server
+## Provision
 
 In order to provision any server, `cloud-init` is used to bootstrap the server,
 and configure users with SSH keys for this repository to work properly.
