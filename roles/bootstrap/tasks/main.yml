@@ -2,7 +2,7 @@
 - name: Generate SSH Keys
   tags: [ssh]
   vars:
-    tpi_name: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['tpi']['name'] }}"
+    bmc: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['tpi']['name'] }}"
   loop:
     - "{{ users.default }}"
     - "{{ users.provision }}"
