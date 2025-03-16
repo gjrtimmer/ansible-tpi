@@ -6,7 +6,15 @@
 # when a 'default' entry is found it will reference the 'default_user'
 # from the distro configuration specified below
 users:
-- default
+  - default
+  - name: {{ users.provision }}
+    lock_passwd: True
+    gecos: Ansible User
+    groups: [adm, audio, cdrom, dialout, dip, floppy, lxd, netdev, plugdev, sudo, video]
+    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - {{ lookup('file', '~/.ssh/tpi/{{ bmc }}.ansible.key.pub') }}
 
 # If this is set, 'root' will not be able to ssh in and they
 # will get a message to login instead as the default $user
@@ -14,6 +22,7 @@ disable_root: true
 
 # This will cause the set+update hostname module to not operate (if true)
 preserve_hostname: false
+hostname: {{ inventory_hostname }}
 
 # If you use datasource_list array, keep array items in a single line.
 # If you use multi line array, ds-identify script won't read array items.
@@ -26,65 +35,65 @@ preserve_hostname: false
 
 # The modules that run in the 'init' stage
 cloud_init_modules:
-- seed_random
-- bootcmd
-- write_files
-- growpart
-- resizefs
-- disk_setup
-- mounts
-- set_hostname
-- update_hostname
-- update_etc_hosts
-- ca_certs
-- rsyslog
-- users_groups
-- ssh
+  - seed_random
+  - bootcmd
+  - write_files
+  - growpart
+  - resizefs
+  - disk_setup
+  - mounts
+  - set_hostname
+  - update_hostname
+  - update_etc_hosts
+  - ca_certs
+  - rsyslog
+  - users_groups
+  - ssh
 
 # The modules that run in the 'config' stage
 cloud_config_modules:
-- wireguard
-- snap
-- ubuntu_autoinstall
-- ssh_import_id
-- keyboard
-- locale
-- set_passwords
-- grub_dpkg
-- apt_pipelining
-- apt_configure
-- ubuntu_pro
-- ntp
-- timezone
-- disable_ec2_metadata
-- runcmd
-- byobu
+  - wireguard
+  - snap
+  - ubuntu_autoinstall
+  - ssh_import_id
+  - keyboard
+  - locale
+  - set_passwords
+  - grub_dpkg
+  - apt_pipelining
+  - apt_configure
+  - ubuntu_pro
+  - ntp
+  - timezone
+  - disable_ec2_metadata
+  - runcmd
+  - byobu
 
 # The modules that run in the 'final' stage
 cloud_final_modules:
-- package_update_upgrade_install
-- fan
-- landscape
-- lxd
-- ubuntu_drivers
-- write_files_deferred
-- puppet
-- chef
-- ansible
-- mcollective
-- salt_minion
-- reset_rmc
-- scripts_vendor
-- scripts_per_once
-- scripts_per_boot
-- scripts_per_instance
-- scripts_user
-- ssh_authkey_fingerprints
-- keys_to_console
-- install_hotplug
-- phone_home
-- final_message
-- power_state_change
+  - package_update_upgrade_install
+  - fan
+  - landscape
+  - lxd
+  - ubuntu_drivers
+  - write_files_deferred
+  - puppet
+  - chef
+  - ansible
+  - mcollective
+  - salt_minion
+  - reset_rmc
+  - scripts_vendor
+  - scripts_per_once
+  - scripts_per_boot
+  - scripts_per_instance
+  - scripts_user
+  - ssh_authkey_fingerprints
+  - keys_to_console
+  - install_hotplug
+  - phone_home
+  - final_message
+  - power_state_change
 
 # System and/or distro specific settings
 # (not accessible to handlers/transforms)
@@ -93,14 +102,14 @@ system_info:
   distro: ubuntu
   # Default user name + that default users groups (if added/used)
   default_user:
-    name: ubuntu
-    doas:
-      - permit nopass ubuntu
-    lock_passwd: True
+    name: {{ users.default }}
+    lock_passwd: False
     gecos: Ubuntu
-    groups: [adm, cdrom, dip, lxd, sudo]
+    groups: [adm, audio, cdrom, dialout, dip, floppy, lxd, netdev, plugdev, sudo, video]
     sudo: ["ALL=(ALL) NOPASSWD:ALL"]
     shell: /bin/bash
+    ssh_authorized_keys:
+      - {{ lookup('file', '~/.ssh/tpi/{{ bmc }}.ubuntu.key.pub') }}
   network:
     dhcp_client_priority: [dhclient, dhcpcd, udhcpc]
     renderers: ['netplan', 'eni', 'sysconfig']
@@ -113,27 +122,27 @@ system_info:
     templates_dir: /etc/cloud/templates/
   package_mirrors:
     - arches: [i386, amd64]
-    failsafe:
+      failsafe:
         primary: http://archive.ubuntu.com/ubuntu
         security: http://security.ubuntu.com/ubuntu
-    search:
+      search:
         primary:
-        - http://%(ec2_region)s.ec2.archive.ubuntu.com/ubuntu/
-        - http://%(availability_zone)s.clouds.archive.ubuntu.com/ubuntu/
-        - http://%(region)s.clouds.archive.ubuntu.com/ubuntu/
+          - http://%(ec2_region)s.ec2.archive.ubuntu.com/ubuntu/
+          - http://%(availability_zone)s.clouds.archive.ubuntu.com/ubuntu/
+          - http://%(region)s.clouds.archive.ubuntu.com/ubuntu/
         security: []
     - arches: [arm64, armel, armhf]
-    failsafe:
+      failsafe:
         primary: http://ports.ubuntu.com/ubuntu-ports
         security: http://ports.ubuntu.com/ubuntu-ports
-    search:
+      search:
         primary:
-        - http://%(ec2_region)s.ec2.ports.ubuntu.com/ubuntu-ports/
-        - http://%(availability_zone)s.clouds.ports.ubuntu.com/ubuntu-ports/
-        - http://%(region)s.clouds.ports.ubuntu.com/ubuntu-ports/
+          - http://%(ec2_region)s.ec2.ports.ubuntu.com/ubuntu-ports/
+          - http://%(availability_zone)s.clouds.ports.ubuntu.com/ubuntu-ports/
+          - http://%(region)s.clouds.ports.ubuntu.com/ubuntu-ports/
         security: []
     - arches: [default]
-    failsafe:
+      failsafe:
         primary: http://ports.ubuntu.com/ubuntu-ports
         security: http://ports.ubuntu.com/ubuntu-ports
   ssh_svcname: ssh
@@ -145,20 +154,3 @@ output:
   final:
     output: "| tee /tmp/final.stdout | tee /tmp/bar.stdout"
     error: "&1"
-
-# Set `true` to enable the stop searching for a datasource on boot.
-manual_cache_clean: False
-
-# def_log_file and syslog_fix_perms work together
-# if
-# - logging is set to go to a log file 'L' both with and without syslog
-# - and 'L' does not exist
-# - and syslog is configured to write to 'L'
-# then 'L' will be initially created with root:root ownership (during
-# cloud-init), and then at cloud-config time (when syslog is available)
-# the syslog daemon will be unable to write to the file.
-#
-# to remedy this situation, 'def_log_file' can be set to a filename
-# and syslog_fix_perms to a string containing "<user>:<group>"
-def_log_file: /var/log/my-logging-file.log
-syslog_fix_perms: syslog:root
