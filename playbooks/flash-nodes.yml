@@ -6,7 +6,7 @@
     - tpi-cli
 
 - name: Flash Nodes
-  hosts: "{{ ansible_limit|default('nodes,!tpi') }}"
+  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
   gather_facts: false
   tags: flash
   roles:
