@@ -60,7 +60,9 @@
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
-  "remoteEnv": {
+  "containerEnv": {
+    "ANSIBLE_COLLECTIONS_PATH": "/work/.ansible/collections:/usr/share/ansible/collections",
+    "ANSIBLE_ROLES_PATH": "/work/.ansible/roles:/usr/share/ansible/roles",
     "ANSIBLE_HOST_KEY_CHECKING": "False"
   },
   "containerUser": "vscode",
