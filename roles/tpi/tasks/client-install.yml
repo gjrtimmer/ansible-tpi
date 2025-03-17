@@ -15,7 +15,7 @@
       changed_when: false
 
 - name: Install TPI CLI
-  when: (cmd_tpi_exists.rc|int) != 0
+  when: (cmd_tpi_exists.rc|int) != 0 or client_overwrite|bool
   block:
     - name: Check OS Type # noqa command-instead-of-shell
       ansible.builtin.shell: uname
