@@ -43,7 +43,7 @@ echo 'PASSWORD' > ~/.ansible_vault_pass
 Read the documentation of the Role to get more information regarding configuration or variables.
 
 - [flash-nodes](./roles/flash/README.md)
-- [tpi-cli](./roles/tpi-cli/)
+- [tpi](./roles/tpi/)
 
 ## Provision
 
