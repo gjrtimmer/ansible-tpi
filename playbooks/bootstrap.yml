@@ -1,7 +1,0 @@
----
-- name: Bootstrap
-  hosts: "{{ ansible_limit | default('nodes, !tpi') }}"
-  gather_facts: false
-  serial: 1
-  roles:
-    - bootstrap

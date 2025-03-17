@@ -1,15 +1,4 @@
 ---
-- name: Generate SSH Keys
-  tags: [ssh]
-  vars:
-    prefix: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_prefix'] }}"
-  loop:
-    - "{{ users.default }}"
-    - "{{ users.provision }}"
-  loop_control:
-    loop_var: user
-  ansible.builtin.include_tasks: ssh.yml
-
 - name: Bootstrap
   tags: bootstrap
   block:

@@ -1,0 +1,16 @@
+---
+- name: Generate User SSH Keys
+  vars:
+    prefix: "{{ hostvars[inventory_hostname]['ansible_ssh_prefix'] }}"
+  loop:
+    - "{{ users.default }}"
+    - "{{ users.provision }}"
+  loop_control:
+    loop_var: user
+  ansible.builtin.include_tasks: keys.yml
+
+- name: Generate BMC SSH Keys
+  vars:
+    prefix: "{{ hostvars[user]['ansible_ssh_prefix'] }}"
+    user: "{{ inventory_hostname }}"
+  ansible.builtin.include_tasks: keys.yml

@@ -1,0 +1,7 @@
+---
+- name: Configure SSH
+  hosts: tpi
+  gather_facts: false
+  serial: 1
+  roles:
+    - ssh
