@@ -1,0 +1,35 @@
+all:
+  hosts:
+    localhost:
+
+tpi:
+  hosts:
+    bmc: # Use this value in the node `bmc` key
+      # The following keys are used to execute commands on the BMC
+      ansible_host: turingpi.local # <-- Change this to Turing PI/Hostname
+      ansible_user: root
+      ansible_ssh_pass: turing # <-- You can encrypt this after setting ansible vault password
+      ansible_ssh_prefix: tpi # <-- Prefix for SSH keys
+
+nodes:
+  hosts:
+    node1:
+      bmc: bmc # <-- This references the host 'bmc' under group 'tpi'
+      slot: 1
+      type: RK1
+      root: /dev/nvme0n1
+    node2:
+      bmc: bmc
+      slot: 2
+      type: RK1
+      root: /dev/nvme0n1
+    node3:
+      bmc: bmc
+      slot: 3
+      type: RK1
+      root: /dev/nvme0n1
+    node4:
+      bmc: bmc
+      slot: 4
+      type: RK1
+      root: /dev/nvme0n1
