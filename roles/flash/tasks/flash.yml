@@ -16,10 +16,11 @@
     path: "{{ flash.image.path.local }}/remote_image_exists_{{ node.type }}"
   register: remote_image_marker_exists
 
+  # TODO: Replace with delegate to 'bmc'
 - name: Check Image on BMC
   when: flash_sdcard | bool and not remote_image_marker_exists.stat.exists | bool
   delegate_to: localhost
-  ansible.builtin.raw: "ssh {{ hostvars[node.bmc]['tpi.user'] }}@{{ hostvars[node.bmc]['ansible_host'] }} 'mkdir -p {{ flash.image.path.remote }} && [ -f {{ flash.image.path.remote }}/{{ image.file.target }} ]' && echo true || echo false"
+  ansible.builtin.raw: "ssh {{ bmc_user }}@{{ bmc_host }} 'mkdir -p {{ flash.image.path.remote }} && [ -f {{ flash.image.path.remote }}/{{ image.file.target }} ]' && echo true || echo false"
   register: remote_file_exists
   changed_when: false
 
@@ -73,7 +74,7 @@
 - name: Copy Image to BMC SDCard
   delegate_to: localhost
   when: flash_sdcard | bool and not remote_image_marker_exists.stat.exists | bool
-  ansible.builtin.raw: "scp {{ flash.image.path.local }}/{{ image.file.target }} {{ hostvars[node.bmc]['tpi.user'] }}@{{ hostvars[node.bmc]['ansible_host'] }}:{{ flash.image.path.remote }}/{{ image.file.target }}"
+  ansible.builtin.raw: "scp {{ flash.image.path.local }}/{{ image.file.target }} {{ bmc_user }}@{{ bmc_host }}:{{ flash.image.path.remote }}/{{ image.file.target }}"
   changed_when: false
 
 - name: Place remote-image Marker
@@ -84,16 +85,15 @@
     mode: "0755"
     state: touch
 
-  # TODO: Replace with tpi/power-off.yml
 - name: Ensure Shutdown Node {{ hostname }} # noqa command-instead-of-shell
   delegate_to: localhost
-  ansible.builtin.shell: "tpi --user {{ hostvars[node.bmc]['tpi.user'] }} --password {{ hostvars[node.bmc]['tpi.pass'] }} power off -n {{ node.slot }}"
+  ansible.builtin.shell: "tpi --host {{ bmc_host }} --user {{ bmc_user }} --password {{ bmc_pass }} power off -n {{ node.slot }}"
   changed_when: true
 
 - name: Flash Node Remote {{ hostname }} # noqa command-instead-of-shell
   delegate_to: localhost
   when: flash_node | bool and flash_sdcard | bool
-  ansible.builtin.shell: "tpi --user {{ hostvars[node.bmc]['tpi.user'] }} --password {{ hostvars[node.bmc]['tpi.pass'] }} flash --local --image-path {{ flash.image.path.remote }}/{{ image.file.target }} --sha256 {{ image.sha }} -n {{ node.slot }} > {{ flash.image.path.local }}/flash.{{ hostname }}.log 2>&1"
+  ansible.builtin.shell: "tpi --host {{ bmc_host }} --user {{ bmc_user }} --password {{ bmc_pass }} flash --local --image-path {{ flash.image.path.remote }}/{{ image.file.target }} --sha256 {{ image.sha }} -n {{ node.slot }} > {{ flash.image.path.local }}/flash.{{ hostname }}.log 2>&1"
   register: flash_report_remote
   changed_when: true
 
@@ -105,7 +105,7 @@
 - name: Flash Node Local {{ hostname }} # noqa command-instead-of-shell
   delegate_to: localhost
   when: flash_node | bool and not flash_sdcard | bool
-  ansible.builtin.shell: "tpi --user {{ hostvars[node.bmc]['tpi.user'] }} --password {{ hostvars[node.bmc]['tpi.pass'] }} flash --image-path {{ flash.image.path.remote }}/{{ image.file.target }} --sha256 {{ image.sha }} -n {{ node.slot }} > {{ flash.image.path.local }}/flash.{{ hostname }}.log 2>&1"
+  ansible.builtin.shell: "tpi --host {{ bmc_host }} --user {{ bmc_user }} --password {{ bmc_pass }} flash --image-path {{ flash.image.path.remote }}/{{ image.file.target }} --sha256 {{ image.sha }} -n {{ node.slot }} > {{ flash.image.path.local }}/flash.{{ hostname }}.log 2>&1"
   register: flash_report_local
   changed_when: true
 
@@ -114,8 +114,7 @@
   ansible.builtin.debug:
     var: flash_report_local
 
-  # TODO: Replace with tpi/power-off.yml
 - name: Ensure Shutdown Node {{ hostname }} # noqa command-instead-of-shell
   delegate_to: localhost
   changed_when: true
-  ansible.builtin.shell: "tpi --user {{ hostvars[node.bmc]['tpi.user'] }} --password {{ hostvars[node.bmc]['tpi.pass'] }} power off -n {{ node.slot }}"
+  ansible.builtin.shell: "tpi --host {{ bmc_host }} --user {{ bmc_user }} --password {{ bmc_pass }} power off -n {{ node.slot }}"

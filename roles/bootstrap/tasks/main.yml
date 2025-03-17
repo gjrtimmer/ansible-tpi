@@ -2,7 +2,7 @@
 - name: Generate SSH Keys
   tags: [ssh]
   vars:
-    bmc: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['tpi']['name'] }}"
+    prefix: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_prefix'] }}"
   loop:
     - "{{ users.default }}"
     - "{{ users.provision }}"

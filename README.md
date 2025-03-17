@@ -3,7 +3,8 @@
 This repository holds the Ansible configuration to manage your Turing PI.
 
 - [Usage](#usage)
-  - [Ansible Vault Password](#ansible-vault-password)
+- [Update Inventory](#update-inventory)
+- [Ansible Vault Password](#ansible-vault-password)
 - [Playbooks](#playbooks)
 - [Roles](#roles)
 - [Provision](#provision)
@@ -15,10 +16,19 @@ This repository holds the Ansible configuration to manage your Turing PI.
 
 In order to use this repository the following requirements must be configured first.
 
+<!-- no toc -->
+- [Update Inventory](#update-inventory)
 - [Set Ansible Vault Password](#ansible-vault-password)
 - [Generate SSH keys](#ssh-key-generation)
 
-### Ansible Vault Password
+## Update Inventory
+
+Update your Ansible inventory `hosts.yml` accordingly to your configuration.
+After you configure your Ansible Vault Password, you can encrypt your BMC root password.
+
+You can find examples for inventories in the [.config](./.config) directory.
+
+## Ansible Vault Password
 
 Use the following command to configure or update the `Ansible Vault Password`.
 Replace `PASSWORD` with your actual password.
