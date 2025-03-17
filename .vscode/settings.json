@@ -45,7 +45,6 @@
   },
 
   "prettier.requireConfig": false,
-  "ansible.python.interpreterPath": "/usr/local/bin/python3",
-  "ansible.validation.lint.path": "/usr/local/py-utils/bin/ansible-lint",
+  "ansible.python.interpreterPath": "/usr/bin/python3",
   "markdown.extension.toc.levels": "2..6"
 }
