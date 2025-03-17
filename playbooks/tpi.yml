@@ -4,6 +4,7 @@
   gather_facts: true
   tasks:
     - name: Install TPI Client
+      tags: [tpi]
       ansible.builtin.import_role:
         name: tpi
         tasks_from: client-install.yml
