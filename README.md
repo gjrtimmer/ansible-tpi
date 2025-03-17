@@ -55,7 +55,7 @@ Read the documentation of the Role to get more information regarding configurati
 
 - [bootstrap](./roles/bootstrap/README.md)
 - [flash](./roles/flash/README.md)
-- [ssh](./roles/ssh/)
+- [ssh](./roles/ssh/README.md)
 - [tpi](./roles/tpi/README.md)
 
 ## SSH Key Generation
