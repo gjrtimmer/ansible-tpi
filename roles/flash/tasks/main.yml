@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: Skip Flash
+- name: Flash DISABLED
   when: not flash_node|bool
   ansible.builtin.fail:
     msg: "Flash: DISABLED; use '-e flash_node=true' to enable flashing of nodes"
