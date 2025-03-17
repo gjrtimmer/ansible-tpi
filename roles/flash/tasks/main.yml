@@ -1,19 +1,9 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: TPI Check
-  delegate_to: localhost
-  block:
-    - name: Command Exists
-      ansible.builtin.shell: command -v tpi >/dev/null 2>&1
-      register: cmd_tpi_exists
-      check_mode: false
-      changed_when: false
-      failed_when: cmd_tpi_exists.rc != 0
-  rescue:
-    - name: Command Not Found
-      ansible.builtin.fail:
-        msg: "'tpi' command not found"
-      changed_when: false
+- name: TPI Client
+  ansible.builtin.import_role:
+    name: tpi
+    tasks_from: client-install.yml
 
 - name: Clear remote-image Marker
   delegate_to: localhost
