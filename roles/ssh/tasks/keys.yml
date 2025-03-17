@@ -30,7 +30,7 @@
         size: "{{ ssh.bitsize }}"
         state: present
         force: "{{ ssh_overwrite }}"
-        comment: "ansible"
+        comment: "{{ user | lower }}"
 
     - name: Private key permission {{ prefix }}.{{ user }} # noqa: name[template]
       ansible.builtin.file:
