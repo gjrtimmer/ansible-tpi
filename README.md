@@ -32,7 +32,7 @@ echo 'PASSWORD' > ~/.ansible_vault_pass
 | Playbook                                   | Description                                                                |
 | ------------------------------------------ | -------------------------------------------------------------------------- |
 | [flash-nodes](./playbooks/flash-nodes.yml) | Flash node(s), this playbook will also install the `tpi` cli on localhost. |
-| [tpi-cli](./playbooks/tpi-cli.yml)         | Install `tpi` client                                                       |
+| [tpi](./playbooks/tpi.yml)                 | Install `tpi` client                                                       |
 
 ## Roles
 
@@ -42,8 +42,9 @@ echo 'PASSWORD' > ~/.ansible_vault_pass
 
 Read the documentation of the Role to get more information regarding configuration or variables.
 
-- [flash-nodes](./roles/flash/README.md)
-- [tpi](./roles/tpi/)
+- [bootstrap](./roles/bootstrap/README.md)
+- [flash](./roles/flash/README.md)
+- [tpi](./roles/tpi/README.md)
 
 ## Provision
 
