@@ -9,3 +9,17 @@
   loop_control:
     loop_var: user
   ansible.builtin.include_tasks: ssh.yml
+
+- name: Bootstrap
+  tags: bootstrap
+  block:
+    - name: TPI Client
+      tags: [tpi]
+      ansible.builtin.import_role:
+        name: tpi
+        tasks_from: client-install.yml
+
+    - name: Power Off Node
+      ansible.builtin.import_role:
+        name: tpi
+        tasks_from: power-off.yml
