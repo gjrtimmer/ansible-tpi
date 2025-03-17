@@ -1,5 +1,5 @@
 ---
-- name: Configure SSH
+- name: Bootstrap
   hosts: "{{ ansible_limit | default('nodes, !tpi') }}"
   gather_facts: false
   serial: 1
