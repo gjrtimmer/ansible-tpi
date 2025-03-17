@@ -16,6 +16,8 @@ The following tasks are available for use:
   - [Install Client](#install-client)
   - [Power On](#power-on)
   - [Power Off](#power-off)
+  - [Mount NVMe Drive](#mount-nvme-drive)
+  - [Umount NVMe Drive](#umount-nvme-drive)
 
 ### Install Client
 
@@ -44,4 +46,22 @@ Check and install the TPI Client to the targeted hosts.
   ansible.builtin.import_role:
     name: tpi
     tasks_from: power-off.yml
+```
+
+### Mount NVMe Drive
+
+```yaml
+- name: Mount NVMe
+  ansible.builtin.import_role:
+    name: tpi
+    tasks_from: msd-mount.yml
+```
+
+### Umount NVMe Drive
+
+```yaml
+- name: Unmount NVMe
+  ansible.builtin.import_role:
+    name: tpi
+    tasks_from: msd-umount.yml
 ```
