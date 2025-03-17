@@ -19,7 +19,7 @@ The following tasks are available for use:
 
 ### Install Client
 
-Install the TPI Client to the targeted hosts.
+Check and install the TPI Client to the targeted hosts.
 
 ```yaml
 - name: TPI Client
