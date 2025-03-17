@@ -1,5 +1,10 @@
 # SPDX-License-Identifier: MIT-0
 ---
+- name: Skip Flash
+  when: not flash_node|bool
+  ansible.builtin.fail:
+    msg: "Flash: DISABLED; use flash_node=true to enable flashing of nodes"
+
 - name: Clear remote-image Marker
   delegate_to: localhost
   when: flash_node | bool and flash_sdcard | bool
