@@ -21,19 +21,39 @@
   ignore_errors: true
 
 - name: Remove old key {{ prefix }}.{{ user }} # noqa: name[template]
-  delegate_to: localhost
   when: ssh_overwrite|bool
+  delegate_to: localhost
   ansible.builtin.raw: sshpass -p "{{ bmc_pass }}" ssh {{ bmc_user }}@{{ bmc_host }} "sed -i.bak '/ {{ user }}$/d' ~/.ssh/authorized_keys"
   changed_when: true
 
-- name: Install SSH Key
+- name: Install SSH Key {{ prefix }}.{{ user }} # noqa: name[template]
   delegate_to: localhost
   when: (key_user_stat.stat.exists|bool and (key_user_remote.rc|int) != 0) or ssh_overwrite
   ansible.builtin.raw: cat {{ bmc_key }}.pub | sshpass -p "{{ bmc_pass }}" ssh {{ bmc_user }}@{{ bmc_host }} "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
   changed_when: true
 
-- name: Permissions SSH Key
-  delegate_to: localhost
+- name: Permissions SSH Key {{ prefix }}.{{ user }} # noqa: name[template]
   when: (key_user_stat.stat.exists|bool and (key_user_remote.rc|int) != 0) or ssh_overwrite
+  delegate_to: localhost
   ansible.builtin.raw: sshpass -p "{{ bmc_pass }}" ssh {{ bmc_user }}@{{ bmc_host }} "chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys"
+  changed_when: true
+
+- name: Remove bmc known_host {{ prefix }}.{{ user }} # noqa: name[template]
+  delegate_to: localhost
+  ansible.builtin.raw: |
+    TEMP_SED=$(sed '/{{ bmc_host }}/d' ~/.ssh/known_hosts)
+    echo "${TEMP_SED}" > ~/.ssh/known_hosts
+  changed_when: true
+
+- name: Get SSH fingerprints {{ inventory_hostname }}
+  delegate_to: localhost
+  ansible.builtin.raw: ssh-keyscan {{ bmc_host }}
+  register: ssh_fingerprint
+  changed_when: false
+
+- name: Add fingerprints to known_hosts
+  delegate_to: localhost
+  ansible.builtin.raw: echo "{{ item }}" >> ~/.ssh/known_hosts
+  loop: "{{ ssh_fingerprint.stdout_lines }}"
+  when: not item.startswith('#')
   changed_when: true
