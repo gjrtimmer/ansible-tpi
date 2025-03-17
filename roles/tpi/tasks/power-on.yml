@@ -1,9 +1,10 @@
 ---
 - name: Power On {{ inventory_hostname }} # noqa command-instead-of-shell
   delegate_to: localhost
-  ansible.builtin.shell: "tpi --user {{ bmc_username }} --password {{ bmc_password }} power on -n {{ node_slot }}"
+  ansible.builtin.shell: "tpi --host {{ bmc_host }} --user {{ bmc_user }} --password {{ bmc_pass }} power on -n {{ node_slot }}"
   changed_when: true
   vars:
     node_slot: "{{ hostvars[inventory_hostname]['slot'] }}"
-    bmc_username: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['tpi']['user'] }}"
-    bmc_password: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['tpi']['pass'] }}"
+    bmc_host: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_host'] }}"
+    bmc_user: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['tpi']['user'] }}"
+    bmc_pass: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['tpi']['pass'] }}"
