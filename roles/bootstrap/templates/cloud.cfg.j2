@@ -111,7 +111,6 @@ system_info:
     ssh_authorized_keys:
       - {{ lookup('file', '~/.ssh/tpi/{{ bmc }}.ubuntu.key.pub') }}
   network:
-    dhcp_client_priority: [dhclient, dhcpcd, udhcpc]
     renderers: ['netplan', 'eni', 'sysconfig']
     activators: ['netplan', 'eni', 'network-manager', 'networkd']
   # Automatically discover the best ntp_client
