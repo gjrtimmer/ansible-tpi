@@ -21,7 +21,7 @@
 
 - name: Generate SSH Key
   delegate_to: localhost
-  when: not key_user_stat.stat.exists
+  when: not key_user_stat.stat.exists|bool or ssh_overwrite|bool
   block:
     - name: Generate SSH key {{ prefix }}.{{ user }} # noqa: name[template]
       community.crypto.openssh_keypair:
@@ -52,14 +52,13 @@
         src: "/home/vscode/{{ prefix }}.{{ user }}.key.pub"
         dest: "{{ ssh.path }}/{{ prefix }}.{{ user }}.key.pub"
 
-- name: Clean private key
+- name: Clean Temp
   delegate_to: localhost
+  with_items:
+    - "/home/vscode/{{ prefix }}.{{ user }}.key"
+    - "/home/vscode/{{ prefix }}.{{ user }}.key.pub"
+  loop_control:
+    loop_var: file
   ansible.builtin.file:
     state: absent
-    path: "/home/vscode/{{ prefix }}.{{ users }}.key"
-
-- name: Clean public key
-  delegate_to: localhost
-  ansible.builtin.file:
-    state: absent
-    path: "/home/vscode/{{ prefix }}.{{ user }}.key.pub"
+    path: "{{ file }}"
