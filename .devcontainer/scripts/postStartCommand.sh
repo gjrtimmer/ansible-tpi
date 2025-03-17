@@ -31,6 +31,6 @@ fi
 
 # Install collections
 ansible-galaxy collection install -U -p .ansible/collections -r requirements.yml
-ansible-galaxy role install -U -p .ansible/roles -r requirements.yml
+ansible-galaxy role install -p .ansible/roles -r requirements.yml
 
 echo "Container Start Completed"
