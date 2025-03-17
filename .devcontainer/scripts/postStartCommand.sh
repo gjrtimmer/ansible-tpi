@@ -16,7 +16,7 @@ git config -C "${PROJECT_DIR}" core.eol lf
 sudo chmod -x ${HOME}/.ansible_vault_pass
 
 # Configure ownership of SSH mount
-sudo chown vscode:vscode ~/.ssh
+sudo chown vscode:vscode ~/.ssh || true
 
 if [[ ! -f "${DEVCON_DIR}/.bashrc" ]]; then
     echo "Linking .bashrc"
