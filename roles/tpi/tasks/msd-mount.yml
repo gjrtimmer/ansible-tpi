@@ -1,0 +1,41 @@
+---
+# IMPORTANT
+#
+# This task must run in serial. This is because otherwise it will not be possible
+# to identify the correct block device which must be mounted.
+
+- name: Power Off Node
+  ansible.builtin.import_role:
+    name: tpi
+    tasks_from: power-off.yml
+
+- name: TPI Client Wait
+  ansible.builtin.pause:
+    seconds: 1
+
+- name: Enable MSD (Mass Storage Driver)
+  delegate_to: localhost
+  ansible.builtin.raw: "tpi --host {{ bmc_host }} --user {{ bmc_user }} --password {{ bmc_pass }} advanced msd -n {{ node_slot }}"
+  changed_when: true
+  vars:
+    node_slot: "{{ hostvars[inventory_hostname]['slot'] }}"
+    bmc_host: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_host'] }}"
+    bmc_user: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_user'] }}"
+    bmc_pass: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_pass'] }}"
+
+- name: Wait for block device
+  delegate_to: "{{ hostvars[inventory_hostname]['bmc'] }}"
+  ansible.builtin.raw: ls --color=never /dev/sd*2
+  changed_when: false
+  register: nvme_blk_rc
+  retries: 10
+  delay: 1
+
+- name: Set NVMe Block Device
+  ansible.builtin.set_fact:
+    nvme_blk_dev: "{{ nvme_blk_rc.stdout_lines[0] | string }}"
+
+- name: Mount Node NVMe
+  delegate_to: "{{ hostvars[inventory_hostname]['bmc'] }}"
+  ansible.builtin.raw: mkdir -p /mnt/node && mount {{ nvme_blk_dev }} /mnt/node
+  changed_when: true
