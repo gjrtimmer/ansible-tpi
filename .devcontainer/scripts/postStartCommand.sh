@@ -17,6 +17,7 @@ sudo chmod -x ${HOME}/.ansible_vault_pass
 
 # Configure ownership of SSH mount
 sudo chown vscode:vscode ~/.ssh || true
+sudo chmod 0600 "${HOME}/.ssh/config" "${HOME}/.ssh/known_hosts"
 
 if [[ ! -f "${DEVCON_DIR}/.bashrc" ]]; then
     echo "Linking .bashrc"
