@@ -4,7 +4,8 @@
   gather_facts: true
   tasks:
     - name: Install TPI Client
-      tags: [tpi]
+      vars:
+        client_overwrite: true
       ansible.builtin.import_role:
         name: tpi
         tasks_from: client-install.yml
@@ -12,6 +13,5 @@
 - name: Flash Nodes
   hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
   gather_facts: false
-  tags: [flash]
   roles:
     - flash
