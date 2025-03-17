@@ -1,10 +1,5 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: TPI Client
-  ansible.builtin.import_role:
-    name: tpi
-    tasks_from: client-install.yml
-
 - name: Clear remote-image Marker
   delegate_to: localhost
   when: flash_node | bool and flash_sdcard | bool
