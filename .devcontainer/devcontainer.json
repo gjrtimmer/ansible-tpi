@@ -54,9 +54,6 @@
       ]
     }
   },
-  "remoteEnv": {
-    "PATH": "${containerEnv:PATH}:/work/.bin"
-  },
   "remoteUser": "vscode",
   "containerUser": "vscode"
 }

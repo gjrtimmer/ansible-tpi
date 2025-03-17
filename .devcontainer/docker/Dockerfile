@@ -10,4 +10,5 @@ RUN pipx install --include-deps ansible && \
     pipx install ansible-lint && \
     pipx install --include-deps ensurepath
 
+ENV PATH=/home/vscode/.local/bin:/work/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 WORKDIR /work
