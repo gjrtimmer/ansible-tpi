@@ -1,10 +1,11 @@
 # .ansible-lint
 exclude_paths:
   - .ansible
+  - .bin/
   - .config/
   - .devcontainer/
-  - .github
-  - .gitlab
+  - .github/
+  - .gitlab/
   - .vscode/
   - hosts.yml
 
