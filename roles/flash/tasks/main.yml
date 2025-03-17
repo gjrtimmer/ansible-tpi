@@ -3,7 +3,7 @@
 - name: Skip Flash
   when: not flash_node|bool
   ansible.builtin.fail:
-    msg: "Flash: DISABLED; use flash_node=true to enable flashing of nodes"
+    msg: "Flash: DISABLED; use '-e flash_node=true' to enable flashing of nodes"
 
 - name: Clear remote-image Marker
   delegate_to: localhost
