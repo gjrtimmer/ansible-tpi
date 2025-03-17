@@ -9,6 +9,8 @@ PROJECT_DIR="$(git rev-parse --show-toplevel)"
 echo "Configuring Git"
 # shellcheck disable=SC2154
 git config --global --add safe.directory /work
+git config -C "${PROJECT_DIR}" core.autocrlf false
+git config -C "${PROJECT_DIR}" core.eol lf
 
 # Configure Ansible Vault Pass
 sudo chmod -x ${HOME}/.ansible_vault_pass
