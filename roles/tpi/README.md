@@ -1,12 +1,47 @@
 # TPI CLI
 
-Role to install the `tpi` command line tool. There are roles dependent on the availability of the `tpi` command.
-This role can be used to install the cli to either localhost or a target server depending on the provided hosts.
+This role provides common tasks used by other roles or playbooks.
 
-## Architecture
+> **IMPORTANT!**
+>
+> There is NO main.yml, this is deliberate, this is because the tasks in this role are meant to be imported.
 
-The following architectures are supported by this role. Beacause this repository ships with a devcontainer,
-there is currently no need to support Windows.
+- [Tasks](#tasks)
 
-- Darwin (MacOS)
-- Linux
+## Tasks
+
+The following tasks are available for use:
+
+- [Tasks](#tasks)
+  - [Install Client](#install-client)
+  - [Power On](#power-on)
+  - [Power Off](#power-off)
+
+### Install Client
+
+Install the TPI Client to the targeted hosts.
+
+```yaml
+- name: TPI Client
+  ansible.builtin.import_role:
+    name: tpi
+    tasks_from: client-install.yml
+```
+
+### Power On
+
+```yaml
+- name: Power Off Node
+  ansible.builtin.import_role:
+    name: tpi
+    tasks_from: power-on.yml
+```
+
+### Power Off
+
+```yaml
+- name: Power Off Node
+  ansible.builtin.import_role:
+    name: tpi
+    tasks_from: power-off.yml
+```
