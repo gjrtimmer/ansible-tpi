@@ -9,6 +9,7 @@
     "PKief.material-icon-theme",
     "mrkaran.nomfmt",
     "esbenp.prettier-vscode",
-    "jlcs-es.x509-parser"
+    "jlcs-es.x509-parser",
+    "aaron-bond.better-comments"
   ]
 }
