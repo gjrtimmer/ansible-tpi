@@ -6,7 +6,7 @@
     - name: Install TPI Client
       ansible.builtin.import_role:
         name: tpi
-        tasks_from: install.yml
+        tasks_from: client-install.yml
 
 - name: Flash Nodes
   hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
