@@ -4,11 +4,16 @@
   gather_facts: true
   tasks:
     - name: Install TPI Client
-      vars:
-        client_overwrite: true
       ansible.builtin.import_role:
         name: tpi
         tasks_from: client-install.yml
+
+- name: Generate SSH keys
+  hosts: tpi
+  gather_facts: false
+  serial: 1
+  roles:
+    - ssh
 
 - name: Flash Nodes
   hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
