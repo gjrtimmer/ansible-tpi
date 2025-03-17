@@ -1,24 +1,15 @@
 all:
   hosts:
     localhost:
-      ansible_connection: local
 
 tpi:
   hosts:
     bmc: # Use this value in the node `bmc` key
-      ansible_host: turingpi.local # <-- Change this
-      tpi:
-        # Name to identify this Turing PI
-        # Used in various places like ssh key filenames
-        # NO SPACES
-        name: tpi
-
-        # Username to login into the BMC
-        user: root
-
-        # Password to login into the BMC
-        # Change this if required; use Ansible Vault
-        pass: turing
+      # The following keys are used to execute commands on the BMC
+      ansible_host: turingpi.local # <-- Change this to Turing PI/Hostname
+      ansible_user: root
+      ansible_ssh_pass: turing # <-- You can encrypt this after setting ansible vault password
+      ansible_ssh_prefix: tpi # <-- Prefix for SSH keys
 
 nodes:
   hosts:
