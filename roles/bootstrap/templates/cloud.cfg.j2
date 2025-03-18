@@ -15,7 +15,6 @@ users:
     groups: [adm, audio, cdrom, dialout, dip, floppy, lxd, netdev, plugdev, sudo, video]
     sudo: ["ALL=(ALL) NOPASSWD:ALL"]
     shell: /bin/bash
-    homedir: /home/ansible
     ssh_authorized_keys:
       - {{ lookup('file', '~/.ssh/tpi/{{ prefix }}.ansible.key.pub') }}
 
@@ -61,6 +60,7 @@ cloud_init_modules:
 
 # The modules that run in the 'config' stage
 cloud_config_modules:
+  - users_groups
   - wireguard
   - snap
   - ubuntu_autoinstall
