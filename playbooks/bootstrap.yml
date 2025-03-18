@@ -1,14 +1,25 @@
 ---
-- name: Configure SSH
-  hosts: tpi
+- name: Requirements
+  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
   gather_facts: false
+  tags: [setup]
   serial: 1
-  roles:
-    - ssh
+  tasks:
+    - name: Install TPI Client
+      delegate_to: localhost
+      ansible.builtin.import_role:
+        name: tpi
+        tasks_from: client-install.yml
+
+    - name: Generate SSH Keys
+      delegate_to: localhost
+      ansible.builtin.import_role:
+        name: ssh
 
 - name: Bootstrap
-  hosts: "{{ ansible_limit|default('nodes,!tpi') }}"
+  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
   gather_facts: false
   serial: 1
+  tags: [bootstrap]
   roles:
     - bootstrap
