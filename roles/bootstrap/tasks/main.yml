@@ -7,23 +7,31 @@
         name: tpi
         tasks_from: power-off.yml
 
-# - name: Mount Storage
-#   tags: [bootstrap]
-#   ansible.builtin.import_role:
-#     name: tpi
-#     tasks_from: msd-mount.yml
-
-# - name: Unmount Storage
-#   tags: [bootstrap]
-#   ansible.builtin.import_role:
-#     name: tpi
-#     tasks_from: msd-umount.yml
+- name: Mount Storage
+  tags: [bootstrap]
+  ansible.builtin.import_role:
+    name: tpi
+    tasks_from: msd-mount.yml
 
 - name: Generate cloud-init {{ inventory_hostname }}
   delegate_to: localhost
   ansible.builtin.template:
     src: cloud.cfg.j2
-    dest: /tmp/cloud.cfg
+    dest: /tmp/tpi/cloud.cfg
     mode: "0644"
   vars:
     prefix: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_prefix'] }}"
+
+- name: Copy cloud-init to {{ inventory_hostname }}
+  vars:
+    src: /tmp/tpi/cloud.cfg
+    dest: /mnt/node/etc/cloud/cloud.cfg
+  ansible.builtin.import_role:
+    name: tpi
+    tasks_from: scp-send.yml
+
+- name: Unmount Storage
+  tags: [bootstrap]
+  ansible.builtin.import_role:
+    name: tpi
+    tasks_from: msd-umount.yml

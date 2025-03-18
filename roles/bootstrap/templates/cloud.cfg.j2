@@ -8,7 +8,7 @@
 users:
   - default
   - name: {{ users.provision }}
-    lock_passwd: True
+    lock_passwd: false
     gecos: Ansible User
     groups: [adm, audio, cdrom, dialout, dip, floppy, lxd, netdev, plugdev, sudo, video]
     sudo: ["ALL=(ALL) NOPASSWD:ALL"]
@@ -35,6 +35,7 @@ hostname: {{ inventory_hostname }}
 
 # The modules that run in the 'init' stage
 cloud_init_modules:
+  - migrator
   - seed_random
   - bootcmd
   - write_files
@@ -103,7 +104,7 @@ system_info:
   # Default user name + that default users groups (if added/used)
   default_user:
     name: {{ users.default }}
-    lock_passwd: False
+    lock_passwd: false
     gecos: Ubuntu
     groups: [adm, audio, cdrom, dialout, dip, floppy, lxd, netdev, plugdev, sudo, video]
     sudo: ["ALL=(ALL) NOPASSWD:ALL"]
@@ -148,8 +149,8 @@ system_info:
 
 # configure where output will go
 output:
-  init: "> /var/log/my-cloud-init.log"
-  config: [ ">> /tmp/foo.out", "> /tmp/foo.err" ]
+  init: "> /var/log/{{ inventory_hostname }}.log"
+  config: [ ">> /tmp/{{ inventory_hostname }}.out", "> /tmp/{{ inventory_hostname }}.err" ]
   final:
-    output: "| tee /tmp/final.stdout | tee /tmp/bar.stdout"
+    output: "| tee /tmp/{{ inventory_hostname }}.stdout | tee /tmp/{{ inventory_hostname }}.stdout"
     error: "&1"
