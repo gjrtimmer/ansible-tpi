@@ -45,15 +45,22 @@
     name: tpi
     tasks_from: power-on.yml
 
+- name: Bootup Node {{ inventory_hostname }}
+  ansible.builtin.pause:
+    seconds: 15
+
 - name: Wait for {{ inventory_hostname }}
-  ansible.builtin.wait_for_connection:
-    connect_timeout: 5
-    delay: 10
+  delegate_to: localhost
+  ansible.builtin.wait_for:
+    host: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
+    port: 22
+    search_regex: OpenSSH
     timeout: 120
 
 - name: Add known_host
   vars:
     host: "{{ inventory_hostname }}"
+    host_addr: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
   ansible.builtin.include_role:
     name: ssh
     tasks_from: known_hosts.yml
@@ -62,9 +69,9 @@
   when: inventory_hostname in groups.nodes
   vars:
     host: "{{ inventory_hostname }}"
-    hostname: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
+    hostname: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
     username: "{{ users.default }}"
-    key: "~/.ssh/{{ hostvars[hostvars[inventory_hostname]['bmc']] }}.ubuntu.key"
+    key: "{{ hostvars[hostvars[inventory_hostname]['bmc']] }}.ubuntu.key"
   ansible.builtin.include_role:
     name: ssh
     tasks_from: config.yml
