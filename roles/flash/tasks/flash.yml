@@ -62,10 +62,10 @@
 - name: Download Image
   delegate_to: localhost
   when: >
-    (
-      not (flash_sdcard | bool and not remote_image_marker_exists.stat.exists | bool) and
-      not (flash_sdcard | bool and not local_image_exists.stat.exists | bool)
-    ) or not local_image_exists.stat.exists | bool
+    (not flash_sdcard|bool and not remote_image_marker_exists.stat.exists|bool)
+    or
+    (flash_sdcard|bool and not local_image_exists.stat.exists|bool)
+    or not local_image_exists.stat.exists|bool
   ansible.builtin.get_url:
     url: "{{ image.url }}/{{ image.file.source }}"
     dest: "{{ flash.image.path.local }}/{{ image.file.target }}"
