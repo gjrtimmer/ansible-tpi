@@ -58,9 +58,14 @@
   when: not item.startswith('#')
   changed_when: true
 
-- name: Delete BMC entry from config {{ prefix }}.{{ user }} # noqa: name[template]
+- name: Delete BMC entry from SSH config {{ prefix }}.{{ user }} # noqa: name[template]
   delegate_to: localhost
   ansible.builtin.raw: |
     TEMP_SED=$(sed '/^Host {{ user }}$/,/^$/d' ~/.ssh/config)
     echo "${TEMP_SED}" > ~/.ssh/config
+  changed_when: true
+
+- name: Add BMC entry to SSH config {{ prefix }}.{{ user }} # noqa: name[template]
+  delegate_to: localhost
+  ansible.builtin.raw: echo "\nHost {{ user }}\n  HostName {{ bmc_host }}\n  User {{ bmc_user }}\n  IdentityFile {{ bmc_key }}\n  ServerAliveInterval 60\n" >> ~/.ssh/config
   changed_when: true
