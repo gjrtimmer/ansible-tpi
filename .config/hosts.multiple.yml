@@ -6,13 +6,13 @@ tpi:
   hosts:
     tpi1_rk1: # Turing PI #1 with only RK1 modules, use this value in the node `bmc` key
       # The following keys are used to execute commands on the BMC
-      ansible_host: turingpi.local # <-- Change this to Turing PI/Hostname
+      ansible_ssh_host: turingpi.local # <-- Change this to Turing PI/Hostname
       ansible_ssh_user: root
       ansible_ssh_pass: turing # <-- You can encrypt this after setting ansible vault password
       ansible_ssh_prefix: rk1 # <-- Prefix for SSH keys
 
     tpi2_cm4: # Turing PI #2 with only CM4 modules, use this value in the node `bmc` key
-      ansible_host: 192.168.10.35 # <-- Change this to Turing PI/Hostname
+      ansible_ssh_host: 192.168.10.35 # <-- Change this to Turing PI/Hostname
       # The following keys are used to execute commands on the BMC
       ansible_ssh_user: root
       ansible_ssh_pass: turing # <-- You can encrypt this after setting ansible vault password

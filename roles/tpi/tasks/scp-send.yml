@@ -4,6 +4,6 @@
   ansible.builtin.raw: sshpass -p "{{ bmc_pass }}" scp {{ src }} {{ bmc_user }}@{{ bmc_host }}:{{ dest }}
   changed_when: true
   vars:
-    bmc_host: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_host'] }}"
+    bmc_host: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_host'] }}"
     bmc_user: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_user'] }}"
     bmc_pass: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_pass'] }}"

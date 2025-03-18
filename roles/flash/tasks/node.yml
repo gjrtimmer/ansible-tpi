@@ -19,7 +19,7 @@
     - name: Check BMC Status for {{ hostname }}
       ansible.builtin.include_tasks: tasks/status.yml
       vars:
-        host: "{{ hostvars[node.bmc]['ansible_host'] }}"
+        host: "{{ hostvars[node.bmc]['ansible_ssh_host'] }}"
         type: bmc
 
     - name: Check Node Status for {{ hostname }}
@@ -33,7 +33,7 @@
       ansible.builtin.include_tasks: tasks/flash.yml
       vars:
         bmc_user: "{{ hostvars[node.bmc]['ansible_ssh_user'] }}"
-        bmc_host: "{{ hostvars[node.bmc]['ansible_host'] }}"
+        bmc_host: "{{ hostvars[node.bmc]['ansible_ssh_host'] }}"
         bmc_pass: "{{ hostvars[node.bmc]['ansible_ssh_pass'] }}"
 
   rescue:

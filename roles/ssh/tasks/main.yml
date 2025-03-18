@@ -20,7 +20,7 @@
     prefix: "{{ hostvars[user]['ansible_ssh_prefix'] }}"
     user: "{{ inventory_hostname }}"
     bmc_key: "{{ ssh.path }}/{{ prefix }}.{{ user }}.key"
-    bmc_host: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
+    bmc_host: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
     bmc_user: "{{ hostvars[inventory_hostname]['ansible_ssh_user'] }}"
     bmc_pass: "{{ hostvars[inventory_hostname]['ansible_ssh_pass'] }}"
   ansible.builtin.include_tasks: install.yml

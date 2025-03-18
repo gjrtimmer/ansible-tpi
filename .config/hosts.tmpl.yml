@@ -6,7 +6,7 @@ tpi:
   hosts:
     bmc: # Use this value in the node `bmc` key
       # The following keys are used to execute commands on the BMC
-      ansible_host: turingpi.local # <-- Change this to Turing PI/Hostname
+      ansible_ssh_host: turingpi.local # <-- Change this to Turing PI/Hostname
       ansible_ssh_user: root
       ansible_ssh_pass: turing # <-- You can encrypt this after setting ansible vault password
       ansible_ssh_prefix: tpi # <-- Prefix for SSH keys
