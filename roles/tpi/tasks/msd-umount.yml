@@ -15,7 +15,7 @@
 
 - name: TPI Client Wait
   ansible.builtin.pause:
-    seconds: 1
+    seconds: 2
 
 - name: Power Off Node
   ansible.builtin.import_role:
