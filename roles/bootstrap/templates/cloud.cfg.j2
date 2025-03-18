@@ -1,4 +1,4 @@
-#
+#cloud-config
 # Source: https://cloudinit.readthedocs.io/en/latest/reference/base_config_reference.html#example
 #
 # The top level settings are used as module and base configuration.
@@ -30,15 +30,6 @@ preserve_hostname: false
 hostname: {{ inventory_hostname }}
 
 timezone: {{ timezone }}
-
-# If you use datasource_list array, keep array items in a single line.
-# If you use multi line array, ds-identify script won't read array items.
-# Example datasource config
-# datasource:
-#    Ec2:
-#      metadata_urls: [ 'blah.com' ]
-#      timeout: 5 # (defaults to 50 seconds)
-#      max_wait: 10 # (defaults to 120 seconds)
 
 # The modules that run in the 'init' stage
 cloud_init_modules:
