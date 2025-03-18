@@ -39,4 +39,12 @@ printf "%s\n" "[DONE]"
 ANSIBLE_COLLECTIONS_PATH=/work/.ansible/collections ansible-galaxy collection install -U -p .ansible/collections -r requirements.yml
 ANSIBLE_ROLES_PATH=/work/.ansible/roles ansible-galaxy role install -p .ansible/roles -r requirements.yml
 
-echo "Container Start Completed"
+# Install TPI Client
+CWD=$(pwd)
+cd /work
+printf "\n%s" "Install TPI Client..."
+ansible-playbook -l localhost playbooks/tpi.yml > /tmp/tpi/client-install.log
+printf "%s\n" "[DONE]"
+cd "${CWD}" || exit 1
+
+printf "\n%s\n\n" "Container Start Completed"
