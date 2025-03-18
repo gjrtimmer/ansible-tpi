@@ -1,0 +1,19 @@
+# Shutdown Node(s)
+---
+- name: Shutdown Nodes
+  hosts: "{{ ansible_limit|default('nodes,!tpi') }}"
+  gather_facts: false
+  tasks:
+    - name: Shutdown Node {{ inventory_hostname }}
+      community.general.shutdown:
+
+    - name: Wait for Shutdown
+      delegate_to: localhost
+      ansible.builtin.wait_for:
+        host: "{{ ansible_ssh_host }}"
+        state: stopped
+
+    - name: Power Off Node
+      ansible.builtin.import_role:
+        name: tpi
+        tasks_from: power-off.yml
