@@ -6,7 +6,8 @@ DEVCON_DIR="$(dirname "${SCRIPT_DIR}")"
 CONFIG_DIR="${DEVCON_DIR}/config"
 PROJECT_DIR="$(git rev-parse --show-toplevel)"
 
-echo "Configuring Git"
+printf "\n%s" "Configuring DevContainer..."
+
 # shellcheck disable=SC2154
 git -C "${PROJECT_DIR}" config --global --add safe.directory /work
 git -C "${PROJECT_DIR}" config core.autocrlf false
