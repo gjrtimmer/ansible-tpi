@@ -28,6 +28,12 @@ if [ ! -f "${PROJECT_DIR}/hosts.yml" ]; then
     cp "${PROJECT_DIR}/.config/hosts.tmpl.yml" "${PROJECT_DIR}/hosts.yml"
 fi
 
+# Create Temp Directory
+if [[ ! -d /tmp/tpi ]]; then
+    mkdir -p /tmp/tpi
+fi
+
+
 # Install collections
 ANSIBLE_COLLECTIONS_PATH=/work/.ansible/collections ansible-galaxy collection install -U -p .ansible/collections -r requirements.yml
 ANSIBLE_ROLES_PATH=/work/.ansible/roles ansible-galaxy role install -p .ansible/roles -r requirements.yml
