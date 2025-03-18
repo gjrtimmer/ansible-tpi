@@ -5,6 +5,7 @@ This repository holds the Ansible configuration to manage your Turing PI.
 - [Usage](#usage)
 - [Update Inventory](#update-inventory)
 - [Ansible Vault Password](#ansible-vault-password)
+- [host\_vars](#host_vars)
 - [Playbooks](#playbooks)
 - [Roles](#roles)
 - [SSH Key Generation](#ssh-key-generation)
@@ -19,6 +20,7 @@ In order to use this repository the following requirements must be configured fi
 - [Update Inventory](#update-inventory)
 - [Set Ansible Vault Password](#ansible-vault-password)
 - [Generate SSH keys](#ssh-key-generation)
+- [host_vars]
 
 ## Update Inventory
 
@@ -35,6 +37,10 @@ Replace `PASSWORD` with your actual password.
 ```shell
 echo 'PASSWORD' > ~/.ansible_vault_pass
 ```
+
+## host_vars
+
+Copy `.config/node.yml` to `host_vars/{NODE_HOSTNAME}.yml` and update the IP number for each host.
 
 ## Playbooks
 

@@ -7,3 +7,4 @@
 hosts.yml
 hosts
 .DS_Store
+host_vars/*.yml
