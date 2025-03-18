@@ -11,6 +11,7 @@ This repository holds the Ansible configuration to manage your Turing PI.
 - [SSH Key Generation](#ssh-key-generation)
 - [Provision](#provision)
   - [Provision/Bootstrap Server](#provisionbootstrap-server)
+    - [Login](#login)
 
 ## Usage
 
@@ -108,3 +109,7 @@ or specific server from the inventory.
 ```shell
 ansible-playbook -l {LIMIT} playbooks/bootstrap.yml
 ```
+
+#### Login
+
+The `cloud-init` process will configure the default `ubuntu` user with password `turing`.
