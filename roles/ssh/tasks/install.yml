@@ -40,7 +40,8 @@
 
 - name: Add known_host
   vars:
-    host: "{{ bmc_host }}"
+    host: "{{ prefix }}"
+    host_addr: "{{ bmc_host }}"
   ansible.builtin.include_role:
     name: ssh
     tasks_from: known_hosts.yml

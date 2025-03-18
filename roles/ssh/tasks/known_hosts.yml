@@ -20,7 +20,7 @@
 
 - name: Get SSH fingerprints
   delegate_to: localhost
-  ansible.builtin.raw: ssh-keyscan {{ host }}
+  ansible.builtin.raw: ssh-keyscan {{ host_addr }}
   register: ssh_fingerprint
   changed_when: false
 
