@@ -36,6 +36,10 @@
     name: tpi
     tasks_from: msd-umount.yml
 
+- name: TPI Client Wait
+  ansible.builtin.pause:
+    seconds: 1
+
 - name: Power On Node
   ansible.builtin.import_role:
     name: tpi
