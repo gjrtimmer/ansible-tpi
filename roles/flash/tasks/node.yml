@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: MIT-0
 ---
-- name: Set Node
+- name: Set Node {{ hostname }}
   ansible.builtin.set_fact:
     node: "{{ hostvars[hostname] }}"
 
-- name: Show Node
+- name: Show Node {{ hostname }}
   tags: [never, debug]
   ansible.builtin.debug:
     var: node
