@@ -38,34 +38,19 @@
   ansible.builtin.raw: sshpass -p "{{ bmc_pass }}" ssh {{ bmc_user }}@{{ bmc_host }} "chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys"
   changed_when: true
 
-- name: Remove bmc known_host {{ prefix }}.{{ user }} # noqa: name[template]
-  delegate_to: localhost
-  ansible.builtin.raw: |
-    TEMP_SED=$(sed '/{{ bmc_host }}/d' ~/.ssh/known_hosts)
-    echo "${TEMP_SED}" > ~/.ssh/known_hosts
-  changed_when: true
+- name: Add known_host
+  vars:
+    host: "{{ bmc_host }}"
+  ansible.builtin.include_role:
+    name: ssh
+    tasks_from: known_hosts.yml
 
-- name: Get SSH fingerprints {{ prefix }}.{{ user }} # noqa: name[template]
-  delegate_to: localhost
-  ansible.builtin.raw: ssh-keyscan {{ bmc_host }}
-  register: ssh_fingerprint
-  changed_when: false
-
-- name: Add fingerprints to known_hosts {{ prefix }}.{{ user }} # noqa: name[template]
-  delegate_to: localhost
-  ansible.builtin.raw: echo "{{ item }}" >> ~/.ssh/known_hosts
-  loop: "{{ ssh_fingerprint.stdout_lines }}"
-  when: not item.startswith('#')
-  changed_when: true
-
-- name: Delete BMC entry from SSH config {{ prefix }}.{{ user }} # noqa: name[template]
-  delegate_to: localhost
-  ansible.builtin.raw: |
-    TEMP_SED=$(sed '/^Host {{ user }}$/,/^$/d' ~/.ssh/config)
-    echo "${TEMP_SED}" > ~/.ssh/config
-  changed_when: true
-
-- name: Add BMC entry to SSH config {{ prefix }}.{{ user }} # noqa: name[template]
-  delegate_to: localhost
-  ansible.builtin.raw: echo "\nHost {{ user }}\n  HostName {{ bmc_host }}\n  User {{ bmc_user }}\n  IdentityFile {{ bmc_key }}\n  ServerAliveInterval 60\n" >> ~/.ssh/config
-  changed_when: true
+- name: Add config
+  vars:
+    host: "{{ user }}"
+    hostname: "{{ bmc_host }}"
+    username: "{{ bmc_user }}"
+    key: "{{ bmc_key }}"
+  ansible.builtin.include_role:
+    name: ssh
+    tasks_from: config.yml

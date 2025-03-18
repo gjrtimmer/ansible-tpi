@@ -1,0 +1,20 @@
+---
+- name: Remove known_host
+  delegate_to: localhost
+  ansible.builtin.raw: |
+    TEMP_SED=$(sed '/{{ host }}/d' ~/.ssh/known_hosts)
+    echo "${TEMP_SED}" > ~/.ssh/known_hosts
+  changed_when: true
+
+- name: Get SSH fingerprints
+  delegate_to: localhost
+  ansible.builtin.raw: ssh-keyscan {{ host }}
+  register: ssh_fingerprint
+  changed_when: false
+
+- name: Add known_host
+  delegate_to: localhost
+  ansible.builtin.raw: echo "{{ item }}" >> ~/.ssh/known_hosts
+  loop: "{{ ssh_fingerprint.stdout_lines }}"
+  when: not item.startswith('#')
+  changed_when: true
