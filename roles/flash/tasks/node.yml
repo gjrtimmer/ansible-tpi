@@ -29,7 +29,7 @@
         type: node
 
     - name: Flashing Node {{ hostname }}
-      when: flash_node | bool and ( (node_status_bmc and not node_status_node) or flash_force | bool )
+      when: (flash_node | bool and ( (node_status_bmc and not node_status_node)) or flash_force | bool )
       ansible.builtin.include_tasks: tasks/flash.yml
       vars:
         bmc_user: "{{ hostvars[node.bmc]['ansible_ssh_user'] }}"
