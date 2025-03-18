@@ -16,8 +16,10 @@ git -C "${PROJECT_DIR}" config core.eol lf
 # Configure Ansible Vault Pass
 sudo chmod -x ${HOME}/.ansible_vault_pass
 
-# Configure ownership of SSH mount
-sudo chmod 0600 "${HOME}/.ssh/config" "${HOME}/.ssh/known_hosts"
+# Configure ownership mounts
+sudo chmod 0600 "${HOME}/.ssh/config" 
+sudo chmod 0600 "${HOME}/.ssh/known_hosts"
+sudo chmod 0755 "${HOME}/.ssh/tpi"
 
 if [[ ! -f "${DEVCON_DIR}/.bashrc" ]]; then
     ln -sf "${DEVCON_DIR}/.bashrc" "${HOME}/.bashrc"
@@ -36,6 +38,7 @@ fi
 printf "%s\n" "[DONE]"
 
 # Install collections
+printf "\n%s\n" "Running Ansible Galaxy"
 ANSIBLE_COLLECTIONS_PATH=/work/.ansible/collections ansible-galaxy collection install -U -p .ansible/collections -r requirements.yml
 ANSIBLE_ROLES_PATH=/work/.ansible/roles ansible-galaxy role install -p .ansible/roles -r requirements.yml
 
