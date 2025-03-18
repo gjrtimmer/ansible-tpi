@@ -52,13 +52,13 @@
         src: "/home/vscode/{{ prefix }}.{{ user }}.key.pub"
         dest: "{{ ssh.path }}/{{ prefix }}.{{ user }}.key.pub"
 
-- name: Clean Temp
-  delegate_to: localhost
-  with_items:
-    - "/home/vscode/{{ prefix }}.{{ user }}.key"
-    - "/home/vscode/{{ prefix }}.{{ user }}.key.pub"
-  loop_control:
-    loop_var: file
-  ansible.builtin.file:
-    state: absent
-    path: "{{ file }}"
+    - name: Clean Temp
+      delegate_to: localhost
+      with_items:
+        - "/home/vscode/{{ prefix }}.{{ user }}.key"
+        - "/home/vscode/{{ prefix }}.{{ user }}.key.pub"
+      loop_control:
+        loop_var: file
+      ansible.builtin.file:
+        state: absent
+        path: "{{ file }}"
