@@ -1,22 +1,19 @@
 ---
-- name: Install TPI CLI
-  hosts: localhost
-  gather_facts: true
+- name: Requirements
+  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
+  gather_facts: false
+  tags: [setup]
+  serial: 1
   tasks:
     - name: Install TPI Client
+      delegate_to: localhost
       ansible.builtin.import_role:
         name: tpi
         tasks_from: client-install.yml
 
-- name: Generate SSH keys
-  hosts: tpi
-  gather_facts: false
-  serial: 1
-  roles:
-    - ssh
-
 - name: Flash Nodes
   hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
   gather_facts: false
+  tags: [flash]
   roles:
     - flash
