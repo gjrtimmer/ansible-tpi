@@ -7,4 +7,4 @@ users:
   default: ubuntu
   provision: ansible
 
-timezone: Europe/Amsterdam
+timezone: America/Toronto
