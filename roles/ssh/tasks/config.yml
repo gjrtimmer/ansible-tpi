@@ -14,14 +14,14 @@
 #     tasks_from: config.yml
 #
 ---
-- name: Delete config
+- name: Delete config {{ inventory_hostname }}
   delegate_to: localhost
   ansible.builtin.raw: |
     TEMP_SED=$(sed '/^Host {{ host }}$/,/^$/d' ~/.ssh/config)
     sudo echo "${TEMP_SED}" > ~/.ssh/config
   changed_when: true
 
-- name: Add config
+- name: Add config {{ inventory_hostname }}
   delegate_to: localhost
   ansible.builtin.raw: sudo printf "\nHost %s\n  HostName %s\n  User %s\n  IdentityFile ~/.ssh/tpi/%s\n  ServerAliveInterval 60\n" {{ host }} {{ hostname }} {{ username }} {{ key }} >> ~/.ssh/config
   changed_when: true
