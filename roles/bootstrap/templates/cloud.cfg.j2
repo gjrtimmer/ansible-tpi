@@ -19,6 +19,9 @@ users:
     ssh_authorized_keys:
       - {{ lookup('file', '~/.ssh/tpi/{{ prefix }}.ansible.key.pub') }}
 
+chpasswd:
+  expire: false
+
 # If this is set, 'root' will not be able to ssh in and they
 # will get a message to login instead as the default $user
 disable_root: true
