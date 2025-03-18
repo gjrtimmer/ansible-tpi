@@ -33,7 +33,7 @@ Check and install the TPI Client to the targeted hosts.
 ### Power On
 
 ```yaml
-- name: Power Off Node
+- name: Power On Node
   ansible.builtin.import_role:
     name: tpi
     tasks_from: power-on.yml
