@@ -10,3 +10,5 @@ users:
 ansible_connection: ssh
 ansible_ssh_user: "{{ users.provision }}"
 ansible_ssh_private_key_file: ~/.ssh/{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_prefix'] }}.ansible.key
+
+timezone: Europe/Amsterdam
