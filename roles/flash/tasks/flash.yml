@@ -20,7 +20,7 @@
 - name: Check Image on BMC
   when: flash_sdcard | bool and not remote_image_marker_exists.stat.exists | bool
   delegate_to: localhost
-  ansible.builtin.raw: "ssh {{ bmc_user }}@{{ bmc_host }} 'mkdir -p {{ flash.image.path.remote }} && [ -f {{ flash.image.path.remote }}/{{ image.file.target }} ]' && echo true || echo false"
+  ansible.builtin.raw: sshpass -p "{{ bmc_pass }}" ssh {{ bmc_user }}@{{ bmc_host }} 'mkdir -p {{ flash.image.path.remote }} && [ -f {{ flash.image.path.remote }}/{{ image.file.target }} ]' && echo true || echo false
   register: remote_file_exists
   changed_when: false
 
@@ -74,7 +74,7 @@
 - name: Copy Image to BMC SDCard
   delegate_to: localhost
   when: flash_sdcard | bool and not remote_image_marker_exists.stat.exists | bool
-  ansible.builtin.raw: "scp {{ flash.image.path.local }}/{{ image.file.target }} {{ bmc_user }}@{{ bmc_host }}:{{ flash.image.path.remote }}/{{ image.file.target }}"
+  ansible.builtin.raw: sshpass -p "{{ bmc_pass }}" scp {{ flash.image.path.local }}/{{ image.file.target }} {{ bmc_user }}@{{ bmc_host }}:{{ flash.image.path.remote }}/{{ image.file.target }}
   changed_when: false
 
 - name: Place remote-image Marker
