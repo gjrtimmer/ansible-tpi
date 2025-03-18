@@ -18,10 +18,10 @@
   delegate_to: localhost
   ansible.builtin.raw: |
     TEMP_SED=$(sed '/^Host {{ host }}$/,/^$/d' ~/.ssh/config)
-    echo "${TEMP_SED}" > ~/.ssh/config
+    sudo echo "${TEMP_SED}" > ~/.ssh/config
   changed_when: true
 
 - name: Add config
   delegate_to: localhost
-  ansible.builtin.raw: echo "\nHost {{ host }}\n  HostName {{ hostname }}\n  User {{ username }}\n  IdentityFile {{ key }}\n  ServerAliveInterval 60\n" >> ~/.ssh/config
+  ansible.builtin.raw: sudo echo "\nHost {{ host }}\n  HostName {{ hostname }}\n  User {{ username }}\n  IdentityFile {{ key }}\n  ServerAliveInterval 60\n" >> ~/.ssh/config
   changed_when: true

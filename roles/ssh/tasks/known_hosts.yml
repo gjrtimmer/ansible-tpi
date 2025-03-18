@@ -15,7 +15,7 @@
   delegate_to: localhost
   ansible.builtin.raw: |
     TEMP_SED=$(sed '/{{ host }}/d' ~/.ssh/known_hosts)
-    echo "${TEMP_SED}" > ~/.ssh/known_hosts
+    sudo echo "${TEMP_SED}" > ~/.ssh/known_hosts
   changed_when: true
 
 - name: Get SSH fingerprints
@@ -26,7 +26,7 @@
 
 - name: Add known_host
   delegate_to: localhost
-  ansible.builtin.raw: echo "{{ item }}" >> ~/.ssh/known_hosts
+  ansible.builtin.raw: sudo echo "{{ item }}" >> ~/.ssh/known_hosts
   loop: "{{ ssh_fingerprint.stdout_lines }}"
   when: not item.startswith('#')
   changed_when: true
