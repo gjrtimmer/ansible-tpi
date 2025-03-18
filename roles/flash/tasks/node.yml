@@ -32,7 +32,7 @@
       when: flash_node | bool and ( (node_status_bmc and not node_status_node) or flash_force | bool )
       ansible.builtin.include_tasks: tasks/flash.yml
       vars:
-        bmc_user: "{{ hostvars[node.bmc]['ansible_user'] }}"
+        bmc_user: "{{ hostvars[node.bmc]['ansible_ssh_user'] }}"
         bmc_host: "{{ hostvars[node.bmc]['ansible_host'] }}"
         bmc_pass: "{{ hostvars[node.bmc]['ansible_ssh_pass'] }}"
 
