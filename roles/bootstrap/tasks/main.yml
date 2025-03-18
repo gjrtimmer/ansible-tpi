@@ -1,14 +1,29 @@
 ---
 - name: Bootstrap
-  tags: bootstrap
+  delegate_to: localhost
   block:
-    - name: TPI Client
-      tags: [tpi]
-      ansible.builtin.import_role:
-        name: tpi
-        tasks_from: client-install.yml
-
     - name: Power Off Node
       ansible.builtin.import_role:
         name: tpi
         tasks_from: power-off.yml
+
+# - name: Mount Storage
+#   tags: [bootstrap]
+#   ansible.builtin.import_role:
+#     name: tpi
+#     tasks_from: msd-mount.yml
+
+# - name: Unmount Storage
+#   tags: [bootstrap]
+#   ansible.builtin.import_role:
+#     name: tpi
+#     tasks_from: msd-umount.yml
+
+- name: Generate cloud-init {{ inventory_hostname }}
+  delegate_to: localhost
+  ansible.builtin.template:
+    src: cloud.cfg.j2
+    dest: /tmp/cloud.cfg
+    mode: "0644"
+  vars:
+    prefix: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_prefix'] }}"

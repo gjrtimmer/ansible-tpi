@@ -14,7 +14,7 @@ users:
     sudo: ["ALL=(ALL) NOPASSWD:ALL"]
     shell: /bin/bash
     ssh_authorized_keys:
-      - {{ lookup('file', '~/.ssh/tpi/{{ bmc }}.ansible.key.pub') }}
+      - {{ lookup('file', '~/.ssh/tpi/{{ prefix }}.ansible.key.pub') }}
 
 # If this is set, 'root' will not be able to ssh in and they
 # will get a message to login instead as the default $user
@@ -109,7 +109,7 @@ system_info:
     sudo: ["ALL=(ALL) NOPASSWD:ALL"]
     shell: /bin/bash
     ssh_authorized_keys:
-      - {{ lookup('file', '~/.ssh/tpi/{{ bmc }}.ubuntu.key.pub') }}
+      - {{ lookup('file', '~/.ssh/tpi/{{ prefix }}.ubuntu.key.pub') }}
   network:
     renderers: ['netplan', 'eni', 'sysconfig']
     activators: ['netplan', 'eni', 'network-manager', 'networkd']
