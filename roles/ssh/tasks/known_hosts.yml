@@ -14,13 +14,13 @@
 - name: Remove known_host
   delegate_to: localhost
   ansible.builtin.raw: |
-    TEMP_SED=$(sed '/{{ host_addr }}/d' ~/.ssh/known_hosts)
+    TEMP_SED=$(sed '/{{ host }}/d' ~/.ssh/known_hosts)
     sudo echo "${TEMP_SED}" > ~/.ssh/known_hosts
   changed_when: true
 
 - name: Get SSH fingerprints
   delegate_to: localhost
-  ansible.builtin.raw: ssh-keyscan {{ host_addr }}
+  ansible.builtin.raw: ssh-keyscan {{ host }}
   register: ssh_fingerprint
   changed_when: false
 

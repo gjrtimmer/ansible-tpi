@@ -59,8 +59,7 @@
 
 - name: Add known_host
   vars:
-    host: "{{ inventory_hostname }}"
-    host_addr: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
+    host: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
   ansible.builtin.include_role:
     name: ssh
     tasks_from: known_hosts.yml
