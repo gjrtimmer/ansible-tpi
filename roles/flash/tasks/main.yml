@@ -22,9 +22,13 @@
 
 - name: Flash Nodes
   when: >
-    inventory_hostname in groups['nodes'] and
-    inventory_hostname == hostvars[hostname].inventory_hostname and
-    ansible_limit | default('nodes,!tpi')
+    flash_node | bool
+    and
+    (
+      inventory_hostname in groups['nodes'] and
+      inventory_hostname == hostvars[hostname].inventory_hostname and
+      ansible_limit | default('nodes,!tpi')
+    )
   ansible.builtin.include_tasks: tasks/node.yml
   with_items: "{{ groups['nodes'] }}"
   loop_control:
