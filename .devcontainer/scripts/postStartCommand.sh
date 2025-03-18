@@ -19,18 +19,11 @@ sudo chmod -x ${HOME}/.ansible_vault_pass
 sudo chmod 0600 "${HOME}/.ssh/config" "${HOME}/.ssh/known_hosts"
 
 if [[ ! -f "${DEVCON_DIR}/.bashrc" ]]; then
-    echo "Linking .bashrc"
     ln -sf "${DEVCON_DIR}/.bashrc" "${HOME}/.bashrc"
 fi
 
 if [ ! -f "${PROJECT_DIR}/hosts.yml" ]; then
-    echo "Installing Ansible Inventory Template"
     cp "${PROJECT_DIR}/.config/hosts.tmpl.yml" "${PROJECT_DIR}/hosts.yml"
-fi
-
-# Create Temp Directory
-if [[ ! -d /tmp/tpi ]]; then
-    mkdir -p /tmp/tpi
 fi
 
 
