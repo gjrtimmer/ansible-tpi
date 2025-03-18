@@ -30,7 +30,7 @@
     name: tpi
     tasks_from: scp-send.yml
 
-- name: Wipe cloud-init
+- name: Wipe cloud-init {{ inventory_hostname }}
   delegate_to: "{{ hostvars[inventory_hostname]['bmc'] }}"
   ansible.builtin.raw: rm -rf rm -rf /mnt/node/var/lib/cloud
   changed_when: true
