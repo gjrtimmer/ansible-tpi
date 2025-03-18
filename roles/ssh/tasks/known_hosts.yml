@@ -1,3 +1,15 @@
+# Task known_hosts.yml
+#
+# IMPORTANT: Run in Serial
+#
+# Usage:
+# - name: Add known_host
+#   vars:
+#     host: "{{ bmc_host }}"
+#   ansible.builtin.include_role:
+#     name: ssh
+#     tasks_from: known_hosts.yml
+#
 ---
 - name: Remove known_host
   delegate_to: localhost

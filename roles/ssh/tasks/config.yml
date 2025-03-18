@@ -1,3 +1,18 @@
+# Task known_hosts.yml
+#
+# IMPORTANT: Run in Serial
+#
+# Usage:
+# - name: Add config
+#   vars:
+#     host: "{{ user }}"
+#     hostname: "{{ bmc_host }}"
+#     username: "{{ bmc_user }}"
+#     key: "{{ bmc_key }}"
+#   ansible.builtin.include_role:
+#     name: ssh
+#     tasks_from: config.yml
+#
 ---
 - name: Delete config
   delegate_to: localhost

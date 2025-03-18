@@ -49,7 +49,7 @@ The following variables must be provided.
 | key      | Path to the SSH private key |
 
 ```yaml
- - name: Add config
+- name: Add config
   vars:
     host: "{{ user }}"
     hostname: "{{ bmc_host }}"
