@@ -35,3 +35,32 @@
   ansible.builtin.import_role:
     name: tpi
     tasks_from: msd-umount.yml
+
+- name: Power On Node
+  ansible.builtin.import_role:
+    name: tpi
+    tasks_from: power-on.yml
+
+- name: Wait for {{ inventory_hostname }}
+  ansible.builtin.wait_for_connection:
+    connect_timeout: 5
+    delay: 10
+    timeout: 120
+
+- name: Add known_host
+  vars:
+    host: "{{ inventory_hostname }}"
+  ansible.builtin.include_role:
+    name: ssh
+    tasks_from: known_hosts.yml
+
+- name: Add SSH config {{ inventory_hostname }}
+  when: inventory_hostname in groups.nodes
+  vars:
+    host: "{{ inventory_hostname }}"
+    hostname: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
+    username: "{{ users.default }}"
+    key: "~/.ssh/{{ hostvars[hostvars[inventory_hostname]['bmc']] }}.ubuntu.key"
+  ansible.builtin.include_role:
+    name: ssh
+    tasks_from: config.yml
