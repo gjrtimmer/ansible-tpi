@@ -1,20 +1,20 @@
 # SPDX-License-Identifier: MIT-0
 #
 # Check host status
-- name: Check status for {{ inventory_hostname }}
+- name: Check status for {{ host }}
   delegate_to: localhost
   ansible.builtin.wait_for:
-    host: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
+    host: "{{ host }}"
     port: 22
     timeout: 5
   failed_when: false
   register: host_check
 
-- name: Show status for {{ inventory_hostname }}
+- name: Show status for {{ host }}
   tags: [never, debug]
   ansible.builtin.debug:
     var: host_check
 
-- name: Set status for {{ inventory_hostname }}
+- name: Set status for {{ host }}
   ansible.builtin.set_fact:
     node_status_{{ type }}: "{{ not host_check is search('Timeout') | bool }}"
