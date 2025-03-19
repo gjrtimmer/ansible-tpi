@@ -50,17 +50,13 @@
     name: tpi
     tasks_from: power-on.yml
 
-- name: Bootup Node {{ inventory_hostname }}
-  ansible.builtin.pause:
-    seconds: 15
-
 - name: Wait for {{ inventory_hostname }}
   delegate_to: localhost
   ansible.builtin.wait_for:
     host: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
     port: 22
-    search_regex: OpenSSH
-    timeout: 120
+  retries: 20
+  delay: 3
 
 - name: Add known_host
   vars:
