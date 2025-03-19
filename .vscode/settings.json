@@ -31,7 +31,11 @@
     "**/playbooks/**/*.yml": "ansible",
     "**/ansible/**/hosts": "properties",
     "**/ansible/**/inventory": "properties",
-    "ansible.cfg": "properties"
+    "ansible.cfg": "properties",
+    "ansible.yml": "yaml",
+    "group_vars/*.md": "markdown",
+    "host_vars/*.md": "markdown",
+    "docs/*.md": "markdown"
   },
   "[ansible]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
