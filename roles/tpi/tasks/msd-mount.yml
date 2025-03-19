@@ -23,19 +23,31 @@
     bmc_user: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_user'] }}"
     bmc_pass: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_pass'] }}"
 
-- name: Wait for block device
+- name: Wait for cloud-init block device
   delegate_to: "{{ hostvars[inventory_hostname]['bmc'] }}"
-  ansible.builtin.raw: ls --color=never /dev/sd*2
+  ansible.builtin.raw: ls --color=never /dev/sd*1
   changed_when: false
-  register: nvme_blk_rc
+  register: nvme_cloud_blk_rc
   retries: 10
   delay: 1
 
-- name: Set NVMe Block Device
+- name: Wait for root block device
+  delegate_to: "{{ hostvars[inventory_hostname]['bmc'] }}"
+  ansible.builtin.raw: ls --color=never /dev/sd*2
+  changed_when: false
+  register: nvme_root_blk_rc
+  retries: 10
+  delay: 1
+
+- name: Set NVMe cloud-init Block Device
   ansible.builtin.set_fact:
-    nvme_blk_dev: "{{ nvme_blk_rc.stdout_lines[0] | string }}"
+    nvme_cloud_blk_dev: "{{ nvme_cloud_blk_rc.stdout_lines[0] | string }}"
+
+- name: Set NVMe Root Block Device
+  ansible.builtin.set_fact:
+    nvme_root_blk_dev: "{{ nvme_root_blk_rc.stdout_lines[0] | string }}"
 
 - name: Mount Node NVMe
   delegate_to: "{{ hostvars[inventory_hostname]['bmc'] }}"
-  ansible.builtin.raw: mkdir -p /mnt/node && mount {{ nvme_blk_dev }} /mnt/node
+  ansible.builtin.raw: mkdir -p /mnt/node/cloud && mount {{ nvme_cloud_blk_dev }} /mnt/node/cloud &&  mkdir -p /mnt/node/root && mount {{ nvme_root_blk_dev }} /mnt/node/root
   changed_when: true

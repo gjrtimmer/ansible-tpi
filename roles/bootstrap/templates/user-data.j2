@@ -1,0 +1,43 @@
+#cloud-config
+
+# This is the user-data configuration file for cloud-init. By default this sets
+# up an initial user called "ubuntu" with password "ubuntu", which must be
+# changed at first login. However, many additional actions can be initiated on
+# first boot from this file. The cloud-init documentation has more details:
+#
+# https://cloudinit.readthedocs.io/
+#
+# Please note that the YAML format employed by this file is sensitive to
+# differences in whitespace; if you are editing this file in an editor (like
+# Notepad) which uses literal tabs, take care to only use spaces for
+# indentation. See the following link for more details:
+#
+# https://en.wikipedia.org/wiki/YAML
+#
+# Some additional examples are provided in comments below the default
+# configuration.
+users:
+  - default
+  - name: {{ users.provision }}
+    lock_passwd: false
+    passwd: "$6$p9zPQA5/WXGxoKdx$yh7CzuS8cP23/nBcsdbjWn/dc8TfhOF57hlziKtDpqJTH2K2me3SBGhEpeFg.X42aUcxT/zW1BbNieKmbcNFo."
+    chpasswd: { expire: False }
+    gecos: Ansible User
+    groups: [adm, audio, cdrom, dialout, dip, floppy, lxd, netdev, plugdev, sudo, video]
+    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+    shell: /bin/bash
+    homedir: /home/ansible
+    ssh_authorized_keys:
+      - {{ lookup('file', '~/.ssh/tpi/{{ prefix }}.ansible.key.pub') }}
+
+chpasswd:
+  expire: false
+
+# Set hostname
+hostname: {{ inventory_hostname }}
+
+# Timezone
+timezone: {{ timezone }}
+
+# Enable password authentication with the SSH daemon
+ssh_pwauth: true
