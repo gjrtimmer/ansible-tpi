@@ -1,1 +1,49 @@
 ---
+# https://stackoverflow.com/questions/61597724/how-do-i-get-the-root-device-through-ansible
+- name: Get Root Device
+  tags: [rk1]
+  ansible.builtin.raw: df -hT |grep /$|awk '{print $1}'| xargs basename
+  register: root_dev_rc
+  changed_when: false
+
+- name: Root Device
+  tags: [rk1]
+  ansible.builtin.set_fact:
+    root_dev: "{{ root_dev_rc.stdout_lines[0] | trim | lower }}"
+
+- name: Is MMC
+  tags: [rk1]
+  ansible.builtin.set_fact:
+    root_is_mmc: "{{ root_dev.startswith('mmc') | bool }}"
+
+- name: Install-2-NVMe
+  when: root_is_mmc
+  become: true
+  tags: [rk1]
+  block:
+    - name: Update 'ubuntu-rockchip-settings' # noqa: package-latest
+      ansible.builtin.apt:
+        name: ubuntu-rockchip-settings
+        state: latest
+        update_cache: true
+        install_recommends: true
+
+    - name: Install
+      ansible.builtin.raw: yes | ubuntu-rockchip-install {{ nvme_dev }}
+      register: nvme_install
+      changed_when: true
+
+    - name: Show Install Result
+      ansible.builtin.debug:
+        var: nvme_install
+
+    - name: Reboot
+      ansible.builtin.reboot:
+
+    - name: Wait on {{ inventory_hostname }}
+      delegate_to: localhost
+      ansible.builtin.wait_for:
+        host: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
+        port: 22
+      retries: 20
+      delay: 3
