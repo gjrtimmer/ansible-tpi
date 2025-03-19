@@ -49,6 +49,7 @@ Copy `.config/node.yml` to `host_vars/{NODE_HOSTNAME}.yml` and update the IP num
 | ------------------------------------------ | -------------------------------------------------------------------------- |
 | [bootstrap](./playbooks/bootstrap.yml)     | Bootstrap Node                                                             |
 | [flash-nodes](./playbooks/flash-nodes.yml) | Flash node(s), this playbook will also install the `tpi` cli on localhost. |
+| [shutdown](./playbooks/shutdown.yml)       | Shutdown Node(s)                                                           |
 | [ssh](./playbooks/ssh.yml)                 | Configure SSH                                                              |
 | [tpi](./playbooks/tpi.yml)                 | Install `tpi` client                                                       |
 
