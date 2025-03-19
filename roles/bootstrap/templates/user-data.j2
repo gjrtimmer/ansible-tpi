@@ -2,11 +2,18 @@
 
 # User Configuration
 users:
-  - default
+  name: {{ users.default }}
+    lock_passwd: false
+    gecos: Ubuntu
+    groups: [adm, audio, cdrom, dialout, dip, floppy, lxd, netdev, plugdev, sudo, video]
+    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+    shell: /bin/bash
+    homedir: /home/ubuntu
+    ssh_authorized_keys:
+      - {{ lookup('file', '~/.ssh/tpi/{{ prefix }}.ubuntu.key.pub') }}
+
   - name: {{ users.provision }}
     lock_passwd: false
-    passwd: "$6$p9zPQA5/WXGxoKdx$yh7CzuS8cP23/nBcsdbjWn/dc8TfhOF57hlziKtDpqJTH2K2me3SBGhEpeFg.X42aUcxT/zW1BbNieKmbcNFo."
-    chpasswd: { expire: False }
     gecos: Ansible User
     groups: [adm, audio, cdrom, dialout, dip, floppy, lxd, netdev, plugdev, sudo, video]
     sudo: ["ALL=(ALL) NOPASSWD:ALL"]
@@ -17,6 +24,11 @@ users:
 
 chpasswd:
   expire: false
+  users:
+    - name: ubuntu
+      password: "$6$p9zPQA5/WXGxoKdx$yh7CzuS8cP23/nBcsdbjWn/dc8TfhOF57hlziKtDpqJTH2K2me3SBGhEpeFg.X42aUcxT/zW1BbNieKmbcNFo."
+    - name: ansible
+      password: "$6$p9zPQA5/WXGxoKdx$yh7CzuS8cP23/nBcsdbjWn/dc8TfhOF57hlziKtDpqJTH2K2me3SBGhEpeFg.X42aUcxT/zW1BbNieKmbcNFo."
 
 # Set hostname
 hostname: {{ inventory_hostname }}
