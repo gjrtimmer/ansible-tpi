@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/devcontainers/base:ubuntu24.04
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends ca-certificates fonts-firacode sshpass inetutils-ping python3 pipx git git-lfs && \
+    apt-get install -y --no-install-recommends ca-certificates fonts-firacode sshpass inetutils-ping python3 pipx git git-lfs whois && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     update-ca-certificates
