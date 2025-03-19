@@ -28,3 +28,31 @@
       ansible.builtin.include_role:
         name: ssh
         tasks_from: known_hosts.yml
+
+- name: Update config
+  hosts: "{{ ansible_limit | default('nodes, tpi') }}"
+  gather_facts: false
+  serial: 1
+  tags: [config]
+  tasks:
+    - name: Add config {{ inventory_hostname }}
+      when: inventory_hostname in groups.tpi
+      vars:
+        host: "{{ inventory_hostname }}"
+        hostname: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
+        username: "{{ users.default }}"
+        key: "{{ hostvars[inventory_hostname]['ansible_ssh_prefix'] }}.ubuntu.key"
+      ansible.builtin.include_role:
+        name: ssh
+        tasks_from: config.yml
+
+    - name: Add known_host {{ inventory_hostname }}
+      when: inventory_hostname in groups.nodes
+      vars:
+        host: "{{ inventory_hostname }}"
+        hostname: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
+        username: "{{ users.default }}"
+        key: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_prefix'] }}.ubuntu.key"
+      ansible.builtin.include_role:
+        name: ssh
+        tasks_from: config.yml
