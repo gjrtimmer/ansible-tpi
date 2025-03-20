@@ -67,6 +67,17 @@
     name: tpi
     tasks_from: power-on.yml
 
+  # If the user wants to assign the node an IP address
+  # through DHCP reservation then this option will end
+  # the playbook so the user can do this on first boot
+  # of the node.
+  #
+  # It is advised to rerun the bootstrap after a
+  # DHCP reservation has been made.
+- name: DHCP Reservation
+  when: dhcp_reservation
+  ansible.builtin.meta: end_play
+
 - name: Wait on {{ inventory_hostname }}
   delegate_to: localhost
   ansible.builtin.wait_for:

@@ -1,0 +1,16 @@
+---
+# When this is set to 'true' the Bootstrap role will skip any
+# task after the initial bootstrap. This is due to the fact that the IP number of the Node
+# configured in `host_vars` is not yet assigned by DHCP reservation.
+# Therefor the tasks which checks that the node comes online after the bootstrap will
+# fail. This option is used to boot the node after bootstrap so the user
+# can configure DHCP reservation in there network and assign the IP
+# number that the user configured in the 'host_vars'.
+#
+# This option will effectivly 'end' the playbook.
+# In the case of a Turing RK1, as stated before, because all tasks
+# after bootstrap will cease, the RK1 Install-2-NVMe will also not run.
+#
+# When using this option it is wise to rerun the bootstrap after
+# a DHCP reservation has been made.
+dhcp_reservation: false
