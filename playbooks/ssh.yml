@@ -35,7 +35,7 @@
   serial: 1
   tags: [config]
   tasks:
-    - name: Add config {{ inventory_hostname }}
+    - name: Add tpi host {{ inventory_hostname }}
       when: inventory_hostname in groups.tpi
       vars:
         host: "{{ inventory_hostname }}"
@@ -46,7 +46,7 @@
         name: ssh
         tasks_from: config.yml
 
-    - name: Add known_host {{ inventory_hostname }}
+    - name: Add node {{ inventory_hostname }}
       when: inventory_hostname in groups.nodes
       vars:
         host: "{{ inventory_hostname }}"

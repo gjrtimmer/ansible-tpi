@@ -27,7 +27,7 @@
   ansible.builtin.set_fact:
     user: "{{ hostvars[inventory_hostname]['bmc'] }}"
 
-- name: Generate BMC SSH Keys
+- name: Generate SSH Keys
   ansible.builtin.include_tasks: keys.yml
 
 - name: Install BMC SSH Key
