@@ -7,6 +7,24 @@
   roles:
     - ssh
 
+- name: Install SSH Key to BMC
+  hosts: "{{ ansible_limit | default('tpi') }}"
+  gather_facts: false
+  serial: 1
+  tags: [bmc]
+  tasks:
+    - name: Install SSH Key to BMC
+      when: inventory_hostname in groups.tpi
+      vars:
+        prefix: "{{ hostvars[inventory_hostname]['ansible_ssh_prefix'] }}"
+        bmc_host: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
+        bmc_user: "{{ hostvars[inventory_hostname]['ansible_ssh_user'] }}"
+        bmc_pass: "{{ hostvars[inventory_hostname]['ansible_ssh_pass'] }}"
+        bmc_key: "{{ prefix }}.{{ inventory_hostname }}.key"
+      ansible.builtin.include_role:
+        name: ssh
+        tasks_from: install_bmc.yml
+
 - name: Update known_hosts
   hosts: "{{ ansible_limit | default('nodes, tpi') }}"
   gather_facts: false

@@ -1,0 +1,53 @@
+# Install SSH key to BMC
+#
+# We are using a manual copy with scp instead of using `ssh-copy-id`
+# the reason is that we have mounted ~/.ssh as a read-only filesystem
+# to protect the users existing ssh keys. However this means that we
+# have to do a manual copy because `ssh-copy-id` requires `mktemp` to
+# be executed in the ~/.ssh directory, and this cannot be changed
+# because of security reasons regarding ssh.
+---
+- name: Check key exist {{ prefix }}.{{ inventory_hostname }} # noqa: name[template]
+  delegate_to: localhost
+  ansible.builtin.stat:
+    path: "{{ ssh.path }}/{{ bmc_key }}"
+  register: key_user_stat
+
+- name: Check key exists remote {{ prefix }}.{{ inventory_hostname }} # noqa: name[template]
+  delegate_to: localhost
+  ansible.builtin.raw: sshpass -p "{{ bmc_pass }}" ssh {{ bmc_user }}@{{ bmc_host }} "grep -E ' {{ inventory_hostname }}' ~/.ssh/authorized_keys"
+  register: key_user_remote
+  changed_when: false
+  ignore_errors: true
+
+- name: Remove old key {{ prefix }}.{{ inventory_hostname }} # noqa: name[template]
+  when: ssh_overwrite|bool
+  delegate_to: localhost
+  ansible.builtin.raw: sshpass -p "{{ bmc_pass }}" ssh {{ bmc_user }}@{{ bmc_host }} "sed -i.bak '/ {{ inventory_hostname }}$/d' ~/.ssh/authorized_keys"
+  changed_when: true
+
+- name: Install SSH Key {{ prefix }}.{{ inventory_hostname }} # noqa: name[template]
+  delegate_to: localhost
+  when: >
+    (
+      key_user_stat.stat.exists | bool
+      and
+      key_user_remote.rc | int != 0
+    )
+    or
+    ssh_overwrite | bool
+  ansible.builtin.raw: cat {{ ssh.path }}/{{ bmc_key }}.pub | sshpass -p "{{ bmc_pass }}" ssh {{ bmc_user }}@{{ bmc_host }} "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+  changed_when: true
+
+- name: Permissions SSH Key {{ prefix }}.{{ inventory_hostname }} # noqa: name[template]
+  when: >
+    (
+      key_user_stat.stat.exists | bool
+      and
+      key_user_remote.rc | int != 0
+    )
+    or
+    ssh_overwrite | bool
+  delegate_to: localhost
+  ansible.builtin.raw: sshpass -p "{{ bmc_pass }}" ssh {{ bmc_user }}@{{ bmc_host }} "chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys"
+  changed_when: true
