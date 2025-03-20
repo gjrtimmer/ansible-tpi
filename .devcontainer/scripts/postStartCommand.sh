@@ -20,6 +20,7 @@ sudo chmod -x ${HOME}/.ansible_vault_pass
 sudo chmod 0600 "${HOME}/.ssh/config" 
 sudo chmod 0600 "${HOME}/.ssh/known_hosts"
 sudo chmod 0755 "${HOME}/.ssh/tpi"
+sudo chown -R vscode:vscode "${HOME}/.ssh/tpi"
 
 if [[ ! -f "${DEVCON_DIR}/.bashrc" ]]; then
     ln -sf "${DEVCON_DIR}/.bashrc" "${HOME}/.bashrc"
