@@ -40,7 +40,7 @@
       vars:
         host: "{{ inventory_hostname }}"
         hostname: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
-        username: "{{ users.default }}"
+        username: "root"
         key: "{{ hostvars[inventory_hostname]['ansible_ssh_prefix'] }}.ubuntu.key"
       ansible.builtin.include_role:
         name: ssh
