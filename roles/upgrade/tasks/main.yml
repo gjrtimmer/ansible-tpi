@@ -1,0 +1,29 @@
+---
+- name: Repair any broken packages
+  ansible.builtin.command: sudo dpkg --configure -a
+  changed_when: false
+
+- name: Perform upgrade
+  ansible.builtin.apt:
+    upgrade: dist
+    update_cache: true
+
+- name: Check if upgrade reboot is required
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+    get_checksum: false
+  register: upgrade_reboot_required
+
+- name: Reboot if required
+  when: upgrade_reboot_required.stat.exists
+  ansible.builtin.reboot:
+
+- name: Remove old packages
+  ansible.builtin.apt:
+    autoremove: true
+    purge: true
+
+- name: Clean up apt cache
+  ansible.builtin.apt:
+    autoclean: true
+    clean: true

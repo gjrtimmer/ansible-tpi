@@ -1,0 +1,6 @@
+---
+- name: Configure SSH
+  hosts: "{{ ansible_limit | default('nodes') }}"
+  gather_facts: true
+  roles:
+    - upgrade
