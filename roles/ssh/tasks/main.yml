@@ -29,12 +29,3 @@
 
 - name: Generate SSH Keys
   ansible.builtin.include_tasks: keys.yml
-
-- name: Install BMC SSH Key
-  vars:
-    prefix: "{{ hostvars[user]['ansible_ssh_prefix'] }}"
-    bmc_key: "{{ prefix }}.{{ user }}.key"
-    bmc_host: "{{ hostvars[user]['ansible_ssh_host'] }}"
-    bmc_user: "{{ hostvars[user]['ansible_ssh_user'] }}"
-    bmc_pass: "{{ hostvars[user]['ansible_ssh_pass'] }}"
-  ansible.builtin.include_tasks: install.yml
