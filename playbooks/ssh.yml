@@ -41,7 +41,7 @@
         host: "{{ inventory_hostname }}"
         hostname: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
         username: "root"
-        key: "{{ hostvars[inventory_hostname]['ansible_ssh_prefix'] }}.bmc.key"
+        key: "{{ hostvars[inventory_hostname]['ansible_ssh_prefix'] }}.{{ inventory_hostname }}.key"
       ansible.builtin.include_role:
         name: ssh
         tasks_from: config.yml
