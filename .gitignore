@@ -8,3 +8,5 @@ hosts.yml
 hosts
 .DS_Store
 host_vars/*.yml
+group_vars/*.yml
+!group_vars/all.yml
