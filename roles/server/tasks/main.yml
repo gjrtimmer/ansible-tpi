@@ -1,0 +1,5 @@
+---
+- name: Configure sysctl
+  tags: [sysctl]
+  ansible.builtin.import_tasks:
+    file: sysctl.yml

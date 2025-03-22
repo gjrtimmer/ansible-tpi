@@ -1,2 +1,6 @@
 ---
+# Reboot Server on Changes
+reboot: true
+
+# Configure default Network MTU
 network_mtu: 1500

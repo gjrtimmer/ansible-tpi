@@ -1,0 +1,11 @@
+---
+- name: Configure sysctl
+  tags: [sysctl]
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    sysctl_set: true
+    state: present
+    reload: true
+  loop: "{{ sysctl | dict2items }}"
+  notify: server:Reboot

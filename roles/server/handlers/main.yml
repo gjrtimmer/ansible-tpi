@@ -1,0 +1,5 @@
+---
+- name: Reboot
+  when: reboot | default(true)
+  ansible.builtin.reboot:
+    msg: "Rebooting Node in 5 seconds"
