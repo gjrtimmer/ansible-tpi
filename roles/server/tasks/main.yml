@@ -13,3 +13,8 @@
   tags: [htop]
   ansible.builtin.import_tasks:
     file: htop.yml
+
+- name: Time Configuration
+  tags: [timezone, ntp]
+  ansible.builtin.import_tasks:
+    file: time.yml

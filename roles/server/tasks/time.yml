@@ -1,0 +1,52 @@
+# code: language=ansible
+---
+- name: Set timezone to {{ timezone }}
+  tags: [timezone]
+  community.general.timezone:
+    name: "{{ timezone }}"
+
+- name: Remove NTP
+  tags: [ntp]
+  ansible.builtin.apt:
+    name:
+      - ntp
+      - ntpdate
+    state: absent
+    update_cache: true
+    autoclean: true
+    autoremove: true
+    clean: true
+    force_apt_get: true
+    install_recommends: true
+
+- name: Install systemd-timesyncd
+  tags: [ntp]
+  ansible.builtin.apt:
+    name:
+      - systemd-timesyncd
+    state: present
+    update_cache: true
+    clean: true
+    force_apt_get: true
+    install_recommends: true
+
+- name: Install timesyncd configuration
+  tags: [ntp]
+  ansible.builtin.copy:
+    src: timesyncd.conf
+    dest: /etc/systemd/timesyncd.conf
+    owner: root
+    group: root
+    mode: "0664"
+
+- name: Start systemd-timesyncd
+  tags: [ntp]
+  ansible.builtin.service:
+    name: systemd-timesyncd
+    state: started
+
+- name: Enable systemd-timesyncd
+  tags: [ntp]
+  ansible.builtin.service:
+    name: systemd-timesyncd
+    enabled: true
