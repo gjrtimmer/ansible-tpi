@@ -3,3 +3,8 @@
   tags: [sysctl]
   ansible.builtin.import_tasks:
     file: sysctl.yml
+
+- name: Configure SELinux
+  tags: [selinux]
+  ansible.builtin.import_tasks:
+    file: selinux.yml

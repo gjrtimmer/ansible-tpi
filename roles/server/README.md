@@ -13,6 +13,7 @@ This roles contains the basic configuration for a server.
 
 The following tasks are defined and get be individually run with a tag. The tag is the same as the task defined here.
 
-| Task   | Tag    | Description      |
-| ------ | ------ | ---------------- |
-| sysctl | sysctl | Configure sysctl |
+| Task    | Tag     | Description      |
+| ------- | ------- | ---------------- |
+| sysctl  | sysctl  | Configure sysctl |
+| selinux | selinux | Disable SELinux  |
