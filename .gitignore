@@ -10,3 +10,5 @@ hosts
 host_vars/*.yml
 group_vars/*.yml
 !group_vars/all.yml
+playbooks/overrides/*.yml
+!playbooks/overrides/.keep
