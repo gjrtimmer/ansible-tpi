@@ -8,3 +8,8 @@
   tags: [selinux]
   ansible.builtin.import_tasks:
     file: selinux.yml
+
+- name: Configure htop
+  tags: [htop]
+  ansible.builtin.import_tasks:
+    file: htop.yml

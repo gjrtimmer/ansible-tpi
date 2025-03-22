@@ -1,0 +1,40 @@
+---
+- name: Install htop
+  tags: [htop]
+  ansible.builtin.apt:
+    name:
+      - htop
+    state: present
+    update_cache: true
+    autoclean: true
+    autoremove: true
+    clean: true
+    force_apt_get: true
+    install_recommends: false
+
+- name: Ensure directory
+  tags: [htop]
+  ansible.builtin.file:
+    path: /home/ubuntu/.config
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: "0700"
+
+- name: Ensure htop config directory
+  tags: [htop]
+  ansible.builtin.file:
+    path: /home/ubuntu/.config/htop
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: "0755"
+
+- name: Install htop configuration
+  tags: [htop]
+  ansible.builtin.copy:
+    src: htoprc
+    dest: /home/ubuntu/.config/htop/htoprc
+    owner: ubuntu
+    group: ubuntu
+    mode: "0664"
