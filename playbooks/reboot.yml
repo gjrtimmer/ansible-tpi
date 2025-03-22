@@ -1,0 +1,31 @@
+---
+- name: Reboot Node
+  hosts: "{{ ansible_limit | default('nodes') }}"
+  gather_facts: true
+  tasks:
+    - name: Check Pre Reboot Tasks
+      delegate_to: localhost
+      ansible.builtin.stat:
+        path: ./overrides/reboot-pre.yml
+      register: pre_reboot
+
+    - name: Include Pre Reboot Tasks
+      when: pre_reboot.stat.exists | bool
+      ansible.builtin.include_tasks:
+        file: ./overrides/reboot-pre.yml
+
+    - name: Reboot Node
+      become: true
+      ansible.builtin.reboot:
+        msg: "Server Reboot"
+
+    - name: Check Post Reboot Tasks
+      delegate_to: localhost
+      ansible.builtin.stat:
+        path: ./overrides/reboot-post.yml
+      register: post_reboot
+
+    - name: Include Post Reboot Tasks
+      when: post_reboot.stat.exists | bool
+      ansible.builtin.include_tasks:
+        file: ./overrides/reboot-post.yml
