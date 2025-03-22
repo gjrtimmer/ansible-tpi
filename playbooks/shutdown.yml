@@ -6,7 +6,9 @@
   tasks:
     - name: Shutdown Node {{ inventory_hostname }}
       community.general.shutdown:
-
+        msg: "Shutting down node {{ inventory_hostname }}"
+        reboot: false
+        state: shutdown
     - name: Wait for Shutdown
       delegate_to: localhost
       ansible.builtin.wait_for:
