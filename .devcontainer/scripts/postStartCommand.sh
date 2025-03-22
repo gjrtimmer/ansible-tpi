@@ -32,6 +32,10 @@ if [ ! -f "${PROJECT_DIR}/hosts.yml" ]; then
     cp "${PROJECT_DIR}/.config/hosts.tmpl.yml" "${PROJECT_DIR}/hosts.yml"
 fi
 
+if [ ! -f "${PROJECT_DIR}/group_vars/nodes.yml" ]; then
+    cp "${PROJECT_DIR}/.config/nodes.yml" "${PROJECT_DIR}/group_vars/nodes.yml"
+fi
+
 # Create Temp Directory
 if [[ ! -d /tmp/tpi ]]; then
     mkdir -p /tmp/tpi

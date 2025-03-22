@@ -1,0 +1,38 @@
+---
+# Node Timezone Configuration
+timezone: Etc/UTC
+
+# Network Configuration
+network_mtu: 1500
+# Hosts Configuration
+#
+# This key allows you to define the hosts that will be added to the /etc/hosts file.
+# This is useful when you want to add a hostname to an IP address that is not defined in the DNS server.
+# The key is a list of dictionaries, where each dictionary has the following keys:
+# - ip: The IP address of the host.
+# - dns: The DNS name of the host, multiple DNS names are separated by a space.
+#
+# Example:
+#
+# hosts:
+#   - ip: 192.168.0.x
+#     dns: "server alternate-dns"
+
+# sysctl configuration
+# With the systctl configuration you can set sysctl parameters.
+# The key is a dictionary where the key is the sysctl parameter and the value is the value of the parameter.
+# When set in this file `nodes.yml` it will apply to all nodes in the inventory of the group `nodes`.
+#
+# The defaults are loaded from the `roles/server/defaults/main.yml` file.
+#
+# sysctl:
+#   vm.swappiness: 3
+
+# env_vars are environemnt variables that will be set in the /etc/environment file.
+# The key is a dictionary where the key is the environment variable name and the value is the value of the environment variable.
+# When set in this file `nodes.yml` it will apply to all nodes in the inventory of the group `nodes`.
+#
+# Example:
+#
+# env_vars:
+#   MY_ENV_VAR: "my value"

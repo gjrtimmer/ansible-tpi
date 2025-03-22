@@ -1,0 +1,63 @@
+---
+sysctl:
+  # swappiness
+  # The vm.swappiness parameter controls the kernel's preference for swapping out runtime memory
+  # as opposed to dropping pages from the system cache.
+  # It's a value from 0 to 100, where a lower value means less swapping and a higher value means more aggressive swapping.
+  # Value 3 means: 3% memory is free, 97% memory is used (100-3)
+  # start swapping when 97% of the memory is consumed
+  vm.swappiness: 3
+
+  # ip_forward
+  # If the Linux server is acting as a firewall, router, or NAT device,
+  # it will need to be capable of forwarding packets that are meant for other destinations (other than itself).
+  # Needed for docker / orchastrators
+  net.ipv4.ip_forward: 1
+
+  # tcp_syncookies
+  # This parameter can help to prevent SYN flood DDoS attacks by testing the validity of the SYN packets.
+  # For security reasons it is recommended to enable the parameter.
+  # Note that the process is conducted without consuming memory or connection resources
+  net.ipv4.tcp_syncookies: 1
+
+  # ignore_broadcasts
+  # A ping broadcast is used to see what hosts in LAN are up, but there are other ways to do this.
+  # It is safer to disable this option because ICMP (ping) broadcasts and multicasts are usually a sign of Smurf attack.
+  net.ipv4.icmp_echo_ignore_broadcasts: 1
+
+  # accept_redirects
+  # The parameter allows to enable or disable ICMP redirects acceptance.
+  # ICMP redirects are important to routers, but can create security problems for servers,
+  # so it is recommended to set the parameter to off.
+  net.ipv4.conf.all.accept_redirects: 0
+
+  # accept_source_route
+  # Tells netfilter to accept or decline source routed packets. S
+  # Source routed packets are security risk, because they can can allow routing packets through an untrusted or insecure interface.
+  net.ipv4.conf.all.accept_source_route: 0
+
+  # rp_filter
+  # This parameter controls reverse path filtering, which tries to ensure packets use legitimate source addresses.
+  # When is turned on it can prevent some IP spoofing attacks.
+  net.ipv4.conf.all.rp_filter: 1
+
+  # log_martians
+  # The parameter allows to keep track of packets which could potentially indicate an attack on server.
+  # This packets are those that includes impossible IP addresses, bad source routing, bad redirect packets and others.
+  net.ipv4.conf.all.log_martians: 1
+
+  # send_redirects
+  # Enables or disables ICMP redirects which are used mainly by routers to send out ICMP redirects to other hosts.
+  # For security reasons, it is recommended to disable this option.
+  net.ipv4.conf.all.send_redirects: 0
+
+  # fin_timeout
+  # Tells Netfilter how much seconds keep sockets in FIN-WAIT-2 state which means that connection is closed,
+  # and the socket is waiting for a shutdown from the remote end.
+  # Decreasing the value to 30 can avoid some DDoS attacks or other problems that arose from getting huge amounts of connections
+  net.ipv4.tcp_fin_timeout: 30
+
+  # tcp_keepalive_time
+  # Tells the Netfilter how often to send TCP keepalive packets to keep an connection alive if it is currently unused.
+  # The value 1800, or 30 minutes, is a good value for most servers.
+  net.ipv4.tcp_keepalive_time: 1800
