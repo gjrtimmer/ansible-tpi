@@ -3,3 +3,10 @@
   when: reboot | default(true)
   ansible.builtin.reboot:
     msg: "Rebooting Node in 5 seconds"
+
+- name: netplan-apply # noqa name[casing]
+  become: true
+  ansible.builtin.shell:
+    cmd: netplan apply
+    executable: /bin/bash
+  changed_when: false

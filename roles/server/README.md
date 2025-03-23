@@ -21,3 +21,4 @@ The following tasks are defined and get be individually run with a tag. The tag 
 | time    | timezone      | Timezone configuration                   |
 | time    | ntp           | NTP Configuration                        |
 | time    | timezone, ntp | Run both timezone and NTP Configuration  |
+| network | network       | Network MTU Configuration                |

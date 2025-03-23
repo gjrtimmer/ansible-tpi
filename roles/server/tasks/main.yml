@@ -18,3 +18,8 @@
   tags: [timezone, ntp]
   ansible.builtin.import_tasks:
     file: time.yml
+
+- name: Network MTU Configuration
+  tags: [network]
+  ansible.builtin.import_tasks:
+    file: network.yml
