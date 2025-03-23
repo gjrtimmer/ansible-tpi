@@ -40,5 +40,6 @@ Read the documentation of the Role to get more information regarding configurati
 
 - [bootstrap](./roles/bootstrap/README.md)
 - [flash](./roles/flash/README.md)
+- [server](./roles/server/README.md)
 - [ssh](./roles/ssh/README.md)
 - [tpi](./roles/tpi/README.md)
