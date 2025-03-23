@@ -23,3 +23,8 @@
   tags: [network]
   ansible.builtin.import_tasks:
     file: network.yml
+
+- name: Configure env_vars
+  tags: [env_vars]
+  ansible.builtin.import_tasks:
+    file: env_vars.yml

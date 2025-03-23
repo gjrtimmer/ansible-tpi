@@ -1,0 +1,18 @@
+---
+- name: Add env_vars to /etc/environment
+  tags: [env_vars]
+  when: env_vars is defined
+  become: true
+  ansible.builtin.blockinfile:
+    path: "/etc/environment"
+    state: present
+    create: true
+    mode: "0644"
+    block: |
+      {% for item in env_vars %}
+      {{ item.key }}={{ item.value }}
+      {% end %}
+  loop: "{{ env_vars | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}={{ item.value }}"
+  notify: server:reboot
