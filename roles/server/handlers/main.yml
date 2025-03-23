@@ -1,5 +1,5 @@
 ---
-- name: Reboot
+- name: reboot # noqa name[casing]
   when: reboot | default(true)
   ansible.builtin.reboot:
     msg: "Rebooting Node in 5 seconds"

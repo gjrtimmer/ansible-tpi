@@ -22,7 +22,7 @@
   throttle: 1
   ansible.posix.selinux:
     state: disabled
-  notify: server:Reboot
+  notify: server:reboot
 
 - name: Remove the libselinux-python package
   tags: [selinux]
