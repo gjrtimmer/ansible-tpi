@@ -1,6 +1,7 @@
 # code: language=ansible
 ---
 - name: Set MTU (RK1)
+  tags: [network]
   when: hostvars[inventory_hostname]['type'] | upper == 'RK1'
   ansible.builtin.template:
     src: 01-eth0-mtu.yaml
@@ -11,6 +12,7 @@
   notify: server:netplan-apply
 
 - name: Set MTU (Nvidia)
+  tags: [network]
   when: hostvars[inventory_hostname]['type'] | upper == 'NVIDIA'
   ansible.builtin.shell:
     cmd: nmcli con modify Wired\ connection\ 1 802-3-ethernet.mtu 9000
