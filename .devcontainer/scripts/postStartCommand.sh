@@ -17,12 +17,12 @@ git -C "${PROJECT_DIR}" config core.eol lf
 sudo chmod -x ${HOME}/.ansible_vault_pass
 
 # Configure ownership mounts
-sudo chmod 0600 "${HOME}/.ssh/config" 
-sudo chmod 0600 "${HOME}/.ssh/known_hosts"
-sudo chmod 0755 "${HOME}/.ssh/tpi"
-sudo chmod 0600 "${HOME}/.ssh/tpi/*.key"
-sudo chmod 0755 "${HOME}/.ssh/tpi/*.key.pub"
-sudo chown -R vscode:vscode "${HOME}/.ssh/tpi"
+sudo chmod 0600 ${HOME}/.ssh/config
+sudo chmod 0600 ${HOME}/.ssh/known_hosts
+sudo chmod 0755 ${HOME}/.ssh/tpi
+sudo chmod 0600 ${HOME}/.ssh/tpi/*.key
+sudo chmod 0755 ${HOME}/.ssh/tpi/*.key.pub
+sudo chown -R vscode:vscode ${HOME}/.ssh/tpi
 
 if [[ ! -f "${DEVCON_DIR}/.bashrc" ]]; then
     ln -sf "${DEVCON_DIR}/.bashrc" "${HOME}/.bashrc"
