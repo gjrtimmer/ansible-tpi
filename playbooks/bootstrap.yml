@@ -25,3 +25,21 @@
   roles:
     - bootstrap
     - server
+
+- name: Install Container Runtime
+  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
+  gather_facts: true
+  tags: [docker, podman]
+  tasks:
+    - name: Install / Configure Docker
+      tags: [docker]
+      when: container_runtime | lower == 'docker'
+      ansible.builtin.import_role:
+        name: docker
+        tasks_from: main.yml
+
+    - name: Install / Configure Podman
+      tags: [podman]
+      when: container_runtime | lower == 'podman'
+      ansible.builtin.debug:
+        msg: "Podman is not yet supported"

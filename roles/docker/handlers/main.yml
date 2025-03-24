@@ -1,0 +1,7 @@
+# code: language=ansible
+---
+- name: restart # noqa: name[casing]
+  ansible.builtin.service:
+    name: docker
+    enabled: true
+    state: restarted

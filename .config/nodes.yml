@@ -37,3 +37,7 @@ network_mtu: 1500
 #
 # env_vars:
 #   MY_ENV_VAR: "my value"
+
+# Select the Container Runtime
+# The container_runtime key allows you to select the container runtime that will be installed on the nodes.
+container_runtime: docker

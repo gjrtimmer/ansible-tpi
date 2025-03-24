@@ -1,0 +1,31 @@
+# code: language=ansible
+---
+- name: Package Check
+  tags: [docker]
+  ansible.builtin.package_facts:
+    manager: apt
+
+- name: Configure qemu package
+  when: "'qemu' not in ansible_facts.packages"
+  tags: [docker]
+  block:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600 # Cache valid for 1 hour to avoid repeated updates
+
+    - name: Install qemu packages
+      ansible.builtin.apt:
+        name:
+          - qemu
+          - binfmt-support
+          - qemu-user-static
+        state: present
+
+- name: Register Architectures
+  tags: [docker]
+  ansible.builtin.shell:
+    cmd: docker run --privileged --rm tonistiigi/binfmt --install all
+    executable: /bin/bash
+  changed_when: true
+  notify: docker:restart

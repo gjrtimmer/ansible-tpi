@@ -1,0 +1,38 @@
+# code: language=ansible
+---
+- name: Ensure Docker certs.d exists
+  tags: [docker, config]
+  ansible.builtin.file:
+    path: /etc/docker/certs.d
+    state: directory
+    owner: "{{ item.user }}"
+    group: "{{ item.user }}"
+    mode: "0755"
+
+- name: Check CA Exists
+  tags: [docker, config]
+  delegate_to: localhost
+  ansible.builtin.stat:
+    path: "{{ role_path }}/files/{{ item.name }}/{{ item.ca }}"
+  loop: "{{ docker.registries | dict2items }}"
+  register: docker_buildkitd_registries
+# - name: Copy CA Certs
+#   tags: [docker, config]
+#   when: item.stat.exists
+#   ansible.builtin.copy:
+#     src: "{{ role_path }}/files/{{ item.item.name }}/{{ item.item.ca }}"
+#     dest: "/etc/docker/certs.d/{{ item.item.name }}/ca.crt"
+#     owner: "root"
+#     group: "root"
+#     mode: "0644"
+#   loop: "{{ docker_buildkitd_registries.results }}"
+
+# - name: Copy buildkitd config
+#   tags: [docker, config]
+#   ansible.builtin.template:
+#     src: buildkitd.toml
+#     dest: /etc/buildkitd.toml
+#     owner: root
+#     group: root
+#     mode: "0644"
+#   notify: docker:restart

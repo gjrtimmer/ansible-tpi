@@ -1,0 +1,29 @@
+# code: language=ansible
+---
+- name: Docker {{ item.user }} Config Exists? # noqa: name[template]
+  tags: [docker, config]
+  delegate_to: localhost
+  ansible.builtin.stat:
+    path: "{{ role_path }}/files/config.{{ item.user }}.json"
+  register: docker_config
+  changed_when: false
+
+- name: Ensure /home/{{ item.user }}/.docker # noqa: name[template]
+  tags: [docker, config]
+  when: docker_config.stat.exists | bool
+  ansible.builtin.file:
+    path: /home/{{ item.user }}/.docker
+    state: directory
+    owner: "{{ item.user }}"
+    group: "{{ item.user }}"
+    mode: "0755"
+
+- name: Install Docker Auth Config
+  tags: [docker, config]
+  when: docker_config.stat.exists | bool
+  ansible.builtin.copy:
+    src: config.{{ item.user }}.json
+    dest: "{{ item.home }}/.docker/config.json"
+    owner: "{{ item.user }}"
+    group: "{{ item.user }}"
+    mode: "0600"

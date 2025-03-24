@@ -1,0 +1,45 @@
+# code: language=ansible
+---
+# First get the NVIDIA Model
+# If we run on a Jetson board we can go straight ahead with the install of the runtime
+# if it is not a Jetson board we need to install the repository first.
+# This allows hosts which has Nvidia as a type to also be managed by this role
+- name: Get NVIDIA Model
+  tags: [nvidia]
+  ansible.builtin.raw: grep --binary-files=text 'Jetson' /proc/device-tree/model
+  register: nvidia_model
+  changed_when: false
+
+- name: Is Jetson Board
+  tags: [nvidia]
+  ansible.builtin.set_fact:
+    is_jetson: "{{ nvidia_model.rc | int == 0 }}"
+
+- name: Install Nvidia Container Toolkit Repository
+  tags: [nvidia]
+  when: >
+    hostvars[inventory_hostname]['type'] | upper == 'NVIDIA'
+    and
+    not is_jetson | bool
+  block:
+    - name: Add Nvidia Repository
+      ansible.builtin.debug:
+        msg: "Not Yet Implemented"
+
+    - name: Repository Manual
+      ansible.builtin.debug:
+        msg: "Source: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html"
+
+- name: Configure Nvidia Runtime
+  tags: [nvidia]
+  when: >
+    hostvars[inventory_hostname]['type'] | upper == 'NVIDIA'
+    and
+    is_jetson | bool
+  ansible.builtin.apt:
+    name:
+      - nvidia-container-toolkit
+    state: present
+    cache_valid_time: 3600 # Cache valid for 1 hour to avoid repeated updates
+    install_recommends: true
+  notify: docker:restart
