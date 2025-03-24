@@ -1,4 +1,4 @@
-# Shutdown Node(s)
+# code: language=ansible
 ---
 - name: Shutdown Nodes
   hosts: "{{ ansible_limit|default('nodes,!tpi') }}"

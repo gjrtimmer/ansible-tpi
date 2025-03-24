@@ -1,3 +1,5 @@
+# code: language=ansible
+---
 # SPDX-License-Identifier: MIT-0
 #
 # Check host status

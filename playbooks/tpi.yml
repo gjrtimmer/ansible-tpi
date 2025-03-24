@@ -1,3 +1,4 @@
+# code: language=ansible
 ---
 - name: Install TPI CLI
   hosts: "{{ ansible_limit | default('localhost,nodes,!tpi') }}"

@@ -1,3 +1,4 @@
+# code: language=yaml
 ---
 ssh:
   bitsize: 4096

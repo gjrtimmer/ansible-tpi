@@ -1,3 +1,4 @@
+# code: language=ansible
 ---
 - name: Reboot Node
   hosts: "{{ ansible_limit | default('nodes') }}"

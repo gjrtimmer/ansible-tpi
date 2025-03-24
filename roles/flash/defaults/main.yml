@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MIT-0
+# code: language=yaml
 ---
 # Flash a node
 flash_node: false

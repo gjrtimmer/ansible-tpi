@@ -1,3 +1,4 @@
+# code: language=yaml
 ---
 # When this is set to 'true' the Bootstrap role will skip any
 # task after the initial bootstrap. This is due to the fact that the IP number of the Node

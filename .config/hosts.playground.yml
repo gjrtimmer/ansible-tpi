@@ -1,3 +1,5 @@
+# code: language=yaml
+---
 # Ansible Playground (Docker)
 #
 # Source: https://github.com/gjrtimmer/ansible-playground-docker

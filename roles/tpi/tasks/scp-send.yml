@@ -1,3 +1,4 @@
+# code: language=ansible
 ---
 - name: SCP File
   delegate_to: localhost

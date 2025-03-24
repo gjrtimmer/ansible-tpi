@@ -1,3 +1,4 @@
+# code: language=ansible
 ---
 - name: Add env_vars to /etc/environment
   tags: [env_vars]

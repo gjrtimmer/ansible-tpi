@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MIT-0
+# code: language=ansible
 ---
 - name: Flash DISABLED
   when: not flash_node|bool

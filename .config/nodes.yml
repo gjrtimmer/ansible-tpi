@@ -1,3 +1,4 @@
+# code: language=yaml
 ---
 # Node Timezone Configuration
 timezone: Etc/UTC

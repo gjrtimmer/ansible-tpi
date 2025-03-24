@@ -1,3 +1,4 @@
+# code: language=ansible
 ---
 - name: Repair any broken packages
   ansible.builtin.command: sudo dpkg --configure -a

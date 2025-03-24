@@ -1,3 +1,5 @@
+# code: language=ansible
+---
 # Install SSH key to BMC
 #
 # We are using a manual copy with scp instead of using `ssh-copy-id`
@@ -6,7 +8,6 @@
 # have to do a manual copy because `ssh-copy-id` requires `mktemp` to
 # be executed in the ~/.ssh directory, and this cannot be changed
 # because of security reasons regarding ssh.
----
 - name: Check key exist {{ prefix }}.{{ inventory_hostname }} # noqa: name[template]
   delegate_to: localhost
   ansible.builtin.stat:

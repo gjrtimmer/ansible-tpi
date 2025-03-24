@@ -1,2 +1,4 @@
+# code: language=yaml
+---
 # Force install client overwrite
 client_overwrite: false

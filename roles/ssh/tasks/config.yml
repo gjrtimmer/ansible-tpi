@@ -1,3 +1,5 @@
+# code: language=ansible
+---
 # Task known_hosts.yml
 #
 # IMPORTANT: Run in Serial
@@ -13,7 +15,6 @@
 #     name: ssh
 #     tasks_from: config.yml
 #
----
 - name: Delete config {{ inventory_hostname }}
   delegate_to: localhost
   ansible.builtin.raw: |

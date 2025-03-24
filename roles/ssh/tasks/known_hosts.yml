@@ -1,3 +1,5 @@
+# code: language=ansible
+---
 # Task known_hosts.yml
 #
 # IMPORTANT: Run in Serial
@@ -10,7 +12,6 @@
 #     name: ssh
 #     tasks_from: known_hosts.yml
 #
----
 - name: Remove known_host
   delegate_to: localhost
   ansible.builtin.raw: |

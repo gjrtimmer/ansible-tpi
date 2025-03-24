@@ -1,3 +1,4 @@
+# code: language=ansible
 ---
 - name: Power On {{ inventory_hostname }} # noqa command-instead-of-shell
   delegate_to: localhost

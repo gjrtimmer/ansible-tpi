@@ -1,3 +1,4 @@
+# code: language=ansible
 ---
 # https://stackoverflow.com/questions/61597724/how-do-i-get-the-root-device-through-ansible
 - name: Get Root Device

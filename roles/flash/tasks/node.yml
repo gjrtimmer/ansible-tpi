@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MIT-0
+# code: language=ansible
 ---
 - name: Set Node {{ hostname }}
   ansible.builtin.set_fact:

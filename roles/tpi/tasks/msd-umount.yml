@@ -1,3 +1,5 @@
+# code: language=ansible
+---
 - name: Unmount NVMe {{ inventory_hostname }}/cloud # noqa: name[template]
   delegate_to: "{{ hostvars[inventory_hostname]['bmc'] }}"
   ansible.builtin.raw: umount -f /mnt/node/cloud || true
