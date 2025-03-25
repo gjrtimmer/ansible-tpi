@@ -21,6 +21,7 @@
   hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
   gather_facts: false
   serial: 1
+  become: true
   tags: [bootstrap, server]
   roles:
     - bootstrap
