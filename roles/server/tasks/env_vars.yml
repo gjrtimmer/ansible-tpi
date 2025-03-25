@@ -16,4 +16,4 @@
   loop: "{{ env_vars | dict2items }}"
   loop_control:
     label: "{{ item.key }}={{ item.value }}"
-  notify: server:reboot
+  notify: "server : reboot"

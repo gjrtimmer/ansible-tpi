@@ -9,7 +9,7 @@
     owner: root
     group: root
     mode: "0700"
-  notify: server:netplan-apply
+  notify: "server : netplan-apply"
 
 - name: Set MTU (Nvidia)
   tags: [network]
@@ -18,4 +18,4 @@
     cmd: nmcli con modify Wired\ connection\ 1 802-3-ethernet.mtu 9000
     executable: /bin/bash
   changed_when: true
-  notify: server:reboot
+  notify: "server : reboot"

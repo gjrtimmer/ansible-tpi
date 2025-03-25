@@ -9,4 +9,4 @@
     state: present
     reload: true
   loop: "{{ sysctl | dict2items }}"
-  notify: server:reboot
+  notify: "server : reboot"
