@@ -29,23 +29,27 @@ if [[ ! -f "${DEVCON_DIR}/.bashrc" ]]; then
 fi
 
 # Migrate Data to ~/.tpi data directory
-if [[ -d /work/group_vars ]]; then
+if [[ -d /work/group_vars ]] && [[ ! -L /work/group_vars ]]; then
     mv /work/group_vars "${HOME}/.tpi"
     ln -s "${HOME}/.tpi/group_vars" "${PROJECT_DIR}/group_vars"
 else
-    cp -r "${PROJECT_DIR}/.config/group_vars" "${HOME}/.tpi"
-    ln -s "${HOME}/.tpi/group_vars" "${PROJECT_DIR}/group_vars"
+    if [[ ! -d "${HOME}/.tpi/group_vars" ]]; then
+        cp -r "${PROJECT_DIR}/.config/group_vars" "${HOME}/.tpi"
+        ln -s "${HOME}/.tpi/group_vars" "${PROJECT_DIR}/group_vars"
+    fi
 fi
 
-if [[ -d /work/host_vars ]]; then
+if [[ -d /work/host_vars ]] && [[ ! -L /work/host_vars ]]; then
     mv /work/host_vars "${HOME}/.tpi"
     ln -s "${HOME}/.tpi/host_vars" "${PROJECT_DIR}/host_vars"
 else
-    cp -r "${PROJECT_DIR}/.config/host_vars" "${HOME}/.tpi"
-    ln -s "${HOME}/.tpi/host_vars" "${PROJECT_DIR}/host_vars"
+    if [[ ! -d "${HOME}/.tpi/host_vars" ]]; then
+        cp -r "${PROJECT_DIR}/.config/host_vars" "${HOME}/.tpi"
+        ln -s "${HOME}/.tpi/host_vars" "${PROJECT_DIR}/host_vars"
+    fi
 fi
 
-if [[ -f /work/hosts.yml ]]; then
+if [[ -f /work/hosts.yml ]] && [[ ! -L /work/hosts.yml ]]; then
     mv /work/hosts.yml "${HOME}/.tpi"
     ln -s "${HOME}/.tpi/hosts.yml" "${PROJECT_DIR}/hosts.yml"
 else
