@@ -28,8 +28,29 @@ if [[ ! -f "${DEVCON_DIR}/.bashrc" ]]; then
     ln -sf "${DEVCON_DIR}/.bashrc" "${HOME}/.bashrc"
 fi
 
-if [ ! -f "${PROJECT_DIR}/hosts.yml" ]; then
-    cp "${PROJECT_DIR}/.config/hosts.tmpl.yml" "${PROJECT_DIR}/hosts.yml"
+# Migrate Data to ~/.tpi data directory
+if [[ -d /work/group_vars ]]; then
+    mv /work/group_vars "${HOME}/.tpi"
+    ln -s "${HOME}/.tpi/group_vars" "${PROJECT_DIR}/group_vars"
+else
+    cp -r "${PROJECT_DIR}/.config/group_vars" "${HOME}/.tpi"
+    ln -s "${HOME}/.tpi/group_vars" "${PROJECT_DIR}/group_vars"
+fi
+
+if [[ -d /work/host_vars ]]; then
+    mv /work/host_vars "${HOME}/.tpi"
+    ln -s "${HOME}/.tpi/host_vars" "${PROJECT_DIR}/host_vars"
+else
+    cp -r "${PROJECT_DIR}/.config/host_vars" "${HOME}/.tpi"
+    ln -s "${HOME}/.tpi/host_vars" "${PROJECT_DIR}/host_vars"
+fi
+
+if [[ -f /work/hosts.yml ]]; then
+    mv /work/hosts.yml "${HOME}/.tpi"
+    ln -s "${HOME}/.tpi/hosts.yml" "${PROJECT_DIR}/hosts.yml"
+else
+    cp "${PROJECT_DIR}/.config/inventory/hosts.tmpl.yml" "${HOME}/.tpi/hosts.yml"
+    ln -s "${HOME}/.tpi/hosts.yml" "${PROJECT_DIR}/hosts.yml"
 fi
 
 if [ ! -f "${PROJECT_DIR}/group_vars/nodes.yml" ]; then
