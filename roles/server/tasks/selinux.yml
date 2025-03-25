@@ -15,7 +15,7 @@
       - selinux-policy-default
       - policycoreutils
     state: present
-    update_cache: true
+    cache_valid_time: 3600
     install_recommends: false
 
 - name: Disable SELinux
@@ -35,6 +35,7 @@
       - selinux-policy-default
       - policycoreutils
     state: absent
+    cache_valid_time: 3600
     clean: true
     autoremove: true
     autoclean: true

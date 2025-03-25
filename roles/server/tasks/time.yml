@@ -12,7 +12,7 @@
       - ntp
       - ntpdate
     state: absent
-    update_cache: true
+    cache_valid_time: 3600
     autoclean: true
     autoremove: true
     clean: true
@@ -25,7 +25,7 @@
     name:
       - systemd-timesyncd
     state: present
-    update_cache: true
+    cache_valid_time: 3600
     clean: true
     force_apt_get: true
     install_recommends: true
