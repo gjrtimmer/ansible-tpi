@@ -42,4 +42,4 @@
     state: present
     cache_valid_time: 3600 # Cache valid for 1 hour to avoid repeated updates
     install_recommends: true
-  notify: docker:restart
+  notify: "docker : restart"

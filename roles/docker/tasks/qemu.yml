@@ -28,4 +28,4 @@
     cmd: docker run --privileged --rm tonistiigi/binfmt --install all
     executable: /bin/bash
   changed_when: true
-  notify: docker:restart
+  notify: "docker : restart"

@@ -35,4 +35,4 @@
 #     owner: root
 #     group: root
 #     mode: "0644"
-#   notify: docker:restart
+#   notify: "docker : restart"
