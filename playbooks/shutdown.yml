@@ -1,7 +1,7 @@
 # code: language=ansible
 ---
 - name: Power Off
-  hosts: "{{ ansible_limit|default('nodes,!tpi') }}"
+  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
   gather_facts: false
   tasks:
     - name: Shutdown Node {{ inventory_hostname }}
@@ -9,6 +9,7 @@
         msg: "Shutting down node {{ inventory_hostname }}"
         reboot: false
         state: shutdown
+
     - name: Wait for Shutdown
       delegate_to: localhost
       ansible.builtin.wait_for:
