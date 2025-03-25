@@ -60,7 +60,7 @@ else
 fi
 
 if [ ! -f "${PROJECT_DIR}/group_vars/nodes.yml" ]; then
-    cp "${PROJECT_DIR}/.config/nodes.yml" "${PROJECT_DIR}/group_vars/nodes.yml"
+    cp "${PROJECT_DIR}/.config/group_vars/nodes.yml" "${PROJECT_DIR}/group_vars/nodes.yml"
 fi
 
 # Create Temp Directory

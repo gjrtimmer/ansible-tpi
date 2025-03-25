@@ -15,10 +15,10 @@ if [[ ! -f "${DEVCON_DIR}/.bashrc" ]]; then
     echo "export PROMPT_COMMAND='history -a'" >> "${DEVCON_DIR}/.bashrc"
     echo "export HISTFILE=${DEVCON_DIR}/.bash_history" >> "${DEVCON_DIR}/.bashrc"
     
-    echo "alias ansible-playground='ansible -i /work/.config/hosts.playground.yml'" >> "${DEVCON_DIR}/.bashrc"
-    echo "alias ansible-playground-playbook='ansible-playbook -i /work/.config/hosts.playground.yml'" >> "${DEVCON_DIR}/.bashrc"
-    echo "alias ansible-pg='ansible -i /work/.config/hosts.playground.yml'" >> "${DEVCON_DIR}/.bashrc"
-    echo "alias ansible-pp='ansible-playbook -i /work/.config/hosts.playground.yml'" >> "${DEVCON_DIR}/.bashrc"
+    echo "alias ansible-playground='ansible -i /work/.config/inventory/hosts.playground.yml'" >> "${DEVCON_DIR}/.bashrc"
+    echo "alias ansible-playground-playbook='ansible-playbook -i /work/.config/inventory/hosts.playground.yml'" >> "${DEVCON_DIR}/.bashrc"
+    echo "alias ansible-pg='ansible -i /work/.config/inventory/hosts.playground.yml'" >> "${DEVCON_DIR}/.bashrc"
+    echo "alias ansible-pp='ansible-playbook -i /work/.config/inventory/hosts.playground.yml'" >> "${DEVCON_DIR}/.bashrc"
 fi
 ln -sf "${DEVCON_DIR}/.bashrc" "${HOME}/.bashrc"
 
