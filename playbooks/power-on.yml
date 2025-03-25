@@ -1,0 +1,16 @@
+# code: language=ansible
+---
+- name: Power On
+  hosts: "{{ ansible_limit|default('nodes,!tpi') }}"
+  gather_facts: false
+  tasks:
+    - name: Power On Node
+      ansible.builtin.import_role:
+        name: tpi
+        tasks_from: power-on.yml
+
+    - name: Wait for Power On
+      delegate_to: localhost
+      ansible.builtin.wait_for:
+        host: "{{ ansible_ssh_host }}"
+        state: started
