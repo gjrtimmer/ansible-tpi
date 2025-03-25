@@ -3,6 +3,7 @@
 This repository holds the Ansible configuration to manage your Turing PI.
 
 - [Usage](#usage)
+- [Data Persistence](#data-persistence)
 - [Provision Nodes](#provision-nodes)
 - [Commands](#commands)
 - [Playbooks](#playbooks)
@@ -11,6 +12,17 @@ This repository holds the Ansible configuration to manage your Turing PI.
 ## Usage
 
 In order to use this repository read the [setup](./docs/SETUP.md) documentation first.
+
+## Data Persistence
+
+The container will create the two following directories on the host to manage the persistent data.
+
+- $HOME/.tpi
+- $HOME/.ssh/tpi
+
+If you are using a previous version of this repository, data should be automatically migrated to this new configuration.
+This is to ensure that we keep the user data, like inventory, group_vars, host_vars in the case the user resets the repository
+or removes the repository from the host all together.
 
 ## Provision Nodes
 
