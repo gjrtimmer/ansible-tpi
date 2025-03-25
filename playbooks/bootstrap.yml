@@ -21,10 +21,17 @@
   hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
   gather_facts: false
   serial: 1
-  become: true
-  tags: [bootstrap, server]
+  tags: [bootstrap]
   roles:
     - bootstrap
+
+- name: Server Configuration
+  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
+  gather_facts: true
+  serial: 1
+  become: true
+  tags: [server]
+  roles:
     - server
 
 - name: Install Container Runtime
