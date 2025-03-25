@@ -27,7 +27,10 @@
 
 - name: Add known_host
   delegate_to: localhost
+  when: >
+    not item.startswith('#')
+    and
+    ssh_fingerprint is defined
   ansible.builtin.raw: sudo echo "{{ item }}" >> ~/.ssh/known_hosts
-  loop: "{{ ssh_fingerprint.stdout_lines }}"
-  when: not item.startswith('#')
+  loop: "{{ ssh_fingerprint.stdout_lines | default('[]') }}"
   changed_when: true
