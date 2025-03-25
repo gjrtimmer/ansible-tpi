@@ -1,6 +1,6 @@
 # code: language=ansible
 ---
-- name: Shutdown Nodes
+- name: Power Off
   hosts: "{{ ansible_limit|default('nodes,!tpi') }}"
   gather_facts: false
   tasks:
