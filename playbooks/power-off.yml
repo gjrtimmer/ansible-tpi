@@ -1,0 +1,10 @@
+# code: language=ansible
+---
+- name: Power Off
+  hosts: "{{ ansible_limit|default('nodes,!tpi') }}"
+  gather_facts: false
+  tasks:
+    - name: Power Off Node
+      ansible.builtin.import_role:
+        name: tpi
+        tasks_from: power-on.yml
