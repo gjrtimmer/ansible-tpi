@@ -9,6 +9,10 @@
         name: tpi
         tasks_from: power-off.yml
 
+    - name: TPI Client Wait
+      ansible.builtin.pause:
+        seconds: 1
+
 - name: Mount Storage
   tags: [bootstrap]
   ansible.builtin.import_role:
