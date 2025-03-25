@@ -53,8 +53,10 @@ if [[ -f /work/hosts.yml ]] && [[ ! -L /work/hosts.yml ]]; then
     mv /work/hosts.yml "${HOME}/.tpi"
     ln -s "${HOME}/.tpi/hosts.yml" "${PROJECT_DIR}/hosts.yml"
 else
-    cp "${PROJECT_DIR}/.config/inventory/hosts.tmpl.yml" "${HOME}/.tpi/hosts.yml"
-    ln -s "${HOME}/.tpi/hosts.yml" "${PROJECT_DIR}/hosts.yml"
+    if [[ ! -f "${HOME}/.tpi/hosts.yml" ]]; then
+        cp "${PROJECT_DIR}/.config/inventory/hosts.tmpl.yml" "${HOME}/.tpi/hosts.yml"
+        ln -s "${HOME}/.tpi/hosts.yml" "${PROJECT_DIR}/hosts.yml"
+    fi
 fi
 
 if [ ! -f "${PROJECT_DIR}/group_vars/nodes.yml" ]; then
