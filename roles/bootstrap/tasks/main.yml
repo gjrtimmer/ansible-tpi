@@ -15,6 +15,7 @@
 
 - name: Mount Storage
   tags: [bootstrap]
+  when: not ansible_check_mode
   ansible.builtin.import_role:
     name: tpi
     tasks_from: msd-mount.yml
@@ -65,6 +66,7 @@
 
 - name: Unmount Storage
   tags: [bootstrap]
+  when: not ansible_check_mode
   ansible.builtin.import_role:
     name: tpi
     tasks_from: msd-umount.yml
