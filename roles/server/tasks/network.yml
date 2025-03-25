@@ -4,7 +4,7 @@
   tags: [network]
   when: hostvars[inventory_hostname]['type'] | upper == 'RK1'
   ansible.builtin.template:
-    src: 01-eth0-mtu.yaml
+    src: 01-eth0-mtu.yaml.j2
     dest: /etc/netplan/01-eth0-mtu.yaml
     owner: root
     group: root
