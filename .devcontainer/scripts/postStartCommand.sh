@@ -63,6 +63,11 @@ if [ ! -f "${PROJECT_DIR}/group_vars/nodes.yml" ]; then
     cp "${PROJECT_DIR}/.config/group_vars/nodes.yml" "${PROJECT_DIR}/group_vars/nodes.yml"
 fi
 
+# Migrate .bashrc
+if [[ -f "/work/.devcontainer/.bashrc" ]]; then
+    sed -i "s|/work/.config/hosts.playground.yml|/work/.config/inventory/hosts.playground.yml|g" /work/.devcontainer/.bashrc
+fi
+
 # Create Temp Directory
 if [[ ! -d /tmp/tpi ]]; then
     mkdir -p /tmp/tpi
