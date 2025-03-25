@@ -10,6 +10,7 @@ This contain all the configured commands and their use.
 | Bootstrap Node                    | ansible-playbook playbooks/bootstrap.yml -t bootstrap            |
 | Bootstrap Node (RK1 NVMe Install) | ansible-playbook playbooks/bootstrap.yml -t bootstrap,rk1        |
 | Bootstrap Node (DHCP Reservation) | ansible-playbook playbooks/bootstrap.yml -e dhcp_reservation     |
+| Generate SSH Keys BMC             | ansible-playbook playbooks/ssh.yml -l tpi                        |
 | Generate SSH Keys                 | ansible-playbook playbooks/ssh.yml                               |
 | Regenerate SSH Keys               | ansible-playbook playbooks/ssh.yml -e ssh_overwrite=true         |
 | Update known_hosts                | ansible-playbook playbooks/ssh.yml -t known_hosts                |
