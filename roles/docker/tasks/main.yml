@@ -8,6 +8,7 @@
 - name: Configure Docker Repository
   when: "'docker-ce' not in ansible_facts.packages"
   tags: [docker]
+  become: true
   block:
     - name: Remove Conflicting Packages
       ansible.builtin.apt:
@@ -74,6 +75,7 @@
 
 - name: Ensure Docker service is enabled and running
   tags: [docker]
+  become: true
   ansible.builtin.service:
     name: docker
     enabled: true
@@ -81,6 +83,7 @@
 
 - name: Add users to the Docker group
   tags: [docker]
+  become: true
   ansible.builtin.user:
     name: "{{ item }}"
     groups: docker
@@ -90,6 +93,7 @@
 
 - name: Set docker socket group and permissions
   tags: [docker]
+  become: true
   ansible.builtin.file:
     path: /var/run/docker.sock
     owner: root
@@ -98,12 +102,14 @@
 
 - name: Enable docker qemu
   tags: [docker]
+  become: true
   ansible.builtin.include_tasks:
     file: qemu.yml
 
 - name: Configure Nvidia Runtime
   when: hostvars[inventory_hostname]['type'] | upper == 'NVIDIA'
   tags: [docker, nvidia]
+  become: true
   ansible.builtin.include_tasks:
     file: nvidia.yml
 
@@ -123,7 +129,8 @@
       home: /root
 
 - name: Configure Buildkitd
-  tags: [docker, config]
   when: docker.registries is defined and docker.registries | length > 0
+  tags: [docker, config]
+  become: true
   ansible.builtin.include_tasks:
     file: buildkitd.yml

@@ -8,6 +8,7 @@
 - name: Configure qemu package
   when: "'qemu' not in ansible_facts.packages"
   tags: [docker]
+  become: true
   block:
     - name: Update apt cache
       ansible.builtin.apt:
@@ -24,6 +25,7 @@
 
 - name: Register Architectures
   tags: [docker]
+  become: true
   ansible.builtin.shell:
     cmd: docker run --privileged --rm tonistiigi/binfmt --install all
     executable: /bin/bash

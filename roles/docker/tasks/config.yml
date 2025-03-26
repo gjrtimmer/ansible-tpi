@@ -9,8 +9,9 @@
   changed_when: false
 
 - name: Copy Docker Config
-  tags: [docker, config]
   when: docker_config.stat.exists | bool
+  tags: [docker, config]
+  become: true
   ansible.builtin.copy:
     src: config.json
     dest: /etc/docker/config.json

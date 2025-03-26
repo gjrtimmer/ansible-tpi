@@ -21,6 +21,7 @@
     hostvars[inventory_hostname]['type'] | upper == 'NVIDIA'
     and
     not is_jetson | bool
+  become: true
   block:
     - name: Add Nvidia Repository
       ansible.builtin.debug:
@@ -31,11 +32,12 @@
         msg: "Source: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html"
 
 - name: Configure Nvidia Runtime
-  tags: [nvidia]
   when: >
     hostvars[inventory_hostname]['type'] | upper == 'NVIDIA'
     and
     is_jetson | bool
+  tags: [nvidia]
+  become: true
   ansible.builtin.apt:
     name:
       - nvidia-container-toolkit
