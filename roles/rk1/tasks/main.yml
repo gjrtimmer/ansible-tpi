@@ -19,8 +19,8 @@
 
 - name: Install-2-NVMe
   when: root_is_mmc
-  become: true
   tags: [rk1]
+  become: true
   block:
     - name: Update 'ubuntu-rockchip-settings' # noqa: package-latest
       ansible.builtin.apt:

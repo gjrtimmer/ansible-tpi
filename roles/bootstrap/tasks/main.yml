@@ -122,21 +122,3 @@
   ansible.builtin.include_role:
     name: ssh
     tasks_from: config.yml
-
-- name: Detect NVMe Configuration {{ inventory_hostname }}
-  when: >
-    (hostvars[inventory_hostname]['type'] | upper == "RK1")
-    and
-    (hostvars[inventory_hostname]['root'] is defined)
-  tags: [rk1]
-  ansible.builtin.set_fact:
-    nvme_dev: "{{ hostvars[inventory_hostname]['root'] }}"
-
-- name: Install-2-NVMe {{ inventory_hostname }}
-  when: >
-    (hostvars[inventory_hostname]['type'] | upper == "RK1")
-    and
-    nvme_dev is defined
-  tags: [rk1]
-  ansible.builtin.include_tasks:
-    file: rk1.yml
