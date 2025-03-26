@@ -10,18 +10,13 @@
   tags: [docker]
   become: true
   block:
-    - name: Update apt cache
-      ansible.builtin.apt:
-        update_cache: true
-        cache_valid_time: 3600 # Cache valid for 1 hour to avoid repeated updates
-
     - name: Install qemu packages
       ansible.builtin.apt:
         name:
-          - qemu
           - binfmt-support
           - qemu-user-static
         state: present
+        cache_valid_time: 3600
 
 - name: Register Architectures
   tags: [docker]
