@@ -1,10 +1,5 @@
 # code: language=ansible
 ---
-- name: Update cache
-  tags: [selinux]
-  ansible.builtin.apt:
-    update_cache: true
-
 - name: Install the libselinux-python package
   tags: [selinux]
   ansible.builtin.apt:
