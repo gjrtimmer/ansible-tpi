@@ -1,9 +1,9 @@
 # code: language=ansible
 ---
-- name: Set timezone to {{ timezone }}
+- name: Set timezone to {{ datetime.timezone }}
   tags: [timezone]
   community.general.timezone:
-    name: "{{ timezone }}"
+    name: "{{ datetime.timezone }}"
 
 - name: Remove NTP
   tags: [ntp]
@@ -32,8 +32,8 @@
 
 - name: Install timesyncd configuration
   tags: [ntp]
-  ansible.builtin.copy:
-    src: timesyncd.conf
+  ansible.builtin.template:
+    src: timesyncd.conf.j2
     dest: /etc/systemd/timesyncd.conf
     owner: root
     group: root

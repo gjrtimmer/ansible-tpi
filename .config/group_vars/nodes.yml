@@ -1,7 +1,8 @@
 # code: language=yaml
 ---
 # Node Timezone Configuration
-timezone: Etc/UTC
+datetime:
+  timezone: Etc/UTC
 
 # Network Configuration
 network_mtu: 1500

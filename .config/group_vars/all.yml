@@ -8,4 +8,10 @@ users:
   default: ubuntu
   provision: ansible
 
-timezone: Etc/UTC
+datetime:
+  timezone: Etc/UTC
+  ntp:
+    servers: [pool.ntp.org]
+    fallback:
+      - ntp.ubuntu.com
+      - time.google.com
