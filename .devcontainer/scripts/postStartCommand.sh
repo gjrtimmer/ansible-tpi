@@ -62,6 +62,19 @@ else
     fi
 fi
 
+if [[ ! -d "${HOME}/.tpi/config" ]]; then
+    mkdir -p "${HOME}/.tpi/config"
+fi
+
+if [[ -d /work/config ]] && [[ ! -L /work/config ]]; then
+    mv /work/config "${HOME}/.tpi"
+    ln -s "${HOME}/.tpi/config" "${PROJECT_DIR}/config"
+else
+    if [[ -d "${HOME}/.tpi/config" ]] && [[ ! -L /work/config ]]; then
+        ln -s "${HOME}/.tpi/config" "${PROJECT_DIR}/config"
+    fi
+fi
+
 if [ ! -f "${PROJECT_DIR}/group_vars/nodes.yml" ]; then
     cp "${PROJECT_DIR}/.config/group_vars/nodes.yml" "${PROJECT_DIR}/group_vars/nodes.yml"
 fi
