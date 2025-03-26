@@ -45,6 +45,7 @@
   hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
   gather_facts: true
   tags: [docker, podman]
+  become: true
   tasks:
     - name: Install / Configure Docker
       tags: [docker]
