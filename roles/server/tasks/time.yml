@@ -43,10 +43,5 @@
   tags: [ntp]
   ansible.builtin.service:
     name: systemd-timesyncd
-    state: started
-
-- name: Enable systemd-timesyncd
-  tags: [ntp]
-  ansible.builtin.service:
-    name: systemd-timesyncd
+    state: restarted
     enabled: true
