@@ -102,14 +102,12 @@
 
 - name: Enable docker qemu
   tags: [docker]
-  become: true
   ansible.builtin.include_tasks:
     file: qemu.yml
 
 - name: Configure Nvidia Runtime
   when: hostvars[inventory_hostname]['type'] | upper == 'NVIDIA'
   tags: [docker, nvidia]
-  become: true
   ansible.builtin.include_tasks:
     file: nvidia.yml
 
@@ -131,6 +129,5 @@
 - name: Configure Buildkitd
   when: docker.registries is defined and docker.registries | length > 0
   tags: [docker, config]
-  become: true
   ansible.builtin.include_tasks:
     file: buildkitd.yml
