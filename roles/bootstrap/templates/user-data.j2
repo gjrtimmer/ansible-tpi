@@ -34,7 +34,7 @@ chpasswd:
 hostname: {{ inventory_hostname }}
 
 # Timezone
-timezone: {{ timezone }}
+timezone: {{ datetime.timezone }}
 
 # Enable password authentication with the SSH daemon
 ssh_pwauth: true

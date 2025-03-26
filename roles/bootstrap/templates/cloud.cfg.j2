@@ -29,7 +29,7 @@ disable_root: true
 preserve_hostname: false
 hostname: {{ inventory_hostname }}
 
-timezone: {{ timezone }}
+timezone: {{ datetime.timezone }}
 
 # The modules that run in the 'init' stage
 cloud_init_modules:
