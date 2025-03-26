@@ -56,6 +56,9 @@ else
     if [[ ! -f "${HOME}/.tpi/hosts.yml" ]]; then
         cp "${PROJECT_DIR}/.config/inventory/hosts.tmpl.yml" "${HOME}/.tpi/hosts.yml"
         ln -s "${HOME}/.tpi/hosts.yml" "${PROJECT_DIR}/hosts.yml"
+    elif [[ ! -L "${PROJECT_DIR}/hosts.yml" ]]; then
+        ln -s "${HOME}/.tpi/hosts.yml" "${PROJECT_DIR}/hosts.yml"
+
     fi
 fi
 
