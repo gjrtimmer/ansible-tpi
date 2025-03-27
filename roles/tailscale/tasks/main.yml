@@ -6,12 +6,10 @@
       - tailscale is defined
       - tailscale.authkey is string or tailscale.authkey == ""
       - tailscale.tags is iterable
-      - tailscale.hostname_prefix is string
       - tailscale.advertise_routes is iterable
       - tailscale.enable_subnet_router is boolean
       - tailscale.magic_dns is boolean
       - tailscale.accept_routes is boolean
-      - tailscale.control_server is string or tailscale.control_server == ""
     fail_msg: "One or more required Tailscale variables are missing or invalid."
 
 - name: Check if Tailscale is already installed
@@ -39,16 +37,17 @@
         update_cache: true
         cache_valid_time: 3600
 
-    - name: Add Tailscale APT key (ensure it's in the correct keyring directory)
-      ansible.builtin.apt_key:
+    - name: Add Tailscale APT key
+      ansible.builtin.get_url:
         url: https://pkgs.tailscale.com/stable/ubuntu/{{ distro_codename.stdout }}.noarmor.gpg
-        state: present
-        keyring: /etc/apt/trusted.gpg.d/tailscale.asc
+        dest: /usr/share/keyrings/tailscale-archive-keyring.gpg
+        mode: "0644"
 
     - name: Add Tailscale APT repository
       ansible.builtin.apt_repository:
-        repo: "deb https://pkgs.tailscale.com/stable/ubuntu {{ distro_codename.stdout }} main"
+        repo: "deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/ubuntu {{ distro_codename.stdout }} main"
         state: present
+        filename: tailscale
 
     - name: Install Tailscale package
       ansible.builtin.apt:
