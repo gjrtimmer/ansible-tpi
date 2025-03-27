@@ -39,10 +39,11 @@
         update_cache: true
         cache_valid_time: 3600
 
-    - name: Add Tailscale APT key
+    - name: Add Tailscale APT key (ensure it's in the correct keyring directory)
       ansible.builtin.apt_key:
         url: https://pkgs.tailscale.com/stable/ubuntu/{{ distro_codename.stdout }}.noarmor.gpg
         state: present
+        keyring: /etc/apt/trusted.gpg.d/tailscale.asc
 
     - name: Add Tailscale APT repository
       ansible.builtin.apt_repository:
