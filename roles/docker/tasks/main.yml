@@ -21,6 +21,7 @@
           - containerd
           - runc
         state: absent
+        update_cache: true
         cache_valid_time: 3600 # Cache valid for 1 hour to avoid repeated updates
         purge: true
         force_apt_get: true
@@ -70,6 +71,7 @@
           - docker-buildx-plugin
           - docker-compose-plugin
         state: present
+        update_cache: true
         cache_valid_time: 3600
         install_recommends: true
 

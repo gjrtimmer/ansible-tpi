@@ -42,6 +42,7 @@
     name:
       - nvidia-container-toolkit
     state: present
+    update_cache: true
     cache_valid_time: 3600 # Cache valid for 1 hour to avoid repeated updates
     install_recommends: true
   notify: "docker : restart"
