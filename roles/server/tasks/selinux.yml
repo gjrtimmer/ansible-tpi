@@ -10,6 +10,7 @@
       - selinux-policy-default
       - policycoreutils
     state: present
+    update_cache: true
     cache_valid_time: 3600
     install_recommends: false
 
@@ -30,6 +31,7 @@
       - selinux-policy-default
       - policycoreutils
     state: absent
+    update_cache: true
     cache_valid_time: 3600
     clean: true
     autoremove: true
