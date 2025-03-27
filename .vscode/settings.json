@@ -21,8 +21,8 @@
   },
   "files.associations": {
     "**/defaults/**/*.yml": "ansible",
-    "**/group_vars/**/*": "ansible",
-    "**/host_vars/**/*": "ansible",
+    "**/group_vars/*.yml": "yaml",
+    "**/host_vars/*.yml": "yaml",
     "**/vars/**/*.yml": "ansible",
     "**/tasks/**/*.yml": "ansible",
     "**/handlers/*.yml": "ansible",
@@ -47,7 +47,18 @@
   "[markdown]": {
     "editor.wordWrap": "off"
   },
-
+  "[yaml]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "editor.autoIndent": "keep",
+    "diffEditor.ignoreTrimWhitespace": false,
+    "editor.quickSuggestions": {
+      "other": true,
+      "comments": false,
+      "strings": true
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "prettier.requireConfig": false,
   "ansible.python.interpreterPath": "/usr/bin/python3",
   "markdown.extension.toc.levels": "2..6",
