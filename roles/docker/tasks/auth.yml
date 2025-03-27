@@ -4,7 +4,7 @@
   tags: [docker, config]
   delegate_to: localhost
   ansible.builtin.stat:
-    path: "{{ role_path }}/files/config.{{ item.user }}.json"
+    path: "{{ inventory_dir }}/config/docker/config.{{ item.user }}.json"
   register: docker_config
   changed_when: false
 
@@ -22,7 +22,7 @@
   tags: [docker, config]
   when: docker_config.stat.exists | bool
   ansible.builtin.copy:
-    src: config.{{ item.user }}.json
+    src: "{{ inventory_dir }}/config/docker/config.{{ item.user }}.json"
     dest: "{{ item.home }}/.docker/config.json"
     owner: "{{ item.user }}"
     group: "{{ item.user }}"

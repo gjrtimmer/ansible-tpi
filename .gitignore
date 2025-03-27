@@ -12,6 +12,4 @@ group_vars/*
 !group_vars/all.yml
 playbooks/overrides/*.yml
 !playbooks/overrides/.keep
-roles/docker/files/config.*json
-roles/docker/files/*/*.crt
-roles/docker/files/*/*.pem
+config/*

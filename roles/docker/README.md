@@ -10,7 +10,7 @@ This role is conditionally included in the bootstrap playbook, and activated by 
 
 ## Docker Config
 
-If a `config.json` file is present in the `docker/files` directory it will be installed into `/etc/docker/config.json`.
+If a `config.json` file is present in the `config/docker` directory it will be installed into `/etc/docker/config.json`.
 Furthermore, this role will try to configure docker config files for the users `root` and `ubuntu`.
 It will search for the file `config.{{ username }}.json` in the `docker/files` directory to install them.
 
@@ -23,7 +23,7 @@ This role will auto install and configure buildkit to have support for building 
 If you require additional configuration for `buildkit`, for example you have a repository which has a self-signed certificate,
 this certificate must be added to the buildkit to ensure it is accepted when `docker` tries to pull or push images from it.
 
-This can be configure with the following configuration, the certificate will first be tried to be found in `docker/files/{{ REGISTRY }}/{{ FILE }}`.
+This can be configure with the following configuration, the certificate will be tried to be found in `config/docker/{{ REGISTRY }}/{{ FILE }}`.
 If found it will upload it to to node. If not found, it will check that the certificate is already present on the node in `/etc/docker/certs.d/{{ REGISTRY }}/{{ FILE }}`.
 Please note that this is dynamic configuration. The `{{ REGISTRY }}` is the key `name` of the list under `registries`.
 
