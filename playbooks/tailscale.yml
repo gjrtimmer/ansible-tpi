@@ -1,0 +1,8 @@
+# code: language=ansible
+---
+- name: Tailscale
+  hosts: "{{ ansible_limit | default('nodes') }}"
+  gather_facts: true
+  become: true
+  roles:
+    - tailscale
