@@ -1,5 +1,19 @@
-# code: language=ansible
----
+# roles/tailscale/tasks/main.yml
+
+- name: Assert required Tailscale variables are defined and valid
+  ansible.builtin.assert:
+    that:
+      - tailscale is defined
+      - tailscale.authkey is string or tailscale.authkey == ""
+      - tailscale.tags is iterable
+      - tailscale.hostname_prefix is string
+      - tailscale.advertise_routes is iterable
+      - tailscale.enable_subnet_router is boolean
+      - tailscale.magic_dns is boolean
+      - tailscale.accept_routes is boolean
+      - tailscale.control_server is string or tailscale.control_server == ""
+    fail_msg: "One or more required Tailscale variables are missing or invalid."
+
 - name: Check if Tailscale is already installed
   tags: [setup]
   ansible.builtin.command: which tailscale
