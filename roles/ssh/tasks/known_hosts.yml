@@ -34,3 +34,13 @@
   ansible.builtin.raw: sudo echo "{{ item }}" >> ~/.ssh/known_hosts
   loop: "{{ ssh_fingerprint.stdout_lines | default('[]') }}"
   changed_when: true
+
+- name: Ensure correct owner
+  delegate_to: localhost
+  ansible.builtin.raw: "sudo chown vscode:vscode ~/.ssh/known_hosts"
+  changed_when: true
+
+- name: Ensure correct file permissions
+  delegate_to: localhost
+  ansible.builtin.raw: "sudo chmod 0644 ~/.ssh/known_hosts"
+  changed_when: true

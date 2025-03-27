@@ -26,3 +26,13 @@
   delegate_to: localhost
   ansible.builtin.raw: sudo printf "\nHost %s\n  HostName %s\n  User %s\n  IdentityFile ~/.ssh/tpi/%s\n  ServerAliveInterval 60\n" {{ host }} {{ hostname }} {{ username }} {{ key }} >> ~/.ssh/config
   changed_when: true
+
+- name: Ensure correct file permissions
+  delegate_to: localhost
+  ansible.builtin.raw: "sudo chmod 0644 ~/.ssh/config"
+  changed_when: true
+
+- name: Ensure correct owner
+  delegate_to: localhost
+  ansible.builtin.raw: "sudo chown vscode:vscode ~/.ssh/config"
+  changed_when: true
