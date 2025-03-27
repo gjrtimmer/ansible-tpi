@@ -1,0 +1,26 @@
+# code: language=yaml
+---
+tailscale:
+  # Optional Tailscale auth key. If empty, manual login or keyless join is assumed.
+  authkey: ""
+
+  # List of Tailscale tags to advertise, e.g., ["tag:nl", "tag:gpu"]
+  tags: []
+
+  # Optional prefix for node hostname in Tailscale (e.g., "node-node1")
+  hostname_prefix: "node"
+
+  # List of subnet routes to advertise, e.g., ["192.168.0.0/21"]
+  advertise_routes: []
+
+  # Whether to enable subnet routing for non-local subnets (currently unused)
+  enable_subnet_router: false
+
+  # Enable or disable MagicDNS (recommended: true)
+  magic_dns: true
+
+  # Accept routes advertised by other Tailscale nodes (default: true)
+  accept_routes: true
+
+  # Optional control server URL (for Tailscale enterprise / self-hosted)
+  control_server: ""
