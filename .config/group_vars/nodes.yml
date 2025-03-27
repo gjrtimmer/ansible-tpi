@@ -16,7 +16,7 @@ network_mtu: 1500
 #
 # Example:
 #
-# hosts:
+# extra_hosts:
 #   - ip: 192.168.0.x
 #     dns: "server alternate-dns"
 
