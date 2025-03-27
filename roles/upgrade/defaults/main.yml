@@ -1,0 +1,65 @@
+# code: language=ansible
+---
+upgrade:
+  type: dist
+  unattended:
+    # List of allowed APT origins to enable unattended upgrades for
+    # Each entry must match the format: "Origin:Suite"
+    origins:
+      - "${distro_id}:${distro_codename}-security"
+      - "${distro_id}:${distro_codename}-updates"
+      - "Docker:${distro_codename}"
+      - "Tailscale:${distro_codename}"
+
+    # List of packages to exclude from unattended upgrades
+    blacklist:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+      - tailscale
+
+    # Automatically reboot after upgrade if required
+    automatic_reboot: false # true or false
+
+    # Time to schedule reboot when automatic_reboot is true (format: HH:MM)
+    automatic_reboot_time: "02:00"
+
+    # Automatically fix dpkg interrupted states before upgrades
+    autofix_interrupted: false # true or false
+
+    # Use minimal steps for upgrade (safer but slower)
+    minimal_steps: true # true or false
+
+    # Run upgrade logic at shutdown
+    install_on_shutdown: false # true or false
+
+    # Email address for upgrade reports (requires mail setup)
+    mail: ""
+
+    # When to send upgrade reports
+    # Options: "always", "on-change", "only-on-error", "none"
+    mail_report: "on-change"
+
+    # Remove old kernel packages
+    remove_unused_kernel: true
+
+    # Remove unused dependencies
+    remove_unused_dependencies: true
+
+    # Remove new unused dependencies that appeared after upgrade
+    remove_new_unused_dependencies: true
+
+    # Enable syslog logging for unattended-upgrades
+    syslog_enable: false
+
+    # Which syslog facility to use (default is "daemon")
+    syslog_facility: "daemon"
+
+    # Additional configuration for 20auto-upgrades template
+    # Customizable APT periodic upgrade schedule
+    update_package_lists: "1" # Frequency of apt-get update (default: daily)
+    download_upgradeable_packages: "1" # Frequency of downloading upgradeable packages (default: daily)
+    autoclean_interval: "7" # Interval in days to clean (default: 7)
+    unattended_upgrade: "1" # Enable unattended-upgrades (default: 1)

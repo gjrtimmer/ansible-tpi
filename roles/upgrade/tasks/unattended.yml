@@ -1,0 +1,53 @@
+# code: language=ansible
+---
+- name: Validate structure of upgrade.unattended
+  tags: [unattended]
+  ansible.builtin.assert:
+    that:
+      - upgrade is defined
+      - upgrade.unattended is defined
+      - upgrade.unattended.origins is iterable
+      - upgrade.unattended.blacklist is iterable
+      - upgrade.unattended.automatic_reboot is boolean
+      - upgrade.unattended.automatic_reboot_time is string
+      - upgrade.unattended.autofix_interrupted is boolean
+      - upgrade.unattended.minimal_steps is boolean
+      - upgrade.unattended.install_on_shutdown is boolean
+      - upgrade.unattended.mail_report is string
+      - upgrade.unattended.remove_unused_kernel is boolean
+      - upgrade.unattended.remove_unused_dependencies is boolean
+      - upgrade.unattended.remove_new_unused_dependencies is boolean
+      - upgrade.unattended.syslog_enable is boolean
+      - upgrade.unattended.syslog_facility is string
+    fail_msg: "❌ upgrade.unattended structure is invalid or incomplete. Check group_vars or host_vars."
+    success_msg: "✅ upgrade.unattended structure validated"
+
+- name: Ensure update-notifier-common is installed
+  tags: [unattended]
+  ansible.builtin.apt:
+    name: update-notifier-common
+    state: present
+
+- name: Ensure unattended-upgrades is installed
+  tags: [unattended]
+  ansible.builtin.apt:
+    name: unattended-upgrades
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Enable periodic apt updates
+  tags: [unattended]
+  ansible.builtin.template:
+    src: 20auto-upgrades.j2
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+    mode: "0644"
+  notify: "upgrade : validate-config"
+
+- name: Deploy unattended-upgrades config
+  tags: [unattended]
+  ansible.builtin.template:
+    src: 50unattended-upgrades.j2
+    dest: /etc/apt/apt.conf.d/50unattended-upgrades
+    mode: "0644"
+  notify: "upgrade : validate-config"

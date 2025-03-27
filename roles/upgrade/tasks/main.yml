@@ -1,30 +1,52 @@
 # code: language=ansible
 ---
+# Validate the overall upgrade structure
+- name: Validate upgrade structure
+  ansible.builtin.assert:
+    that:
+      - upgrade is defined
+      - upgrade.type is defined
+      - upgrade.type in ['dist', 'full', 'safe', 'yes', 'no', 'skip']
+    fail_msg: "❌ Invalid value for upgrade.type. Must be one of: dist, full, safe, yes, no, skip."
+    success_msg: "✅ upgrade.type is valid"
+
+- name: Configure unattended Upgrade
+  tags: [unattended]
+  ansible.builtin.import_tasks:
+    file: unattended.yml
+
+# Perform upgrade tasks
 - name: Repair any broken packages
+  tags: [upgrade]
   ansible.builtin.command: sudo dpkg --configure -a
   changed_when: false
 
 - name: Perform upgrade
+  tags: [upgrade]
   ansible.builtin.apt:
-    upgrade: dist
+    upgrade: "{{ upgrade.type }}"
     update_cache: true
 
 - name: Check if upgrade reboot is required
+  tags: [upgrade]
   ansible.builtin.stat:
     path: /var/run/reboot-required
     get_checksum: false
   register: upgrade_reboot_required
 
 - name: Reboot if required
+  tags: [upgrade]
   when: upgrade_reboot_required.stat.exists
   ansible.builtin.reboot:
 
 - name: Remove old packages
+  tags: [upgrade]
   ansible.builtin.apt:
     autoremove: true
     purge: true
 
 - name: Clean up apt cache
+  tags: [upgrade]
   ansible.builtin.apt:
     autoclean: true
     clean: true

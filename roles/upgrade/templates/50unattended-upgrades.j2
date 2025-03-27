@@ -1,0 +1,29 @@
+Unattended-Upgrade::Allowed-Origins {
+{% for origin in upgrade.unattended.origins %}
+    "{{ origin }}";
+{% endfor %}
+};
+
+Unattended-Upgrade::Package-Blacklist {
+{% for pkg in upgrade.unattended.blacklist %}
+    "{{ pkg }}";
+{% endfor %}
+};
+
+Unattended-Upgrade::DevRelease "auto";
+Unattended-Upgrade::AutoFixInterruptedDpkg "{{ upgrade.unattended.autofix_interrupted | lower }}";
+Unattended-Upgrade::MinimalSteps "{{ upgrade.unattended.minimal_steps | lower }}";
+Unattended-Upgrade::InstallOnShutdown "{{ upgrade.unattended.install_on_shutdown | lower }}";
+
+Unattended-Upgrade::Mail "{{ upgrade.unattended.mail }}";
+Unattended-Upgrade::MailReport "{{ upgrade.unattended.mail_report }}";
+
+Unattended-Upgrade::Remove-Unused-Kernel-Packages "{{ upgrade.unattended.remove_unused_kernel | lower }}";
+Unattended-Upgrade::Remove-New-Unused-Dependencies "{{ upgrade.unattended.remove_new_unused_dependencies | lower }}";
+Unattended-Upgrade::Remove-Unused-Dependencies "{{ upgrade.unattended.remove_unused_dependencies | lower }}";
+
+Unattended-Upgrade::Automatic-Reboot "{{ upgrade.unattended.automatic_reboot | lower }}";
+Unattended-Upgrade::Automatic-Reboot-Time "{{ upgrade.unattended.automatic_reboot_time }}";
+
+Unattended-Upgrade::SyslogEnable "{{ upgrade.unattended.syslog_enable | lower }}";
+Unattended-Upgrade::SyslogFacility "{{ upgrade.unattended.syslog_facility }}";

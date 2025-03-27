@@ -1,0 +1,5 @@
+# code: language=ansible
+---
+- name: validate-config # noqa: name[casing]
+  ansible.builtin.command: unattended-upgrade --dry-run --debug
+  changed_when: false
