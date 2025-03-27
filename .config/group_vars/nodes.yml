@@ -42,3 +42,13 @@ network_mtu: 1500
 # Select the Container Runtime
 # The container_runtime key allows you to select the container runtime that will be installed on the nodes.
 container_runtime: docker
+# Tailscale
+# tailscale:
+#   authkey: ""                    # Optional: Tailscale preauth key
+#   tags: []                       # Example: ["tag:nl-prod", "tag:gpu"]
+#   hostname_prefix: "node"        # Auto-prefixed to inventory_hostname
+#   advertise_routes: []           # Example: ["192.168.0.0/21", "192.168.10.0/21"]
+#   enable_subnet_router: false    # Enable subnet routing
+#   magic_dns: true                # Enable MagicDNS
+#   accept_routes: true            # Accept advertised routes from others
+#   control_server: ""             # Optional: Custom control server (for enterprise use)
