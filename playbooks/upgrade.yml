@@ -1,6 +1,6 @@
 # code: language=ansible
 ---
-- name: Configure SSH
+- name: Upgrade Nodes
   hosts: "{{ ansible_limit | default('nodes') }}"
   gather_facts: true
   become: true
