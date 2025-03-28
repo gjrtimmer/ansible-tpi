@@ -11,6 +11,7 @@
 - name: Ensure {{ item.home }}/.docker # noqa: name[template]
   tags: [docker, config]
   when: docker_config.stat.exists | bool
+  become: true
   ansible.builtin.file:
     path: "{{ item.home }}/.docker"
     state: directory
@@ -19,8 +20,9 @@
     mode: "0755"
 
 - name: Install Docker Auth Config
-  tags: [docker, config]
   when: docker_config.stat.exists | bool
+  tags: [docker, config]
+  become: true
   ansible.builtin.copy:
     src: "{{ inventory_dir }}/config/docker/config.{{ item.user }}.json"
     dest: "{{ item.home }}/.docker/config.json"

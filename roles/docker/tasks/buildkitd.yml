@@ -40,6 +40,7 @@
     and
     docker_registries_ca.results | map(attribute='stat.exists') | list
   tags: [docker, config]
+  become: true
   ansible.builtin.copy:
     src: "{{ inventory_dir }}/config/docker/{{ item.name }}/{{ item.ca }}"
     dest: "/etc/docker/certs.d/{{ item.name }}/ca.crt"
@@ -49,11 +50,12 @@
   loop: "{{ docker.buildkitd.registries }}"
 
 - name: Copy buildkitd config
-  tags: [docker, config]
   when: >
     docker.buildkitd.registries | length > 0
     and
     docker_registries_ca.results | map(attribute='stat.exists') | list
+  tags: [docker, config]
+  become: true
   ansible.builtin.template:
     src: buildkitd.toml
     dest: /etc/buildkitd.toml
