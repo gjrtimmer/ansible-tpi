@@ -52,7 +52,8 @@
         "esbenp.prettier-vscode",
         "jlcs-es.x509-parser",
         "ms-azuretools.vscode-docker",
-        "aaron-bond.better-comments"
+        "aaron-bond.better-comments",
+        "donjayamanne.githistory"
       ]
     }
   },

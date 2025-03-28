@@ -10,6 +10,7 @@
     "mrkaran.nomfmt",
     "esbenp.prettier-vscode",
     "jlcs-es.x509-parser",
-    "aaron-bond.better-comments"
+    "aaron-bond.better-comments",
+    "donjayamanne.githistory"
   ]
 }
