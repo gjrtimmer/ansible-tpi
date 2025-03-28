@@ -8,11 +8,11 @@
   register: docker_config
   changed_when: false
 
-- name: Ensure /home/{{ item.user }}/.docker # noqa: name[template]
+- name: Ensure {{ item.home }}/.docker # noqa: name[template]
   tags: [docker, config]
   when: docker_config.stat.exists | bool
   ansible.builtin.file:
-    path: /home/{{ item.user }}/.docker
+    path: "{{ item.home }}/.docker"
     state: directory
     owner: "{{ item.user }}"
     group: "{{ item.user }}"
