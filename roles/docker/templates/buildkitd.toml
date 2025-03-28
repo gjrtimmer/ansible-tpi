@@ -2,7 +2,7 @@
 #
 # /etc/buildkitd.toml
 #
-debug = {{ docker.buildkitd.debug | default(false) }}
+debug = {{ docker.buildkitd.debug | default('false') }}
 {% for registry in docker.buildkitd.registries %}
 [registry."{{ registry.name }}"]
   ca=["/etc/docker/certs.d/{{ registry.name }}/{{ registry.ca }}"]

@@ -6,32 +6,54 @@
   ansible.builtin.file:
     path: /etc/docker/certs.d
     state: directory
-    owner: "{{ item.user }}"
-    group: "{{ item.user }}"
+    owner: "root"
+    group: "root"
     mode: "0755"
 
 - name: Check CA Exists
+  when: docker.buildkitd.registries | length > 0
   tags: [docker, config]
   delegate_to: localhost
   ansible.builtin.stat:
     path: "{{ inventory_dir }}/config/docker/{{ item.name }}/{{ item.ca }}"
-  loop: "{{ docker.registries | dict2items }}"
-  register: docker_buildkitd_registries
+  loop: "{{ docker.buildkitd.registries }}"
+  register: docker_registries_ca
+
+- name: Ensure Docker certs.d exists
+  when: >
+    docker.buildkitd.registries | length > 0 
+    and 
+    docker_registries_ca.results | map(attribute='stat.exists') | list
+  tags: [docker, config]
+  become: true
+  ansible.builtin.file:
+    path: "/etc/docker/certs.d/{{ item.name }}"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  loop: "{{ docker.buildkitd.registries }}"
 
 - name: Copy CA Certs
+  when: >
+    docker.buildkitd.registries | length > 0 
+    and 
+    docker_registries_ca.results | map(attribute='stat.exists') | list
   tags: [docker, config]
-  when: docker.registries | dict2items | length > 0
   ansible.builtin.copy:
-    src: "{{ inventory_dir }}/config/docker/{{ item.item.name }}/{{ item.item.ca }}"
-    dest: "/etc/docker/certs.d/{{ item.item.name }}/ca.crt"
+    src: "{{ inventory_dir }}/config/docker/{{ item.name }}/{{ item.ca }}"
+    dest: "/etc/docker/certs.d/{{ item.name }}/ca.crt"
     owner: "root"
     group: "root"
     mode: "0644"
-  loop: "{{ docker_buildkitd_registries.results }}"
+  loop: "{{ docker.buildkitd.registries }}"
 
 - name: Copy buildkitd config
   tags: [docker, config]
-  when: docker.registries | dict2items | length > 0
+  when: >
+    docker.buildkitd.registries | length > 0 
+    and 
+    docker_registries_ca.results | map(attribute='stat.exists') | list
   ansible.builtin.template:
     src: buildkitd.toml
     dest: /etc/buildkitd.toml

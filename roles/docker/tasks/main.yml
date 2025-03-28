@@ -129,7 +129,7 @@
       home: /root
 
 - name: Configure Buildkitd
-  when: docker.registries is defined and docker.registries | length > 0
+  when: docker.buildkitd.registries is defined and docker.buildkitd.registries | length > 0
   tags: [docker, config]
   ansible.builtin.include_tasks:
     file: buildkitd.yml
