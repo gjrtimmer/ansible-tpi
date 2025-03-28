@@ -16,6 +16,7 @@
         state: stopped
 
     - name: Power Off Node
+      delegate_to: localhost
       ansible.builtin.import_role:
         name: tpi
         tasks_from: power-off.yml
