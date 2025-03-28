@@ -3,6 +3,7 @@
 - name: Power Off
   hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
   gather_facts: false
+  become: true
   tasks:
     - name: Shutdown Node {{ inventory_hostname }}
       community.general.shutdown:
