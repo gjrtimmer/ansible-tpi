@@ -5,6 +5,7 @@
   gather_facts: true
   tasks:
     - name: Install TPI Client
+      delegate_to: localhost
       tags: [tpi]
       ansible.builtin.import_role:
         name: tpi
