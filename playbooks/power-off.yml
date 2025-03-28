@@ -8,4 +8,4 @@
       delegate_to: localhost
       ansible.builtin.import_role:
         name: tpi
-        tasks_from: power-on.yml
+        tasks_from: power-off.yml
