@@ -1,0 +1,53 @@
+# code: language=ansible
+---
+- name: Check if Tailscale is already installed
+  tags: [setup]
+  ansible.builtin.command: which tailscale
+  register: tailscale_installed
+  ignore_errors: true
+  changed_when: false
+
+- name: Install Tailscale
+  when: tailscale_installed.rc != 0
+  tags: [setup]
+  block:
+    - name: Get distribution codename
+      ansible.builtin.command: lsb_release -cs
+      register: distro_codename
+      changed_when: false
+
+    - name: Install required dependencies (Ubuntu)
+      ansible.builtin.apt:
+        name:
+          - curl
+          - gnupg2
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Add Tailscale APT key
+      ansible.builtin.get_url:
+        url: https://pkgs.tailscale.com/stable/ubuntu/{{ distro_codename.stdout }}.noarmor.gpg
+        dest: /usr/share/keyrings/tailscale-archive-keyring.gpg
+        mode: "0644"
+
+    - name: Add Tailscale APT repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/ubuntu {{ distro_codename.stdout }} main"
+        state: present
+        filename: tailscale
+
+    - name: Install Tailscale package
+      ansible.builtin.apt:
+        name: tailscale
+        update_cache: true
+
+    - name: Ensure /etc/tailscale
+      tags: [tailscale]
+      become: true
+      ansible.builtin.file:
+        path: "/etc/tailscale"
+        state: directory
+        owner: "root"
+        group: "root"
+        mode: "0755"

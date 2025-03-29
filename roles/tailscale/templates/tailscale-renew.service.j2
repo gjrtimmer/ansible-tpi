@@ -1,0 +1,7 @@
+[Unit]
+Description=Renew Tailscale device key
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/tailscale-renew.sh

@@ -1,26 +1,44 @@
 # code: language=yaml
 ---
 tailscale:
-  # Optional Tailscale auth key. If empty, manual login or keyless join is assumed.
-  authkey: ""
-
-  # List of Tailscale tags to advertise, e.g., ["tag:nl", "tag:gpu"]
+  # List of tags to advertise for this device (e.g., ["tag:nl", "tag:gpu"])
   tags: []
 
-  # Optional prefix for node hostname in Tailscale (e.g., "node-node1")
+  # Optional prefix to prepend to the hostname (e.g., "node" → "node-host1")
   hostname_prefix: "node"
 
-  # List of subnet routes to advertise, e.g., ["192.168.0.0/21"]
+  # Subnet routes to advertise (e.g., ["192.168.0.0/21"])
   advertise_routes: []
 
-  # Whether to enable subnet routing for non-local subnets (currently unused)
+  # Enable subnet routing (usually requires --advertise-routes)
   enable_subnet_router: false
 
-  # Enable or disable MagicDNS (recommended: true)
+  # Enable MagicDNS (recommended)
   magic_dns: true
 
-  # Accept routes advertised by other Tailscale nodes (default: true)
+  # Accept routes from other nodes (default: true)
   accept_routes: true
 
-  # Optional control server URL (for Tailscale enterprise / self-hosted)
+  # Optional control server override (enterprise/self-hosted)
   control_server: ""
+
+  # Admin & device API key management
+  api:
+    admin:
+      # Admin API key used to generate device keys via the Tailscale API
+      key: ""
+      # The tag to assign to the generated device keys
+      tags: ""
+      # Key expiry for generated device keys (e.g., "90d")
+      expiry: "90d"
+
+    device:
+      # The device auth key used in `tailscale up` (managed by automation)
+      key: ""
+      # Whether this key should be ephemeral
+      ephemeral: false
+      # Whether this key should be reusable (not recommended)
+      reusable: true
+
+  # Name of the Tailscale network
+  tailnet: ""
