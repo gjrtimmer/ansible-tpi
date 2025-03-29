@@ -1,6 +1,6 @@
 # code: language=ansible
 ---
-- name: Power Off {{ inventory_hostname }} # noqa command-instead-of-shell
+- name: Power Off Nodes
   delegate_to: localhost
   ansible.builtin.raw: "tpi --host {{ bmc_host }} --user {{ bmc_user }} --password {{ bmc_pass }} power -n {{ node_slot }} off"
   changed_when: false

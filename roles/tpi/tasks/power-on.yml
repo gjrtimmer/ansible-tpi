@@ -1,6 +1,6 @@
 # code: language=ansible
 ---
-- name: Power On {{ inventory_hostname }} # noqa command-instead-of-shell
+- name: Power On Nodes
   delegate_to: localhost
   ansible.builtin.raw: "tpi --host {{ bmc_host }} --user {{ bmc_user }} --password {{ bmc_pass }} power -n {{ node_slot }} on"
   changed_when: false
