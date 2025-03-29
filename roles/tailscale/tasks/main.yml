@@ -6,7 +6,6 @@
       - tailscale is defined
       - tailscale.api.device.key is string or tailscale.api.device.key == ""
       - tailscale.tags is iterable
-      - tailscale.advertise_routes is iterable
       - tailscale.enable_subnet_router is boolean
       - tailscale.magic_dns is boolean
       - tailscale.accept_routes is boolean
@@ -36,10 +35,11 @@
   ansible.builtin.command: >
     tailscale up
     --authkey {{ tailscale.api.device.key }}
-    --ssh
-    {% if tailscale.tags %}--advertise-tags={{ tailscale.tags | join(",") }}{% endif %}
-    {% if tailscale.advertise_routes %}--advertise-routes={{ tailscale.advertise_routes | join(",") }}{% endif %}
+    --reset
+    {% if tailscale.ssh | bool %}--ssh{% endif %}
+    {% if tailscale.tags if defined and tailscale.tags is iterable %}--advertise-tags={{ tailscale.tags | join(",") }}{% endif %}
+    {% if tailscale.advertise_routes | default(false) %}--advertise-routes={{ tailscale.advertise_routes | join(",") }}{% endif %}
     {% if tailscale.hostname_prefix is defined and tailscale.hostname_prefix != "" %}--hostname {{ tailscale.hostname_prefix }}-{{ inventory_hostname }}{% endif %}
-    {% if tailscale.magic_dns %}--accept-dns{% endif %}
-    {% if tailscale.accept_routes %}--accept-routes{% endif %}
+    {% if tailscale.magic_dns | default(false) %}--accept-dns{% endif %}
+    {% if tailscale.accept_routes | default(false) %}--accept-routes{% endif %}
   changed_when: true
