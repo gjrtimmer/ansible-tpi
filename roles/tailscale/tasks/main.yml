@@ -23,12 +23,6 @@
     enabled: true
     state: started
 
-- name: Configure Tailscale
-  when: tailscale.api.admin.key is defined and tailscale.api.admin.key != ""
-  tags: [tailscale]
-  ansible.builtin.include_tasks:
-    file: auth.yml
-
 - name: Bring up Tailscale using authkey (if provided)
   when: tailscale.api.device.key is defined and tailscale.api.device.key != ""
   tags: [tailscale]

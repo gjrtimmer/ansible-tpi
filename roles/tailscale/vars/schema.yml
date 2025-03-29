@@ -29,16 +29,11 @@ tailscale:
       key: ""
       # The tag to assign to the generated device keys
       tags: ""
-      # Key expiry for generated device keys (e.g., "90d")
-      expiry: "90d"
 
     device:
       # The device auth key used in `tailscale up` (managed by automation)
+      # Generate with tailscale-device-key command
       key: ""
-      # Whether this key should be ephemeral
-      ephemeral: false
-      # Whether this key should be reusable (not recommended)
-      reusable: true
 
   # Name of the Tailscale network
   tailnet: ""

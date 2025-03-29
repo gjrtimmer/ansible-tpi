@@ -41,13 +41,3 @@
       ansible.builtin.apt:
         name: tailscale
         update_cache: true
-
-    - name: Ensure /etc/tailscale
-      tags: [tailscale]
-      become: true
-      ansible.builtin.file:
-        path: "/etc/tailscale"
-        state: directory
-        owner: "root"
-        group: "root"
-        mode: "0755"

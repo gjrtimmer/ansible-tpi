@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# ---
+# tailscale-renew-device-key
+# Description: Generates, rotates, or revokes a reusable Tailscale device key for a given tag
+# Usage:
+#   Generate: ./tailscale-renew-device-key --tag tag --admin-key tskey-admin-xxx
+#   Revoke:   ./tailscale-renew-device-key --tag tag --admin-key tskey-admin-xxx --revoke <key>
+#   Rotate:   ./tailscale-renew-device-key --tag tag --admin-key tskey-admin-xxx --rotate <key>
+# ---
+
+print_help() {
+  echo "Usage: $0 --tag <nld|can> --admin-key <tskey-admin-xxxxx> [--revoke <key>] [--rotate <key>]"
+  echo "  --tag         Logical tag to apply to the device key"
+  echo "  --admin-key   Admin API key used to authenticate against the Tailscale API"
+  echo "  --revoke      Revoke a specific device key"
+  echo "  --rotate      Revoke the old key and generate a new one"
+  exit 1
+}
+
+# --- Parse arguments ---
+TAG=""
+ADMIN_KEY=""
+REVOKE_KEY=""
+ROTATE_KEY=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --tag)
+      TAG="$2"
+      shift 2
+      ;;
+    --admin-key)
+      ADMIN_KEY="$2"
+      shift 2
+      ;;
+    --revoke)
+      REVOKE_KEY="$2"
+      shift 2
+      ;;
+    --rotate)
+      ROTATE_KEY="$2"
+      shift 2
+      ;;
+    --help|-h)
+      print_help
+      ;;
+    *)
+      echo "Unknown argument: $1"
+      print_help
+      ;;
+  esac
+done
+
+# --- Validate input ---
+if [[ -z "${TAG}" || -z "${ADMIN_KEY}" ]]; then
+  echo "Error: Missing required arguments."
+  print_help
+fi
+
+# --- Handle revocation ---
+if [[ -n "${REVOKE_KEY}" ]]; then
+  echo "🔐 Revoking device key: ${REVOKE_KEY}"
+  RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+    -u "${ADMIN_KEY}:" \
+    https://api.tailscale.com/api/v2/tailnet/-/keys/${REVOKE_KEY}/disable)
+
+  BODY=$(echo "${RESPONSE}" | head -n -1)
+  CODE=$(echo "${RESPONSE}" | tail -n1)
+
+  if [[ "$CODE" != "200" ]]; then
+    echo "❌ Failed to revoke key. HTTP ${CODE}"
+    echo "Response: ${BODY}"
+    exit 3
+  fi
+
+  echo "✅ Revoked key successfully."
+  [[ -z "${ROTATE_KEY}" ]] && exit 0
+fi
+
+# --- Generate new key ---
+TS_TAG="tag:${TAG}"
+EXPIRY_SECONDS=$((90 * 24 * 60 * 60))  # 90 days
+DATA=$(jq -n --arg tags "${TS_TAG}" --arg tag ${TAG} --argjson expiry "${EXPIRY_SECONDS}" '{
+  "capabilities": {
+    "devices": {
+      "create": {
+        "reusable": true,
+        "ephemeral": false,
+        "preauthorized": true,
+        "tags": [
+          $tags
+        ]
+      }
+    }
+  },
+  "expirySeconds": $expiry,
+  "description": $tag
+}')
+
+echo "🔑 Generating new Tailscale device key for tag: ${TS_TAG}"
+RESPONSE=$(curl -s -w "\n%{http_code}" -X POST https://api.tailscale.com/api/v2/tailnet/-/keys \
+  -u "${ADMIN_KEY}:" \
+  -H "Content-Type: application/json" \
+  -d "${DATA}")
+
+BODY=$(echo "${RESPONSE}" | head -n -1)
+CODE=$(echo "${RESPONSE}" | tail -n1)
+
+if [[ "${CODE}" != "200" ]]; then
+  echo "❌ Failed to generate device key. HTTP ${CODE}"
+  echo "Response: ${BODY}"
+  exit 4
+fi
+
+KEY=$(echo "${BODY}" | jq -r .key)
+EXPIRY=$(echo "${BODY}" | jq -r .expires)
+
+if [[ -z "${KEY}" || "${KEY}" == "null" ]]; then
+  echo "❌ Failed to extract device key from API response."
+  echo "${BODY}"
+  exit 5
+fi
+
+# --- Output success ---
+echo "✅ Generated new Tailscale device key:"
+echo "  Key:    ${KEY}"
+echo "  Expiry: ${EXPIRY}"
+echo "  Tag:    ${TS_TAG}"
+
+exit 0
+# --- End of script ---
