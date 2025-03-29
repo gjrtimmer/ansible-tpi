@@ -19,6 +19,9 @@ if [[ ! -f "${DEVCON_DIR}/.bashrc" ]]; then
     echo "alias ansible-playground-playbook='ansible-playbook -i /work/.config/inventory/hosts.playground.yml'" >> "${DEVCON_DIR}/.bashrc"
     echo "alias ansible-pg='ansible -i /work/.config/inventory/hosts.playground.yml'" >> "${DEVCON_DIR}/.bashrc"
     echo "alias ansible-pp='ansible-playbook -i /work/.config/inventory/hosts.playground.yml'" >> "${DEVCON_DIR}/.bashrc"
+
+    echo "alias ap='ansible-playbook'" >> "${DEVCON_DIR}/.bashrc"
+    echo "alias app='ansible-playground-playbook'" >> "${DEVCON_DIR}/.bashrc"
 fi
 ln -sf "${DEVCON_DIR}/.bashrc" "${HOME}/.bashrc"
 
