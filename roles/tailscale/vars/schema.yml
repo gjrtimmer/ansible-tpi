@@ -1,13 +1,16 @@
 # code: language=yaml
 ---
 tailscale:
-  # List of tags to advertise for this device (e.g., ["tag:nl", "tag:gpu"])
+  # List of tags to advertise for this device (e.g., ["tag:infra", "tag:gpu"])
   tags: []
+
+  # Enable SSH access to this device (default: false)
+  ssh: true
 
   # Optional prefix to prepend to the hostname (e.g., "node" → "node-host1")
   hostname_prefix: "node"
 
-  # Subnet routes to advertise (e.g., ["192.168.0.0/21"])
+  # Subnet routes to advertise (e.g., ["192.168.0.0/24"])
   advertise_routes: []
 
   # Enable subnet routing (usually requires --advertise-routes)
@@ -24,12 +27,6 @@ tailscale:
 
   # Admin & device API key management
   api:
-    admin:
-      # Admin API key used to generate device keys via the Tailscale API
-      key: ""
-      # The tag to assign to the generated device keys
-      tags: ""
-
     device:
       # The device auth key used in `tailscale up` (managed by automation)
       # Generate with tailscale-device-key command
