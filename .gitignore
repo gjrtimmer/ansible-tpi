@@ -13,3 +13,5 @@ group_vars/*
 playbooks/overrides/*.yml
 !playbooks/overrides/.keep
 config/*
+*.pyc
+*.pyo
