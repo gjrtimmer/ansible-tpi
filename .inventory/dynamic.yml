@@ -1,7 +1,7 @@
 plugin: dynamic
 
 inventory_plugin:
-  override_ansible_host: true
+  override: true
   merge_lists: []
   ignore_hosts:
     - localhost

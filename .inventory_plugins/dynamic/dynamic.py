@@ -2,7 +2,7 @@ from ansible.plugins.inventory import BaseInventoryPlugin  # type: ignore
 from ansible.errors import AnsibleParserError  # type: ignore
 import os
 import re
-import yaml
+import yaml  # type: ignore
 
 DOCUMENTATION = r'''
     name: dynamic
@@ -28,6 +28,9 @@ DOCUMENTATION = r'''
                     description: List of dotted variable paths where lists should be merged
                     type: list
                     elements: str
+                override:
+                    description: Whether to override ansible_host if already set
+                    type: bool
 '''
 
 class InventoryModule(BaseInventoryPlugin):
@@ -49,6 +52,7 @@ class InventoryModule(BaseInventoryPlugin):
             plugin_options = plugin_config.get("inventory_plugin", {})
             ignore_hosts = set(plugin_options.get("ignore_hosts", []))
             merge_lists = set(plugin_options.get("merge_lists", []))
+            override = plugin_options.get("override", False) or plugin_options.get("override_ansible_host", False)
 
         if not os.path.isfile(hosts_file):
             raise AnsibleParserError(f"Missing hosts.yml file at {hosts_file}")
@@ -101,10 +105,12 @@ class InventoryModule(BaseInventoryPlugin):
                 return [hostname]
 
         def resolve_ansible_host(hostname, combined_vars):
-            # if "ansible_host" in combined_vars:
+            # if not override_ansible_host and "ansible_host" in combined_vars:
+            #     print(f"[DEBUG] Skipping ansible_host for {hostname} (already defined: {combined_vars['ansible_host']})")
             #     return None
-            if "ansible_host" in combined_vars:
-                print(f"[DEBUG] Skipping ansible_host for {host} (already defined: {combined_vars['ansible_host']})")
+            if not override and "ansible_host" in combined_vars:
+                print(f"[DEBUG] Skipping ansible_host for {hostname} (already defined: {combined_vars['ansible_host']})")
+                return None
 
             tailscale = combined_vars.get("tailscale", {})
             tailnet = tailscale.get("tailnet", "")
