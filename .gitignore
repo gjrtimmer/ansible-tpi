@@ -19,3 +19,5 @@ __pycache__/
 **/__pycache__/
 *.pyo
 *.pyc
+wip/
+tmp/
