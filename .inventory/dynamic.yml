@@ -3,5 +3,4 @@ plugin: dynamic
 inventory_plugin:
   override: true
   merge_lists: []
-  ignore_hosts:
-    - localhost
+  ignore_hosts: []
