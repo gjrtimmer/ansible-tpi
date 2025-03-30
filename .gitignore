@@ -13,5 +13,9 @@ group_vars/*
 playbooks/overrides/*.yml
 !playbooks/overrides/.keep
 config/*
-*.pyc
+
+# Ignore all __pycache__ folders
+__pycache__/
+**/__pycache__/
 *.pyo
+*.pyc
