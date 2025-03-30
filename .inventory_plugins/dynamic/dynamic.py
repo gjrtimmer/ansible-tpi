@@ -1,7 +1,8 @@
 from ansible.plugins.inventory import BaseInventoryPlugin  # type: ignore
 from ansible.errors import AnsibleParserError  # type: ignore
 import os
-import yaml
+import re
+import yaml # type: ignore
 
 DOCUMENTATION = r'''
     name: dynamic
@@ -25,7 +26,6 @@ class InventoryModule(BaseInventoryPlugin):
     def parse(self, inventory, loader, path, cache=True):
         super().parse(inventory, loader, path)
 
-        # Look for hosts.yml at the project root
         project_root = os.getcwd()
         hosts_file = os.path.join(project_root, "hosts.yml")
         hostvars_dir = os.path.join(project_root, "host_vars")
@@ -53,22 +53,32 @@ class InventoryModule(BaseInventoryPlugin):
         def get_group_vars(group):
             return load_vars(os.path.join(groupvars_dir, f"{group}.yml"))
 
+        def expand_bracket_expression(hostname):
+            pattern = r"^(.*)\[(\d+):(\d+)\](.*)$"
+            match = re.match(pattern, hostname)
+            if match:
+                prefix, start, end, suffix = match.groups()
+                pad_width = max(len(start), len(end))
+                return [f"{prefix}{str(i).zfill(pad_width)}{suffix}" for i in range(int(start), int(end)+1)]
+            else:
+                return [hostname]
+
         def resolve_ansible_host(hostname, combined_vars):
             if "ansible_host" in combined_vars:
                 return None
 
             tailscale = combined_vars.get("tailscale", {})
             tailnet = tailscale.get("tailnet", "")
-            enabled = tailscale.get("enabled", False)
+            enabled = tailscale.get("enabled", None)  # must be explicitly True to activate
             ip_address = combined_vars.get("ip_address")
 
-            if tailnet and enabled:
+            if enabled is True and tailnet:
                 return f"{hostname}.{tailnet}"
             elif ip_address:
                 return ip_address
-            else:
-                print(f"[WARNING] No ip_address defined for host '{hostname}', and Tailscale not enabled. ansible_host will fallback to hostname.")
-                return hostname
+            elif enabled is None:
+                print(f"[WARNING] No ip_address defined for host '{hostname}', and Tailscale config not defined. ansible_host will fallback to hostname.")
+            return hostname
 
         def process_group(group_name, group_data):
             self.inventory.add_group(group_name)
@@ -77,20 +87,21 @@ class InventoryModule(BaseInventoryPlugin):
                 group_vars.update(group_data['vars'])
 
             hosts = group_data.get("hosts", {})
-            for host in hosts:
-                self.inventory.add_host(host, group_name)
-                host_vars = get_host_vars(host)
-                combined_vars = {**group_vars, **host_vars}
+            for raw_host in hosts:
+                for host in expand_bracket_expression(raw_host):
+                    self.inventory.add_host(host, group_name)
+                    host_vars = get_host_vars(host)
+                    combined_vars = {**group_vars, **host_vars}
 
-                resolved_host = resolve_ansible_host(host, combined_vars)
-                if resolved_host is not None:
-                    self.inventory.set_variable(host, "ansible_host", resolved_host)
+                    resolved_host = resolve_ansible_host(host, combined_vars)
+                    if resolved_host is not None:
+                        self.inventory.set_variable(host, "ansible_host", resolved_host)
 
-                if "ansible_connection" not in combined_vars:
-                    self.inventory.set_variable(host, "ansible_connection", "ssh")
+                    if "ansible_connection" not in combined_vars:
+                        self.inventory.set_variable(host, "ansible_connection", "ssh")
 
-                for key, val in combined_vars.items():
-                    self.inventory.set_variable(host, key, val)
+                    for key, val in combined_vars.items():
+                        self.inventory.set_variable(host, key, val)
 
             children = group_data.get("children", {})
             for subgroup, subgroup_data in children.items():
