@@ -1,0 +1,25 @@
+# code: language=ansible
+---
+- name: Configure Nvidia Power Mode
+  hosts: "{{ ansible_limit | default('nvidia') }}"
+  become: true
+  gather_facts: true
+  vars:
+    power_mode: 0
+  vars_prompt:
+    - name: power_mode
+      prompt: "Select Power Mode?\n0 - MAXN\n1 - 10W\n2 - 15W\n3 - 25W\n"
+      private: false
+  tasks:
+    - name: Set Power Mode
+      ansible.builtin.expect:
+        command: "/usr/sbin/nvpmodel -m {{ power_mode | int }}"
+        responses:
+          (?m)DO YOU WANT TO REBOOT NOW.*: "YES"
+      async: 1
+      poll: 0
+    - name: Wait for reboot
+      ansible.builtin.wait_for_connection:
+        delay: 20
+        sleep: 5
+        timeout: 300

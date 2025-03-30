@@ -15,7 +15,7 @@
   tags: [network]
   when: hostvars[inventory_hostname]['type'] | upper == 'NVIDIA'
   ansible.builtin.shell:
-    cmd: nmcli con modify Wired\ connection\ 1 802-3-ethernet.mtu 9000
+    cmd: nmcli con modify Wired\ connection\ 1 802-3-ethernet.mtu {{ network_mtu }}
     executable: /bin/bash
   changed_when: true
   notify: "server : reboot"

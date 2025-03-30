@@ -1,0 +1,123 @@
+# code: language=ansible
+---
+- name: Install Dependencies Machine Learning
+  ansible.builtin.apt:
+    name:
+      - autoconf
+      - bc
+      - build-essential
+      - g++
+      - gcc
+      - clang
+      - lld
+      - gettext-base
+      - iputils-ping
+      - libbz2-dev
+      - libc++-dev
+      - libcgal-dev
+      - libffi-dev
+      - libfreetype6-dev
+      - libhdf5-dev
+      - libjpeg-dev
+      - liblzma-dev
+      - libncurses5-dev
+      - libncursesw5-dev
+      - libpng-dev
+      - libreadline-dev
+      - libssl-dev
+      - libsqlite3-dev
+      - libxml2-dev
+      - libxslt-dev
+      - locales
+      - moreutils
+      - openssl
+      - python3-openssl
+      - rsync
+      - scons
+      - python3-pip
+      - libopenblas-dev
+      - curl
+      - wget
+      - stress
+      - libhdf5-serial-dev
+      - hdf5-tools
+      - zlib1g-dev
+      - zip
+      - libjpeg8-dev
+      - liblapack-dev
+      - libblas-dev
+      - gfortran
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+    clean: true
+    force_apt_get: true
+    install_recommends: true
+
+- name: Upgrade Python Dependencies
+  ansible.builtin.command: "sudo python3 -m pip install --upgrade pip"
+  register: rc
+  changed_when: rc.rc != 0
+
+# - name: Install SetupTools
+#   ansible.builtin.pip:
+#     executable: pip3
+#     extra_args: "--upgrade testresources"
+#     name: "setuptools==65.5.0"
+
+- name: Get JetPack Version
+  ansible.builtin.shell:
+    cmd: "set -o pipefail && sudo apt-cache show nvidia-jetpack | grep 'Version' | grep -oP '(?<=: ).*?(?=-)' | tr -d '.'"
+    executable: /bin/bash
+  register: get_jetpack_version
+  changed_when: false
+
+- name: JetPack version
+  ansible.builtin.set_fact:
+    jetpack_version: "{{ get_jetpack_version.stdout }}"
+
+- name: Developers Preview
+  when: developer_preview | bool
+  ansible.builtin.set_fact:
+    jetpack_version: "{{ jetpack_version }}dp"
+
+- name: Set TensorFlow Repository URL
+  ansible.builtin.set_fact:
+    tensorflow_repo_url: "https://developer.download.nvidia.com/compute/redist/jp/v{{ jetpack_version }}/tensorflow/"
+  changed_when: false
+
+- name: Set TensorFlow Install Location
+  ansible.builtin.shell:
+    cmd: "set -o pipefail && echo {{ tensorflow_repo_url }}$(curl -s {{ tensorflow_repo_url }} | grep -oP 'tensorflow-.*?\\.whl' | sort -V | tail -n 1)"
+    executable: /bin/bash
+  register: tensorflow_install
+  changed_when: false
+
+- name: Install TensorFlow
+  ansible.builtin.pip:
+    executable: pip3
+    extra_args: "--upgrade --no-cache"
+    name: "{{ tensorflow_install.stdout }}"
+
+- name: Set PyTorch Repository URL
+  ansible.builtin.set_fact:
+    pytorch_repo_url: "https://developer.download.nvidia.com/compute/redist/jp/v{{ jetpack_version }}/pytorch/"
+  changed_when: false
+
+- name: Set PyTorch Install Location
+  ansible.builtin.shell:
+    cmd: "set -o pipefail && echo {{ pytorch_repo_url }}$(curl -s {{ pytorch_repo_url }} | grep -oP 'torch-.*?\\.whl' | sort -V | tail -n 1)"
+    executable: /bin/bash
+  register: pytorch_install
+  changed_when: false
+
+- name: Install PyTorch
+  ansible.builtin.pip:
+    executable: pip3
+    extra_args: "--upgrade --no-cache"
+    name: "{{ pytorch_install.stdout }}"
+# - name: Patch Nvidia Container Runtime
+#   ansible.posix.patch:
+#     basedir: /etc/nvidia-container-runtime
+#     src: nvidia-container-runtime.patch
+#     dest: /etc/nvidia-container-runtime/config.toml

@@ -1,0 +1,35 @@
+# code: language=ansible
+---
+- name: Configure Nvidia fan profile
+  hosts: "{{ ansible_limit | default('nvidia') }}"
+  become: true
+  gather_facts: true
+  vars:
+    profile: "quiet"
+  vars_prompt:
+    - name: profile_select
+      prompt: "Select profile?\n1 - cool\n2 - quiet\n"
+      private: false
+  tasks:
+    - name: Set fan profile
+      ansible.builtin.set_fact:
+        profile: "cool"
+      when: profile_select | int == 1
+    - name: Set profile to quiet
+      ansible.builtin.set_fact:
+        profile: "quiet"
+      when: profile_select | int == 2
+    - name: Set fan profile to cool
+      ansible.builtin.lineinfile:
+        path: /etc/nvfancontrol.conf
+        state: present
+        regexp: "FAN_DEFAULT_PROFILE .*"
+        line: "\tFAN_DEFAULT_PROFILE {{ profile }}"
+    - name: Remove fancontrol status
+      ansible.builtin.file:
+        path: /var/lib/nvfancontrol/status
+        state: absent
+    - name: Restart fan control
+      ansible.builtin.service:
+        name: nvfancontrol
+        state: restarted

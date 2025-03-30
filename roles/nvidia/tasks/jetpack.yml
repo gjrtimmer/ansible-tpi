@@ -1,0 +1,12 @@
+# code: language=ansible
+---
+- name: Install JetPack
+  ansible.builtin.apt:
+    name:
+      - nvidia-jetpack
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+    clean: true
+    force_apt_get: true
+    install_recommends: true

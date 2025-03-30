@@ -1,6 +1,14 @@
 # code: language=ansible
 ---
 # This playbook is to provision a Nvidia Node
+- name: Upgrade
+  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
+  gather_facts: true
+  become: true
+  tags: [upgrade]
+  roles:
+    - upgrade
+
 - name: Server Configuration
   hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
   gather_facts: true
@@ -8,6 +16,7 @@
   tags: [server]
   roles:
     - server
+    - nvidia
 
 - name: Install Container Runtime
   hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
