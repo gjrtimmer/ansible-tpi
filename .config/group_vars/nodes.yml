@@ -42,19 +42,6 @@ network_mtu: 1500
 # Select the Container Runtime
 # The container_runtime key allows you to select the container runtime that will be installed on the nodes.
 container_runtime: docker
-
-# We are dynamically setting the ansible_host variable based on the Tailscale configuration.
-# this allows us to use the Tailscale network name as the hostname for the node.
-# This is useful when you want to use Tailscale for SSH access to the nodes.
-ansible_host: >-
-  {% if (tailscale | default({})).tailnet | default('') != '' and (tailscale_enabled | default(false)) %}
-    {{ inventory_hostname }}.{{ tailscale.tailnet }}
-  {% elif ip_address is defined %}
-    {{ ip_address }}
-  {% else %}
-    {{ inventory_hostname }}
-  {% endif %}
-
 # Tailscale
 # tailscale:
 #   # List of tags to advertise for this device (e.g., ["tag:infra", "tag:gpu"])
