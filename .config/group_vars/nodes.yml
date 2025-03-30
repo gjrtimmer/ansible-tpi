@@ -42,13 +42,51 @@ network_mtu: 1500
 # Select the Container Runtime
 # The container_runtime key allows you to select the container runtime that will be installed on the nodes.
 container_runtime: docker
+
+# We are dynamically setting the ansible_host variable based on the Tailscale configuration.
+# this allows us to use the Tailscale network name as the hostname for the node.
+# This is useful when you want to use Tailscale for SSH access to the nodes.
+ansible_host: >-
+  {% if (tailscale | default({})).tailnet | default('') != '' and (tailscale_enabled | default(false)) %}
+    {{ inventory_hostname }}.{{ tailscale.tailnet }}
+  {% elif ip_address is defined %}
+    {{ ip_address }}
+  {% else %}
+    {{ inventory_hostname }}
+  {% endif %}
+
 # Tailscale
 # tailscale:
-#   authkey: ""                    # Optional: Tailscale preauth key
-#   tags: []                       # Example: ["tag:nl-prod", "tag:gpu"]
-#   hostname_prefix: "node"        # Auto-prefixed to inventory_hostname
-#   advertise_routes: []           # Example: ["192.168.0.0/21", "192.168.10.0/21"]
-#   enable_subnet_router: false    # Enable subnet routing
-#   magic_dns: true                # Enable MagicDNS
-#   accept_routes: true            # Accept advertised routes from others
-#   control_server: ""             # Optional: Custom control server (for enterprise use)
+#   # List of tags to advertise for this device (e.g., ["tag:infra", "tag:gpu"])
+#   tags: []
+
+#   # Enable SSH access to this device (default: false)
+#   ssh: true
+
+#   # Optional prefix to prepend to the hostname (e.g., "node" → "node-host1")
+#   hostname_prefix: "node"
+
+#   # Subnet routes to advertise (e.g., ["192.168.0.0/21"])
+#   advertise_routes: []
+
+#   # Enable subnet routing (usually requires --advertise-routes)
+#   enable_subnet_router: false
+
+#   # Enable MagicDNS (recommended)
+#   magic_dns: true
+
+#   # Accept routes from other nodes (default: true)
+#   accept_routes: true
+
+#   # Optional control server override (enterprise/self-hosted)
+#   control_server: ""
+
+#   # Admin & device API key management
+#   api:
+#     device:
+#       # The device auth key used in `tailscale up` (managed by automation)
+#       # Generate with tailscale-device-key command
+#       key: ""
+
+#   # Name of the Tailscale network
+#   tailnet: ""
