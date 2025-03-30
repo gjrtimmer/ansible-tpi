@@ -9,7 +9,8 @@ DOCUMENTATION = r'''
     plugin_type: inventory
     short_description: Enhance ansible_host dynamically with Tailscale support
     description:
-        - Uses standard YAML inventory and applies ansible_host dynamically per host based on tailnet or fallback IP
+        - Uses standard YAML inventory and applies ansible_host dynamically per host based on tailnet or fallback IP.
+        - Implements a two-pass approach to avoid repeated overwrites in multi-group scenarios.
     options:
         plugin:
             description: Name of the plugin
@@ -36,11 +37,19 @@ DOCUMENTATION = r'''
 class InventoryModule(BaseInventoryPlugin):
     NAME = 'dynamic'
 
+    def __init__(self):
+        super().__init__()
+        # We'll store merged vars for each host here, in a single pass.
+        self.collected_hosts = {}  # e.g. { 'node1': { 'merged': {...}, 'groups': [...]} }
+
     def verify_file(self, path):
         return path.endswith(('.yml', '.yaml'))
 
     def parse(self, inventory, loader, path, cache=True):
         super().parse(inventory, loader, path)
+        self.inventory = inventory
+        self.loader = loader
+        self.path = path
 
         project_root = os.getcwd()
         hosts_file = os.path.join(project_root, "hosts.yml")
@@ -48,11 +57,11 @@ class InventoryModule(BaseInventoryPlugin):
         groupvars_dir = os.path.join(project_root, "group_vars")
 
         with open(path, 'r') as f:
-            plugin_config = yaml.safe_load(f)
+            plugin_config = yaml.safe_load(f) or {}
             plugin_options = plugin_config.get("inventory_plugin", {})
             ignore_hosts = set(plugin_options.get("ignore_hosts", []))
-            merge_lists = set(plugin_options.get("merge_lists", []))
-            override = plugin_options.get("override", False) or plugin_options.get("override_ansible_host", False)
+            self.merge_lists = set(plugin_options.get("merge_lists", []))
+            self.override = plugin_options.get("override", False) or plugin_options.get("override_ansible_host", False)
 
         if not os.path.isfile(hosts_file):
             raise AnsibleParserError(f"Missing hosts.yml file at {hosts_file}")
@@ -63,6 +72,8 @@ class InventoryModule(BaseInventoryPlugin):
             except yaml.YAMLError as e:
                 raise AnsibleParserError(f"Invalid YAML in hosts.yml: {e}")
 
+        # We'll define some helper methods:
+
         def load_vars(file_path):
             try:
                 with open(file_path, 'r') as f:
@@ -70,90 +81,113 @@ class InventoryModule(BaseInventoryPlugin):
             except FileNotFoundError:
                 return {}
 
-        def get_host_vars(host):
-            return load_vars(os.path.join(hostvars_dir, f"{host}.yml"))
+        def get_host_vars(h):
+            return load_vars(os.path.join(hostvars_dir, f"{h}.yml"))
 
-        def get_group_vars(group):
-            return load_vars(os.path.join(groupvars_dir, f"{group}.yml"))
+        def get_group_vars(g):
+            return load_vars(os.path.join(groupvars_dir, f"{g}.yml"))
 
         def deep_merge(dict1, dict2, path=""):
-            result = dict1.copy()
-            for key, value in dict2.items():
+            result = {}
+            keys = set(dict1) | set(dict2)
+            for key in keys:
                 full_path = f"{path}.{key}" if path else key
-                if key in result:
-                    if isinstance(result[key], dict) and isinstance(value, dict):
-                        result[key] = deep_merge(result[key], value, path=full_path)
-                    elif isinstance(result[key], list) and isinstance(value, list):
-                        if full_path in merge_lists:
-                            result[key] = result[key] + value
-                        else:
-                            result[key] = value
+                val1 = dict1.get(key)
+                val2 = dict2.get(key)
+
+                if isinstance(val1, dict) and isinstance(val2, dict):
+                    result[key] = deep_merge(val1, val2, path=full_path)
+                elif isinstance(val1, list) and isinstance(val2, list):
+                    if full_path in self.merge_lists:
+                        result[key] = val1 + val2
                     else:
-                        result[key] = value
+                        result[key] = val2
                 else:
-                    result[key] = value
+                    result[key] = val2 if key in dict2 else val1
             return result
 
-        def expand_bracket_expression(hostname):
+        def expand_bracket_expression(h):
             pattern = r"^(.*)\[(\d+):(\d+)\](.*)$"
-            match = re.match(pattern, hostname)
-            if match:
-                prefix, start, end, suffix = match.groups()
+            m = re.match(pattern, h)
+            if m:
+                prefix, start, end, suffix = m.groups()
                 pad_width = max(len(start), len(end))
-                return [f"{prefix}{str(i).zfill(pad_width)}{suffix}" for i in range(int(start), int(end)+1)]
+                return [f"{prefix}{str(i).zfill(pad_width)}{suffix}" for i in range(int(start), int(end) + 1)]
             else:
-                return [hostname]
+                return [h]
 
-        def resolve_ansible_host(hostname, combined_vars):
-            # if not override_ansible_host and "ansible_host" in combined_vars:
-            #     print(f"[DEBUG] Skipping ansible_host for {hostname} (already defined: {combined_vars['ansible_host']})")
-            #     return None
-            if not override and "ansible_host" in combined_vars:
-                print(f"[DEBUG] Skipping ansible_host for {hostname} (already defined: {combined_vars['ansible_host']})")
-                return None
-
-            tailscale = combined_vars.get("tailscale", {})
-            tailnet = tailscale.get("tailnet", "")
-            enabled = tailscale.get("enabled", None)
-            ip_address = combined_vars.get("ip_address")
-
-            if enabled is True and tailnet:
-                return f"{hostname}.{tailnet}"
-            elif ip_address:
-                return ip_address
-            elif enabled is None:
-                print(f"[WARNING] No ip_address defined for host '{hostname}', and Tailscale config not defined. ansible_host will fallback to hostname.")
-            return hostname
+        # We'll gather group data in a single pass:
 
         def process_group(group_name, group_data):
             self.inventory.add_group(group_name)
-            group_vars = get_group_vars(group_name)
-            if 'vars' in group_data:
-                group_vars.update(group_data['vars'])
 
+            # Merge group-level vars from group_vars/<group>.yml + group_data['vars']
+            group_merged_vars = get_group_vars(group_name)
+            if 'vars' in group_data:
+                group_merged_vars = deep_merge(group_merged_vars, group_data['vars'])
+
+            # Add hosts
             hosts = group_data.get("hosts", {})
             for raw_host in hosts:
-                for host in expand_bracket_expression(raw_host):
-                    if host in ignore_hosts:
+                for h in expand_bracket_expression(raw_host):
+                    if h in ignore_hosts:
                         continue
-                    self.inventory.add_host(host, group_name)
-                    host_vars = get_host_vars(host)
-                    combined_vars = deep_merge(group_vars, host_vars)
+                    # Make sure host is in the inventory
+                    self.inventory.add_host(h, group_name)
 
-                    resolved_host = resolve_ansible_host(host, combined_vars)
-                    if resolved_host is not None:
-                        self.inventory.set_variable(host, "ansible_host", resolved_host)
+                    # Merge group-level and host-level vars
+                    host_merged_vars = get_host_vars(h)
+                    combined = deep_merge(group_merged_vars, host_merged_vars)
 
-                    if "ansible_connection" not in combined_vars:
-                        self.inventory.set_variable(host, "ansible_connection", "ssh")
+                    # Store or re-merge if host appears in multiple groups
+                    if h not in self.collected_hosts:
+                        self.collected_hosts[h] = combined
+                    else:
+                        # re-merge old + new
+                        old = self.collected_hosts[h]
+                        new = deep_merge(old, combined)
+                        self.collected_hosts[h] = new
 
-                    for key, val in combined_vars.items():
-                        self.inventory.set_variable(host, key, val)
-
+            # children
             children = group_data.get("children", {})
             for subgroup, subgroup_data in children.items():
                 process_group(subgroup, subgroup_data)
                 self.inventory.add_child(group_name, subgroup)
 
-        for group_name, group_data in inventory_data.items():
-            process_group(group_name, group_data)
+        # top-level group iteration
+        for gname, gdata in inventory_data.items():
+            process_group(gname, gdata)
+
+        # SECOND PASS: set ansible_host exactly once per host
+
+        def resolve_ansible_host(h, combined_vars):
+            tailscale = combined_vars.get("tailscale", {})
+            tailnet = tailscale.get("tailnet")
+            enabled = tailscale.get("enabled")
+            ip_address = combined_vars.get("ip_address")
+
+            if enabled and tailnet:
+                fqdn = f"{h}.{tailnet}"
+                # print(f"[DEBUG] Setting ansible_host for {h} using tailnet: {fqdn}")
+                return fqdn
+            elif ip_address:
+                # print(f"[DEBUG] Setting ansible_host for {h} using ip_address: {ip_address}")
+                return ip_address
+            else:
+                # print(f"[WARNING] No ip_address or tailnet for {h}; fallback to hostname")
+                return h
+
+        for h, merged_vars in self.collected_hosts.items():
+            # set all normal merged vars
+            for k, v in merged_vars.items():
+                self.inventory.set_variable(h, k, v)
+
+            # only now do we set ansible_host, once
+            maybe_ansible = resolve_ansible_host(h, merged_vars)
+            if maybe_ansible:
+                # if override is false and ansible_host already set, skip
+                existing = self.inventory.get_host(h).get_vars().get("ansible_host")
+                if existing and not self.override:
+                    print(f"[DEBUG] Not overriding existing ansible_host for {h}: {existing}")
+                else:
+                    self.inventory.set_variable(h, "ansible_host", maybe_ansible)
