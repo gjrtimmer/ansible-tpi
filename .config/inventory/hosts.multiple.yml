@@ -7,6 +7,9 @@ all:
 
 tpi:
   hosts:
+    vars:
+      tailscale:
+        enabled: false
     tpi1_rk1: # Turing PI #1 with only RK1 modules, use this value in the node `bmc` key
       # The following keys are used to execute commands on the BMC
       ansible_ssh_host: turingpi.local # <-- Change this to Turing PI/Hostname

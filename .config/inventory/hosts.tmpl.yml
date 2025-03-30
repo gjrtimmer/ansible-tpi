@@ -4,6 +4,8 @@ all:
   hosts:
     localhost:
       ansible_connection: local
+      tailscale:
+        enabled: false
 
 tpi:
   hosts:

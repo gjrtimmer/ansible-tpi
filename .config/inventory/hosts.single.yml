@@ -4,8 +4,13 @@ all:
   hosts:
     localhost:
       ansible_connection: local
+      tailscale:
+        enabled: false
 
 tpi:
+  vars:
+    tailscale:
+      enabled: false
   hosts:
     bmc: # Use this value in the node `bmc` key
       # The following keys are used to execute commands on the BMC
