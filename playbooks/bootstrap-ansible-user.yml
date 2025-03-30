@@ -1,0 +1,20 @@
+# code: language=ansible
+---
+- name: Bootstrap Ansible Access
+  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
+  gather_facts: false
+  vars_prompt:
+    - name: ansible_ssh_user
+      prompt: "Enter SSH Provision Username"
+      private: false
+    - name: ansible_password
+      prompt: "Enter SSH Provision Password"
+      private: true
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+  tasks:
+    - name: Provision Ansible
+      ansible.builtin.import_role:
+        name: provision
+        tasks_from: ansible.yml

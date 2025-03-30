@@ -1,0 +1,50 @@
+# code: language=ansible
+---
+- name: Ensure ansible user exists
+  ansible.builtin.user:
+    name: ansible
+    groups: sudo
+    shell: /bin/bash
+    state: present
+    create_home: true
+    comment: "Ansible"
+  become: true
+
+- name: Add ansible public key to authorized_keys
+  become: true
+  ansible.posix.authorized_key:
+    user: ansible
+    key: "{{ lookup('file', '~/.ssh/tpi/tpi.ansible.key.pub') }}"
+    state: present
+
+- name: Add ubuntu public key to authorized_keys
+  become: true
+  ansible.posix.authorized_key:
+    user: ubuntu
+    key: "{{ lookup('file', '~/.ssh/tpi/tpi.ubuntu.key.pub') }}"
+    state: present
+
+- name: Add sudoers entry for ansible
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/ansible
+    content: "ansible ALL=(ALL) NOPASSWD:ALL\n"
+    mode: "0440"
+    validate: "visudo -cf %s"
+
+- name: Configure SSH client
+  vars:
+    host: "{{ inventory_hostname }}"
+    hostname: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
+    username: "{{ users.default }}"
+    key: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_prefix'] }}.{{ users.default }}.key"
+  ansible.builtin.include_role:
+    name: ssh
+    tasks_from: config.yml
+
+- name: Add host to known_hosts
+  vars:
+    host: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
+  ansible.builtin.include_role:
+    name: ssh
+    tasks_from: known_hosts.yml
