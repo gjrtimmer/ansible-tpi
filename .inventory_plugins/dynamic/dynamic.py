@@ -1,8 +1,8 @@
-from ansible.plugins.inventory import BaseInventoryPlugin # type: ignore
-from ansible.errors import AnsibleParserError # type: ignore
+from ansible.plugins.inventory import BaseInventoryPlugin  # type: ignore
+from ansible.errors import AnsibleParserError  # type: ignore
 import os
 import re
-import yaml # type: ignore
+import yaml
 
 DOCUMENTATION = r'''
     name: dynamic
@@ -24,6 +24,10 @@ DOCUMENTATION = r'''
                     description: List of hostnames to skip processing
                     type: list
                     elements: str
+                merge_lists:
+                    description: List of dotted variable paths where lists should be merged
+                    type: list
+                    elements: str
 '''
 
 class InventoryModule(BaseInventoryPlugin):
@@ -40,11 +44,11 @@ class InventoryModule(BaseInventoryPlugin):
         hostvars_dir = os.path.join(project_root, "host_vars")
         groupvars_dir = os.path.join(project_root, "group_vars")
 
-        # Load config from dynamic.yml (plugin config)
         with open(path, 'r') as f:
             plugin_config = yaml.safe_load(f)
             plugin_options = plugin_config.get("inventory_plugin", {})
             ignore_hosts = set(plugin_options.get("ignore_hosts", []))
+            merge_lists = set(plugin_options.get("merge_lists", []))
 
         if not os.path.isfile(hosts_file):
             raise AnsibleParserError(f"Missing hosts.yml file at {hosts_file}")
@@ -68,6 +72,24 @@ class InventoryModule(BaseInventoryPlugin):
         def get_group_vars(group):
             return load_vars(os.path.join(groupvars_dir, f"{group}.yml"))
 
+        def deep_merge(dict1, dict2, path=""):
+            result = dict1.copy()
+            for key, value in dict2.items():
+                full_path = f"{path}.{key}" if path else key
+                if key in result:
+                    if isinstance(result[key], dict) and isinstance(value, dict):
+                        result[key] = deep_merge(result[key], value, path=full_path)
+                    elif isinstance(result[key], list) and isinstance(value, list):
+                        if full_path in merge_lists:
+                            result[key] = result[key] + value
+                        else:
+                            result[key] = value
+                    else:
+                        result[key] = value
+                else:
+                    result[key] = value
+            return result
+
         def expand_bracket_expression(hostname):
             pattern = r"^(.*)\[(\d+):(\d+)\](.*)$"
             match = re.match(pattern, hostname)
@@ -79,12 +101,14 @@ class InventoryModule(BaseInventoryPlugin):
                 return [hostname]
 
         def resolve_ansible_host(hostname, combined_vars):
+            # if "ansible_host" in combined_vars:
+            #     return None
             if "ansible_host" in combined_vars:
-                return None
+                print(f"[DEBUG] Skipping ansible_host for {host} (already defined: {combined_vars['ansible_host']})")
 
             tailscale = combined_vars.get("tailscale", {})
             tailnet = tailscale.get("tailnet", "")
-            enabled = tailscale.get("enabled", None)  # must be explicitly True to activate
+            enabled = tailscale.get("enabled", None)
             ip_address = combined_vars.get("ip_address")
 
             if enabled is True and tailnet:
@@ -108,7 +132,7 @@ class InventoryModule(BaseInventoryPlugin):
                         continue
                     self.inventory.add_host(host, group_name)
                     host_vars = get_host_vars(host)
-                    combined_vars = {**group_vars, **host_vars}
+                    combined_vars = deep_merge(group_vars, host_vars)
 
                     resolved_host = resolve_ansible_host(host, combined_vars)
                     if resolved_host is not None:
