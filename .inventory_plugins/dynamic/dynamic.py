@@ -1,5 +1,5 @@
-from ansible.plugins.inventory import BaseInventoryPlugin  # type: ignore
-from ansible.errors import AnsibleParserError  # type: ignore
+from ansible.plugins.inventory import BaseInventoryPlugin # type: ignore
+from ansible.errors import AnsibleParserError # type: ignore
 import os
 import re
 import yaml # type: ignore
@@ -15,6 +15,15 @@ DOCUMENTATION = r'''
             description: Name of the plugin
             required: true
             choices: ['dynamic']
+        inventory_plugin:
+            description: Plugin options
+            required: false
+            type: dict
+            suboptions:
+                ignore_hosts:
+                    description: List of hostnames to skip processing
+                    type: list
+                    elements: str
 '''
 
 class InventoryModule(BaseInventoryPlugin):
@@ -30,6 +39,12 @@ class InventoryModule(BaseInventoryPlugin):
         hosts_file = os.path.join(project_root, "hosts.yml")
         hostvars_dir = os.path.join(project_root, "host_vars")
         groupvars_dir = os.path.join(project_root, "group_vars")
+
+        # Load config from dynamic.yml (plugin config)
+        with open(path, 'r') as f:
+            plugin_config = yaml.safe_load(f)
+            plugin_options = plugin_config.get("inventory_plugin", {})
+            ignore_hosts = set(plugin_options.get("ignore_hosts", []))
 
         if not os.path.isfile(hosts_file):
             raise AnsibleParserError(f"Missing hosts.yml file at {hosts_file}")
@@ -89,6 +104,8 @@ class InventoryModule(BaseInventoryPlugin):
             hosts = group_data.get("hosts", {})
             for raw_host in hosts:
                 for host in expand_bracket_expression(raw_host):
+                    if host in ignore_hosts:
+                        continue
                     self.inventory.add_host(host, group_name)
                     host_vars = get_host_vars(host)
                     combined_vars = {**group_vars, **host_vars}
