@@ -191,13 +191,13 @@ class InventoryModule(BaseInventoryPlugin):
 
             if enabled and tailnet:
                 fqdn = f"{h}.{tailnet}"
-                print(f"[DEBUG] Setting ansible_host for {h} using tailnet: {fqdn}")
+                # print(f"[DEBUG] Setting ansible_host for {h} using tailnet: {fqdn}")
                 return fqdn
             elif ip_address:
-                print(f"[DEBUG] Setting ansible_host for {h} using ip_address: {ip_address}")
+                # print(f"[DEBUG] Setting ansible_host for {h} using ip_address: {ip_address}")
                 return ip_address
             else:
-                print(f"[WARNING] No ip_address or tailnet for {h}; fallback to hostname")
+                # print(f"[WARNING] No ip_address or tailnet for {h}; fallback to hostname")
                 return h
 
         # apply final merges
