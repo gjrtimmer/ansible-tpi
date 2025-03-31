@@ -1,6 +1,17 @@
 # code: language=yaml
 ---
 tailscale:
+  # Enable Tailscale on this host (default: false)
+  enabled: false
+
+  # Docker support (default: false)
+  # Set to true if you want Tailscale to run in a Docker container
+  # This is useful for devices that don't support Tailscale natively
+  # Note: This will not work on all devices, especially ARM64
+  # Set to false if you want Tailscale to run natively
+  # This is the default for most devices
+  docker: false
+
   # List of tags to advertise for this device (e.g., ["tag:infra", "tag:gpu"])
   tags: []
 
