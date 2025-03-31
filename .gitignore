@@ -2,8 +2,12 @@
 .devcontainer/.bash_history
 .devcontainer/.bashrc
 .devcontainer/.netrc
-.ansible/
+
+# Playground
 .playground/
+
+# Ansible
+.ansible/
 hosts.yml
 hosts
 .DS_Store
@@ -14,10 +18,22 @@ playbooks/overrides/*.yml
 !playbooks/overrides/.keep
 config/*
 
-# Ignore all __pycache__ folders
+# Ignore Python Cache
 __pycache__/
 **/__pycache__/
 *.pyo
 *.pyc
+
+# Ignore wip/tmp
 wip/
 tmp/
+
+# Ignore Archives
+*.zip
+*.tar.gz
+*.tar
+*.tgz
+*.gz
+*.bz2
+*.xz
+*.7z
