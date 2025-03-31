@@ -4,5 +4,7 @@
   hosts: "{{ ansible_limit | default('nodes') }}"
   gather_facts: true
   become: true
+  vars:
+    ansible_host: "{{ ip_address | default(inventory_hostname) }}"
   roles:
     - tailscale
