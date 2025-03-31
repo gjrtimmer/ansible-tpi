@@ -33,7 +33,7 @@
         file: pytorch.yml
 
     - name: Check for Reboot
-      tags: [jetpack, tensorflow, pytorch]
+      tags: [packages, jetpack, tensorflow, pytorch]
       ansible.builtin.stat:
         path: /var/run/reboot-required
         get_checksum: false
@@ -41,7 +41,7 @@
 
     - name: Reboot Required
       when: reboot_required.stat.exists
-      tags: [jetpack, tensorflow, pytorch]
+      tags: [packages, jetpack, tensorflow, pytorch]
       ansible.builtin.debug:
         msg: "Reboot required to complete installation of Nvidia JetPack/Deeplearning"
       notify: "nvidia : reboot"
