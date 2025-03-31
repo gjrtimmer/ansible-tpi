@@ -1,5 +1,5 @@
-# roles/tailscale/tasks/main.yml
-
+# code: language=ansible
+---
 - name: Assert required Tailscale variables are defined and valid
   ansible.builtin.assert:
     that:
@@ -11,21 +11,39 @@
       - tailscale.accept_routes is boolean
     fail_msg: "One or more required Tailscale variables are missing or invalid."
 
-- name: Install Tailscale
-  tags: [setup]
+- name: Install Tailscale (Native)
+  when: not tailscale.docker.enabled | bool
+  tags: [setup, native]
   ansible.builtin.include_tasks:
-    file: install.yml
+    file: native.yml
+
+- name: Install Tailscale (Docker)
+  when: tailscale.docker.enabled | bool
+  tags: [setup, docker]
+  ansible.builtin.import_tasks:
+    file: docker.yml
 
 - name: Enable and start Tailscale service (no authkey)
-  tags: [tailscale]
+  when: >
+    tailscale.api.device.key is defined
+    and
+    tailscale.api.device.key != ""
+    and
+    not tailscale.docker.enabled | bool
+  tags: [tailscale, native]
   ansible.builtin.systemd:
     name: tailscaled
     enabled: true
     state: started
 
 - name: Bring up Tailscale using authkey (if provided)
-  when: tailscale.api.device.key is defined and tailscale.api.device.key != ""
-  tags: [tailscale]
+  when: >
+    tailscale.api.device.key is defined
+    and
+    tailscale.api.device.key != ""
+    and
+    not tailscale.docker.enabled | bool
+  tags: [tailscale, native]
   ansible.builtin.command: >
     tailscale up
     --authkey {{ tailscale.api.device.key }}

@@ -10,7 +10,12 @@ tailscale:
   # Note: This will not work on all devices, especially ARM64
   # Set to false if you want Tailscale to run natively
   # This is the default for most devices
-  docker: false
+  docker:
+    # Enable Docker support (default: false)
+    enabled: false
+
+    # Docker data directory (default: /var/lib/docker)
+    mount: "/var/lib/tailscale"
 
   # List of tags to advertise for this device (e.g., ["tag:infra", "tag:gpu"])
   tags: []
@@ -25,7 +30,7 @@ tailscale:
   advertise_routes: []
 
   # Enable subnet routing (usually requires --advertise-routes)
-  enable_subnet_router: false
+  enable_subnet_router: true
 
   # Enable MagicDNS (recommended)
   magic_dns: true

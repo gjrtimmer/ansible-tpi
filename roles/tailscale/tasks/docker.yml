@@ -1,0 +1,87 @@
+# code: language=ansible
+---
+- name: Check if Docker socket exists
+  when: tailscale.docker.enabled | bool
+  tags: [setup, docker]
+  ansible.builtin.command: test -S /var/run/docker.sock
+  register: docker_socket_check
+  ignore_errors: true
+  changed_when: false
+
+- name: Fail on Docker socket check
+  tags: [setup, docker]
+  when: >
+    tailscale.docker.enabled | bool
+    and
+    docker_socket_check.rc | int != 0
+  ansible.builtin.fail:
+    msg: "Docker is not running or accessible on this system, but tailscale.docker.enabled is true"
+
+- name: Tailscale Docker
+  tags: [setup, docker]
+  when: >
+    tailscale.docker.enabled | bool
+    and
+    docker_socket_check.rc | int == 0
+  block:
+    - name: Ensure pip is installed
+      become: true
+      ansible.builtin.command: python3 -m ensurepip --upgrade
+      args:
+        creates: /usr/lib/python3.8/ensurepip
+
+    - name: Ensure request,docker is installed
+      become: true
+      ansible.builtin.command: python3 -m pip install requests docker
+      changed_when: true
+
+    - name: Ensure /dev/net directory exists
+      become: true
+      ansible.builtin.file:
+        path: /dev/net
+        state: directory
+        mode: "0755"
+
+    - name: Ensure data directory exists
+      become: true
+      ansible.builtin.file:
+        path: "{{ tailscale.docker.mount }}"
+        state: directory
+        mode: "0755"
+
+    - name: Ensure tun module is loaded
+      become: true
+      ansible.builtin.command: modprobe tun
+      changed_when: false
+
+    - name: Build TS_EXTRA_ARGS
+      ansible.builtin.set_fact:
+        tailscale_extra_args: >-
+          {{
+            (
+              ['--reset']
+              + (['--ssh'] if tailscale.ssh | default(false) | bool else [])
+              + (['--advertise-tags=' + (tailscale.tags | join(","))] if tailscale.tags is defined and tailscale.tags else [])
+              + (['--advertise-routes=' + (tailscale.advertise_routes | join(","))] if tailscale.advertise_routes is defined and tailscale.advertise_routes | length > 0 else [])
+              + (['--accept-dns'] if tailscale.magic_dns | default(false) else [])
+              + (['--accept-routes'] if tailscale.accept_routes | default(true) else [])
+            ) | join(' ')
+          }}
+
+    - name: Create Tailscale Docker container
+      community.docker.docker_container:
+        name: tailscale
+        image: tailscale/tailscale:latest
+        state: started
+        restart_policy: unless-stopped
+        network_mode: host
+        capabilities:
+          - NET_ADMIN
+          - SYS_MODULE
+        volumes:
+          - /dev/net/tun:/dev/net/tun
+          - "{{ tailscale.docker.mount }}:/var/lib/tailscale"
+        env:
+          TS_AUTHKEY: "{{ tailscale.api.device.key | default('') }}"
+          TS_HOSTNAME: "{{ tailscale.hostname_prefix | default('') ~ '-' ~ inventory_hostname if tailscale.hostname_prefix is defined and tailscale.hostname_prefix != '' else inventory_hostname }}"
+          TS_EXTRA_ARGS: "{{ tailscale_extra_args | default('') }}"
