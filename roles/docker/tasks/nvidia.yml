@@ -46,3 +46,15 @@
     cache_valid_time: 3600 # Cache valid for 1 hour to avoid repeated updates
     install_recommends: true
   notify: "docker : restart"
+
+- name: Patch Nvidia Container Runtime
+  when: >
+    hostvars[inventory_hostname]['type'] | upper == 'NVIDIA'
+    and
+    is_jetson | bool
+  tags: [nvidia]
+  become: true
+  ansible.posix.patch:
+    basedir: /etc/nvidia-container-runtime
+    src: nvidia-container-runtime.patch
+    dest: /etc/nvidia-container-runtime/config.toml
