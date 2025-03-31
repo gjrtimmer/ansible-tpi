@@ -217,18 +217,22 @@ class InventoryModule(BaseInventoryPlugin):
         for gname, gdata in inventory_data.items():
             process_group(gname, gdata)
 
+        group_all_vars = get_group_vars('all')
+
         # pass 2: finalize
         for host, merged_vars in self.collected_hosts.items():
+            final_vars = deep_merge(group_all_vars, merged_vars)
+
             # set all normal variables first
-            for k, v in merged_vars.items():
+            for k, v in final_vars.items():
                 self.inventory.set_variable(host, k, v)
 
-            existing = self.inventory.get_host(host).get_vars().get('ansible_host')
+            existing = final_vars.get('ansible_host')
             if existing and not self.override:
                 continue
 
             # compute ansible_host
-            maybe_ansible = self._resolve_ansible_host(host, merged_vars)
+            maybe_ansible = self._resolve_ansible_host(host, final_vars)
             if maybe_ansible:
                 self.inventory.set_variable(host, 'ansible_host', maybe_ansible)
 
