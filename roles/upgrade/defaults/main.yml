@@ -27,7 +27,7 @@ upgrade:
     automatic_reboot_time: "02:00"
 
     # Automatically fix dpkg interrupted states before upgrades
-    autofix_interrupted: false # true or false
+    autofix_interrupted: true # true or false
 
     # Use minimal steps for upgrade (safer but slower)
     minimal_steps: true # true or false
