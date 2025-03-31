@@ -4,7 +4,7 @@
   tags: [docker, config]
   delegate_to: localhost
   ansible.builtin.stat:
-    path: "{{ inventory_dir }}/config/docker/config.json"
+    path: "{{ inventory_dir }}/../config/docker/config.json"
   register: docker_config
   changed_when: false
 
@@ -13,7 +13,7 @@
   tags: [docker, config]
   become: true
   ansible.builtin.copy:
-    src: "{{ inventory_dir }}/config/docker/config.json"
+    src: "{{ inventory_dir }}/../config/docker/config.json"
     dest: /etc/docker/config.json
     owner: root
     group: root

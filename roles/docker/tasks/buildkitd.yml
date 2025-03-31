@@ -15,7 +15,7 @@
   tags: [docker, config]
   delegate_to: localhost
   ansible.builtin.stat:
-    path: "{{ inventory_dir }}/config/docker/{{ item.name }}/{{ item.ca }}"
+    path: "{{ inventory_dir }}/../config/docker/{{ item.name }}/{{ item.ca }}"
   loop: "{{ docker.buildkitd.registries }}"
   register: docker_registries_ca
 
@@ -42,7 +42,7 @@
   tags: [docker, config]
   become: true
   ansible.builtin.copy:
-    src: "{{ inventory_dir }}/config/docker/{{ item.name }}/{{ item.ca }}"
+    src: "{{ inventory_dir }}/../config/docker/{{ item.name }}/{{ item.ca }}"
     dest: "/etc/docker/certs.d/{{ item.name }}/ca.crt"
     owner: "root"
     group: "root"
