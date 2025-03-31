@@ -1,4 +1,7 @@
 # code: language=ansible
+#
+# https://docs.nvidia.com/deeplearning/frameworks/index.html#installing-frameworks-for-jetson
+#
 ---
 - name: Install Jetson Stats
   tags: [packages]
