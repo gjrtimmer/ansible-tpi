@@ -29,3 +29,8 @@
   tags: [env_vars]
   ansible.builtin.import_tasks:
     file: env_vars.yml
+
+- name: Install Packages
+  tags: [packages]
+  ansible.builtin.import_tasks:
+    file: packages.yml

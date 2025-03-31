@@ -1,0 +1,13 @@
+# code: language=ansible
+---
+- name: Install Dependencies
+  tags: [packages]
+  ansible.builtin.apt:
+    name:
+      - jq
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+    clean: true
+    force_apt_get: true
+    install_recommends: false
