@@ -1,0 +1,74 @@
+# code: language=ansible
+---
+- name: Ensure jq
+  tags: [pytorch]
+  ansible.builtin.apt:
+    name: jq
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+
+- name: Read CUDA SDK version # noqa: risky-shell-pipe
+  tags: [pytorch]
+  ansible.builtin.shell: jq -r '.cuda.version' /usr/local/cuda/version.json | tr -d '\r' | tr -d '\n' | cut -d. -f1,2
+  register: cuda_version
+  changed_when: false
+
+- name: Cuda Version
+  tags: [pytorch]
+  ansible.builtin.debug:
+    var: cuda_version.stdout
+  changed_when: false
+
+- name: Download install_cusparselt.sh script
+  tags: [pytorch]
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/pytorch/pytorch/main/.ci/docker/common/install_cusparselt.sh
+    dest: /tmp/install_cusparselt.sh
+    mode: "0755"
+
+- name: Run cuSPARSELt Installer # noqa: no-changed-when
+  tags: [pytorch]
+  ansible.builtin.command: /tmp/install_cusparselt.sh
+  environment:
+    CUDA_VERSION: "{{ cuda_version.stdout }}"
+  args:
+    chdir: /tmp
+
+- name: Set PyTorch Repository URL
+  tags: [pytorch]
+  ansible.builtin.set_fact:
+    pytorch_repo_url: "https://developer.download.nvidia.com/compute/redist/jp/v{{ jetpack_version }}/pytorch/"
+  changed_when: false
+
+- name: Set PyTorch Install Location
+  tags: [pytorch]
+  ansible.builtin.shell:
+    cmd: "set -o pipefail && echo {{ pytorch_repo_url }}$(curl -s {{ pytorch_repo_url }} | grep -oP 'torch-.*?\\.whl' | sort -V | tail -n 1)"
+    executable: /bin/bash
+  register: pytorch_install
+  changed_when: false
+
+- name: PyTorch Packages
+  tags: [pytorch]
+  ansible.builtin.debug:
+    var: pytorch_install.stdout
+
+- name: Install NumPy-1.26.1
+  tags: [pytorch]
+  ansible.builtin.pip:
+    executable: pip3
+    extra_args: "--upgrade --no-cache"
+    name: "numpy==1.26.1"
+  environment:
+    PIP_ROOT_USER_ACTION: ignore
+
+- name: Install PyTorch
+  tags: [pytorch]
+  ansible.builtin.pip:
+    executable: pip3
+    extra_args: "--upgrade --no-cache --ignore-installed"
+    name: "{{ pytorch_install.stdout }}"
+  environment:
+    PIP_ROOT_USER_ACTION: ignore

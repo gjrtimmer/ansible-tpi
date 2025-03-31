@@ -4,29 +4,44 @@
   when: hostvars[inventory_hostname]['type'] | upper == 'NVIDIA'
   vars:
     developer_preview: false
+    jetpack_version: "61"
   block:
+    - name: Developers Preview
+      when: developer_preview | bool
+      tags: [deeplearning]
+      ansible.builtin.set_fact:
+        jetpack_version: "{{ jetpack_version }}dp"
+
+    - name: Install Dependencies
+      tags: [packages]
+      ansible.builtin.import_tasks:
+        file: packages.yml
+
     - name: Install JetPack
       tags: [jetpack]
       ansible.builtin.import_tasks:
         file: jetpack.yml
 
-    - name: Install Deeplearning Frameworks
-      tags: [tensorflow, pytorch]
+    - name: Install Tensorflow
+      tags: [tensorflow]
       ansible.builtin.import_tasks:
-        file: deeplearning.yml
+        file: tensorflow.yml
+
+    - name: Install PyTorch
+      tags: [pytorch]
+      ansible.builtin.import_tasks:
+        file: pytorch.yml
 
     - name: Check for Reboot
+      tags: [jetpack, tensorflow, pytorch]
       ansible.builtin.stat:
         path: /var/run/reboot-required
         get_checksum: false
       register: reboot_required
 
-    - name: Reboot Server
-      throttle: 1
-      ansible.builtin.reboot:
-        msg: Reboot initiated by Ansible for Nvidia JetPack/Deeplearning install
-        connect_timeout: 5
-        reboot_timeout: 300
-        pre_reboot_delay: 0
-        post_reboot_delay: 30
-        test_command: uptime
+    - name: Reboot Required
+      when: reboot_required.stat.exists
+      tags: [jetpack, tensorflow, pytorch]
+      ansible.builtin.debug:
+        msg: "Reboot required to complete installation of Nvidia JetPack/Deeplearning"
+      notify: "nvidia : reboot"

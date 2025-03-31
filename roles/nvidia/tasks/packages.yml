@@ -1,0 +1,93 @@
+# code: language=ansible
+---
+- name: Install Jetson Stats
+  tags: [packages]
+  ansible.builtin.pip:
+    name: jetson-stats
+    state: present
+    extra_args: --no-cache-dir
+    executable: pip3
+  environment:
+    PIP_ROOT_USER_ACTION: ignore
+  notify: "nvidia : reboot"
+
+- name: Jetson Stats Daemon
+  tags: [packages]
+  ansible.builtin.systemd:
+    name: jtop
+    state: started
+    enabled: true
+    daemon_reload: true
+  notify: "nvidia : reboot"
+
+- name: Install Dependencies Machine Learning
+  tags: [tensorflow, pytorch]
+  ansible.builtin.apt:
+    name:
+      - autoconf
+      - bc
+      - build-essential
+      - g++
+      - gcc
+      - clang
+      - lld
+      - gettext-base
+      - iputils-ping
+      - libbz2-dev
+      - libc++-dev
+      - libcgal-dev
+      - libffi-dev
+      - libfreetype6-dev
+      - libhdf5-dev
+      - libjpeg-dev
+      - liblzma-dev
+      - libncurses5-dev
+      - libncursesw5-dev
+      - libpng-dev
+      - libreadline-dev
+      - libssl-dev
+      - libsqlite3-dev
+      - libxml2-dev
+      - libxslt-dev
+      - locales
+      - moreutils
+      - openssl
+      - python3-openssl
+      - rsync
+      - scons
+      - python3-pip
+      - libopenblas-dev
+      - curl
+      - wget
+      - stress
+      - libhdf5-serial-dev
+      - hdf5-tools
+      - zlib1g-dev
+      - zip
+      - libjpeg8-dev
+      - liblapack-dev
+      - libblas-dev
+      - gfortran
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+    clean: true
+    force_apt_get: true
+    install_recommends: true
+
+- name: Upgrade Python Dependencies
+  tags: [tensorflow, pytorch]
+  ansible.builtin.command: "sudo python3 -m pip install --upgrade pip"
+  environment:
+    PIP_ROOT_USER_ACTION: ignore
+  register: rc
+  changed_when: rc.rc != 0
+
+- name: Install SetupTools
+  tags: [tensorflow, pytorch]
+  ansible.builtin.pip:
+    executable: pip3
+    extra_args: "--upgrade testresources"
+    name: "setuptools==65.5.0"
+  environment:
+    PIP_ROOT_USER_ACTION: ignore

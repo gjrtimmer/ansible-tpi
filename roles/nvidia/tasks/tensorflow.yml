@@ -1,0 +1,24 @@
+# code: language=ansible
+---
+- name: Set TensorFlow Repository URL
+  tags: [deeplearning]
+  ansible.builtin.set_fact:
+    tensorflow_repo_url: "https://developer.download.nvidia.com/compute/redist/jp/v{{ jetpack_version }}/tensorflow/"
+  changed_when: false
+
+- name: Set TensorFlow Install Location
+  tags: [deeplearning]
+  ansible.builtin.shell:
+    cmd: "set -o pipefail && echo {{ tensorflow_repo_url }}$(curl -s {{ tensorflow_repo_url }} | grep -oP 'tensorflow-.*?\\.whl' | sort -V | tail -n 1)"
+    executable: /bin/bash
+  register: tensorflow_install
+  changed_when: false
+
+- name: Install TensorFlow
+  tags: [deeplearning]
+  ansible.builtin.pip:
+    executable: pip3
+    extra_args: "--upgrade --no-cache"
+    name: "{{ tensorflow_install.stdout }}"
+  environment:
+    PIP_ROOT_USER_ACTION: ignore
