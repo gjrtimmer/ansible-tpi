@@ -66,6 +66,27 @@
     name: tpi
     tasks_from: scp-send.yml
 
+- name: Default Network Config {{ inventory_hostname }}
+  when: hostvars[inventory_hostname]['type'] | upper != 'NVIDIA'
+  delegate_to: localhost
+  tags: [bootstrap]
+  ansible.builtin.copy:
+    src: 50-cloud-init.yaml
+    dest: /tmp/tpi/50-cloud-init.yaml
+    mode: "0700"
+  vars:
+    prefix: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_prefix'] }}"
+
+- name: Copy Default Network Config {{ inventory_hostname }}
+  when: hostvars[inventory_hostname]['type'] | upper != 'NVIDIA'
+  tags: [bootstrap]
+  vars:
+    src: /tmp/tpi/50-cloud-init.yaml
+    dest: /mnt/node/root/etc/netplan/50-cloud-init.yaml
+  ansible.builtin.import_role:
+    name: tpi
+    tasks_from: scp-send.yml
+
 - name: Wipe cloud-init {{ inventory_hostname }}
   when: hostvars[inventory_hostname]['type'] | upper != 'NVIDIA'
   delegate_to: "{{ hostvars[inventory_hostname]['bmc'] }}"

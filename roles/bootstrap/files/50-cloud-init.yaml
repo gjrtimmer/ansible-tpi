@@ -1,0 +1,13 @@
+network:
+  version: 2
+  ethernets:
+    zz-all-en:
+      match:
+        name: "en*"
+      optional: true
+      dhcp4: true
+    zz-all-eth:
+      match:
+        name: "eth*"
+      optional: true
+      dhcp4: true
