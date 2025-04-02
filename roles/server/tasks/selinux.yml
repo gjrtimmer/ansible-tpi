@@ -4,6 +4,23 @@
   tags: [selinux]
   ansible.builtin.apt:
     name:
+      - policycoreutils
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+    install_recommends: false
+
+- name: Check SELinux status
+  tags: [selinux]
+  ansible.builtin.command: sestatus
+  register: selinux_status
+  changed_when: false
+
+- name: Install the libselinux-python package
+  when: selinux_status.stdout.find("disabled") == -1
+  tags: [selinux]
+  ansible.builtin.apt:
+    name:
       - auditd
       - python3-selinux
       - python3-semanage
@@ -15,6 +32,7 @@
     install_recommends: false
 
 - name: Disable SELinux
+  when: selinux_status.stdout.find("disabled") == -1
   tags: [selinux]
   throttle: 1
   ansible.posix.selinux:
@@ -22,6 +40,7 @@
   notify: "server : reboot"
 
 - name: Remove the libselinux-python package
+  when: selinux_status.stdout.find("disabled") == -1
   tags: [selinux]
   ansible.builtin.apt:
     name:
@@ -29,7 +48,6 @@
       - python3-selinux
       - python3-semanage
       - selinux-policy-default
-      - policycoreutils
     state: absent
     update_cache: true
     cache_valid_time: 3600
