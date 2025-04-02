@@ -1,0 +1,18 @@
+# code: language=ansible
+---
+# Tailscale Default configuration
+tailscale:
+  enabled: false
+  docker:
+    enabled: false
+    mount: "/var/lib/tailscale"
+  tags: []
+  ssh: true
+  advertise_routes: []
+  enable_subnet_router: false
+  magic_dns: true
+  accept_routes: true
+  api:
+    device:
+      key: ""
+  tailnet: ""
