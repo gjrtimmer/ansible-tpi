@@ -75,6 +75,26 @@ else
     fi
 fi
 
+if [[ -f /work/site.yml ]] && [[ ! -L /work/site.yml ]]; then
+    mv /work/site.yml "${HOME}/.tpi"
+    ln -s "${HOME}/.tpi/site.yml" "${PROJECT_DIR}/site.yml"
+else
+    if [[ ! -f "${HOME}/.tpi/site.yml" ]] && [[ ! -L /work/site.yml ]]; then
+        cp "${PROJECT_DIR}/.config/site.yml" "${HOME}/.tpi/site.yml"
+        ln -s "${HOME}/.tpi/site.yml" "${PROJECT_DIR}/site.yml"
+    fi
+fi
+
+if [[ -d /work/.ansible ]] && [[ ! -L /work/.ansible ]]; then
+    mv /work/.ansible "${HOME}/.tpi"
+    ln -s "${HOME}/.tpi/.ansible" "${PROJECT_DIR}/.ansible"
+else
+    if [[ ! -d "${HOME}/.tpi/.ansible" ]]; then
+        cp -r "${PROJECT_DIR}/.config/.ansible" "${HOME}/.tpi"
+        ln -s "${HOME}/.tpi/.ansible" "${PROJECT_DIR}/.ansible"
+    fi
+fi
+
 if [ ! -f "${PROJECT_DIR}/group_vars/nodes.yml" ]; then
     cp "${PROJECT_DIR}/.config/group_vars/nodes.yml" "${PROJECT_DIR}/group_vars/nodes.yml"
 fi

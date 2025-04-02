@@ -37,3 +37,7 @@ tmp/
 *.bz2
 *.xz
 *.7z
+
+# Ignore Site.yml
+site.yml
+!/.config/site.yml
