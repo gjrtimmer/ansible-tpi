@@ -252,10 +252,17 @@ class InventoryModule(BaseInventoryPlugin):
         """Compute ansible_host based on tailscale or ip_address."""
         tailscale = final_vars.get('tailscale', {})
         tailnet = tailscale.get('tailnet')
-        enabled = tailscale.get('enabled')
+        tailscale_enabled = tailscale.get('enabled')
         ip_address = final_vars.get('ip_address')
 
-        if enabled and tailnet:
+        tailscale_bypass = (
+            os.environ.get("TAILSCALE_BYPASS", "").lower() in ("true", "1", "yes")
+            or final_vars.get('tailscale_bypass', False)
+        )
+        if tailscale_bypass:
+            return ip_address
+
+        if tailscale_enabled and tailnet:
             return f"{hostname}.{tailnet}"
         elif ip_address:
             return ip_address
