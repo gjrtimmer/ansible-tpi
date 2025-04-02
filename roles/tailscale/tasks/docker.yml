@@ -62,7 +62,7 @@
               ['--reset']
               + (['--ssh'] if tailscale.ssh | default(false) | bool else [])
               + (['--advertise-tags=' + (tailscale.tags | join(","))] if tailscale.tags is defined and tailscale.tags else [])
-              + (['--advertise-routes=' + (tailscale.advertise_routes | join(","))] if tailscale.advertise_routes is defined and tailscale.advertise_routes | length > 0 else [])
+              + (['--advertise-routes=' + (tailscale.advertise_routes | join(","))] if tailscale.enable_subnet_router else [])
               + (['--accept-dns'] if tailscale.magic_dns | default(false) else [])
               + (['--accept-routes'] if tailscale.accept_routes | default(true) else [])
             ) | join(' ')

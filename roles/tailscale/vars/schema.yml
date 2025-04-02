@@ -29,8 +29,11 @@ tailscale:
   # Subnet routes to advertise (e.g., ["192.168.0.0/24"])
   advertise_routes: []
 
-  # Enable subnet routing (usually requires --advertise-routes)
-  enable_subnet_router: true
+  # Enable subnet routing, this will publish the configuration
+  # present in advertise_routes, must be used together, this
+  # allows to retain the configuration in advertise_routes
+  # and toggle the subnet router
+  enable_subnet_router: false
 
   # Enable MagicDNS (recommended)
   magic_dns: true
