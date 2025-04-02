@@ -52,6 +52,14 @@
   roles:
     - server
 
+- name: Network Configuration
+  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
+  gather_facts: true
+  become: true
+  tags: [network]
+  roles:
+    - network
+
 - name: Install Container Runtime
   hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
   gather_facts: true

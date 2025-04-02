@@ -20,11 +20,6 @@
   ansible.builtin.import_tasks:
     file: time.yml
 
-- name: Network Configuration
-  tags: [network]
-  ansible.builtin.import_role:
-    name: network
-
 - name: Configure env_vars
   tags: [env_vars]
   ansible.builtin.import_tasks:
