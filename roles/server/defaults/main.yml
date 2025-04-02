@@ -1,5 +1,8 @@
 # code: language=yaml
 ---
+# Reboot Server on Changes
+reboot: true
+
 sysctl:
   # swappiness
   # The vm.swappiness parameter controls the kernel's preference for swapping out runtime memory

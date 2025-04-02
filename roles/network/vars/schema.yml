@@ -1,0 +1,38 @@
+# code: language=yaml
+---
+# vars/schema.yml
+# Active Profile
+profile: "home"
+
+network:
+  # Set to true to use static IP config, false to use DHCP.
+  # This value can be overridden in host_vars/<node>.yml
+  static: false
+
+  # Optional MTU setting applied to the network interface
+  # If undefined, the system default MTU will be used.
+  mtu: 1500
+
+  # Define all possible cluster network profiles
+  profiles:
+    home: # Home cluster
+      cidr: "10.10.0.0/24"
+      gateway: "10.10.0.1"
+      dns: "10.10.0.1"
+      bmc: "10.10.0.15"
+      nodes:
+        node1: "10.10.0.21"
+        node2: "10.10.0.22"
+        node3: "10.10.0.23"
+        node4: "10.10.0.24"
+
+    academy: # Academy Environment
+      cidr: "10.42.42.0/24"
+      gateway: "10.42.42.1"
+      dns: "10.42.42.1"
+      bmc: "10.42.42.40"
+      nodes:
+        node1: "10.42.42.41"
+        node2: "10.42.42.42"
+        node3: "10.42.42.43"
+        node4: "10.42.42.44"

@@ -1,0 +1,26 @@
+# code: language=ansible
+---
+- name: Configure Network
+  tags: [network]
+  when: >
+    network is defined
+    and
+    network.static is defined
+    and
+    network.profiles is defined
+    and
+    profile is defined
+    and
+    network.profiles[profile] is defined
+    and
+    network.profiles[profile].cidr is defined
+    and
+    network.profiles[profile].gateway is defined
+    and
+    network.profiles[profile].dns is defined
+    and
+    network.profiles[profile].bmc is defined
+    and
+    network.profiles[profile].nodes is defined
+  ansible.builtin.include_tasks:
+    file: netplan.yml

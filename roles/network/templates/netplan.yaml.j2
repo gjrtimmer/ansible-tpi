@@ -1,0 +1,32 @@
+# templates/netplan.yml.j2
+network:
+  version: 2
+  ethernets:
+    en-match:
+      match:
+        name: "en*"
+      mtu: {{ network.profiles[profile].mtu | default(network.mtu) }}
+      dhcp4: {{ 'false' if network.static else 'true' }}
+      optional: true
+{% if network.static %}
+      addresses:
+        - {{ network.profiles[profile].nodes[inventory_hostname] }}/{{ network.profiles[profile].cidr.split('/')[1] }}
+      gateway4: {{ network.profiles[profile].gateway }}
+      nameservers:
+        addresses:
+          - {{ network.profiles[profile].dns }}
+{% endif %}
+    eth-match:
+      match:
+        name: "eth*"
+      mtu: {{ network.profiles[profile].mtu | default(network.mtu) }}
+      dhcp4: {{ 'false' if network.static else 'true' }}
+      optional: true
+{% if network.static %}
+      addresses:
+        - {{ network.profiles[profile].nodes[inventory_hostname] }}/{{ network.profiles[profile].cidr.split('/')[1] }}
+      gateway4: {{ network.profiles[profile].gateway }}
+      nameservers:
+        addresses:
+          - {{ network.profiles[profile].dns }}
+{% endif %}

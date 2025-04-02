@@ -1,0 +1,17 @@
+# code: language=ansible
+---
+- name: netplan-apply # noqa name[casing]
+  become: true
+  ansible.builtin.shell:
+    cmd: netplan apply
+    executable: /bin/bash
+  changed_when: false
+  async: 30
+  poll: 0
+
+- name: restart-network # noqa name[casing]
+  become: true
+  ansible.builtin.service:
+    name: systemd-networkd
+    state: restarted
+  changed_when: false

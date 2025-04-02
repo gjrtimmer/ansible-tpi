@@ -1,0 +1,10 @@
+# code: language=ansible
+---
+network:
+  # Set to true to use static IP config, false to use DHCP.
+  # This value can be overridden in host_vars/<node>.yml
+  static: false
+
+  # Optional MTU setting applied to the network interface
+  # If undefined, the system default MTU will be used.
+  mtu: 1500

@@ -1,0 +1,62 @@
+# code: language=ansible
+---
+- name: Default Config Exists
+  tags: [network]
+  ansible.builtin.stat:
+    path: /etc/netplan/50-cloud-init.yaml
+  register: cloud_init_config
+  changed_when: false
+
+- name: Remove Cloud Init Default Config
+  when: hostvars[inventory_hostname]['type'] | upper == 'RK1' and cloud_init_config.stat.exists
+  tags: [network]
+  ansible.builtin.file:
+    path: /etc/netplan/50-cloud-init.yaml
+    state: absent
+  notify:
+    - "network : netplan-apply"
+
+- name: Generate Network Config
+  when: hostvars[inventory_hostname]['type'] | upper == 'RK1'
+  tags: [network]
+  ansible.builtin.template:
+    src: netplan.yaml.j2
+    dest: /etc/netplan/01-network.yaml
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Set MTU (Nvidia)
+  tags: [network]
+  when: hostvars[inventory_hostname]['type'] | upper == 'NVIDIA'
+  ansible.builtin.shell:
+    cmd: nmcli con modify Wired\ connection\ 1 802-3-ethernet.mtu {{ network.mtu }}
+    executable: /bin/bash
+  changed_when: true
+  notify: "network : netplan-apply"
+
+- name: Reboot
+  when: hostvars[inventory_hostname]['type'] | upper == 'RK1'
+  tags: [network]
+  become: true
+  ansible.builtin.command:
+    cmd: /sbin/shutdown -r now
+  async: 1
+  poll: 0
+  changed_when: false
+
+- name: Set New IP
+  when: hostvars[inventory_hostname]['type'] | upper == 'RK1'
+  tags: [network]
+  ansible.builtin.set_fact:
+    ansible_host: "{{ network.profiles[profile].nodes[inventory_hostname] }}"
+  changed_when: false
+
+- name: Wait for Reboot
+  when: hostvars[inventory_hostname]['type'] | upper == 'RK1'
+  tags: [network]
+  ansible.builtin.wait_for_connection:
+    delay: 10
+    timeout: 300
+    sleep: 5
+  changed_when: false
