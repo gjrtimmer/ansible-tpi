@@ -34,6 +34,16 @@
   roles:
     - rk1
 
+- name: TPI
+  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
+  gather_facts: true
+  tags: [tpi]
+  tasks:
+    - name: Wait for Unattended Upgrade first boot
+      tags: [server]
+      ansible.builtin.pause:
+        minutes: 3
+
 - name: Server Configuration
   hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
   gather_facts: true
