@@ -3,12 +3,12 @@
 - name: Assert required Tailscale variables are defined and valid
   ansible.builtin.assert:
     that:
-      - tailscale is defined
-      - tailscale.api.device.key is string or tailscale.api.device.key == ""
-      - tailscale.tags is iterable
-      - tailscale.enable_subnet_router is boolean
-      - tailscale.magic_dns is boolean
-      - tailscale.accept_routes is boolean
+      - hostvars[inventory_hostname]['tailscale'] is defined
+      - hostvars[inventory_hostname]['tailscale']['api']['device']['key'] is string or hostvars[inventory_hostname]['tailscale']['api']['device']['key'] == ""
+      - hostvars[inventory_hostname]['tailscale']['tags'] is iterable
+      - hostvars[inventory_hostname]['tailscale']['enable_subnet_router'] is boolean
+      - hostvars[inventory_hostname]['tailscale']['magic_dns'] is boolean
+      - hostvars[inventory_hostname]['tailscale']['accept_routes'] is boolean
     fail_msg: "One or more required Tailscale variables are missing or invalid."
 
 - name: Install Tailscale (Native)
