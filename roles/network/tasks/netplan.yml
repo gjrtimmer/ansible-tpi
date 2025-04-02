@@ -25,6 +25,7 @@
     owner: root
     group: root
     mode: "0700"
+  register: netplan_config
 
 - name: Set MTU (Nvidia)
   tags: [network]
@@ -33,10 +34,14 @@
     cmd: nmcli con modify Wired\ connection\ 1 802-3-ethernet.mtu {{ network.mtu }}
     executable: /bin/bash
   changed_when: true
+  register: netplan_config
   notify: "network : netplan-apply"
 
 - name: Reboot
-  when: hostvars[inventory_hostname]['type'] | upper == 'RK1'
+  when: >
+    hostvars[inventory_hostname]['type'] | upper == 'RK1'
+    and
+    netplan_config.changed
   tags: [network]
   become: true
   ansible.builtin.command:
@@ -46,14 +51,20 @@
   changed_when: false
 
 - name: Set New IP
-  when: hostvars[inventory_hostname]['type'] | upper == 'RK1'
+  when: >
+    hostvars[inventory_hostname]['type'] | upper == 'RK1'
+    and
+    netplan_config.changed
   tags: [network]
   ansible.builtin.set_fact:
     ansible_host: "{{ network.profiles[profile].nodes[inventory_hostname] }}"
   changed_when: false
 
 - name: Wait for Reboot
-  when: hostvars[inventory_hostname]['type'] | upper == 'RK1'
+  when: >
+    hostvars[inventory_hostname]['type'] | upper == 'RK1'
+    and
+    netplan_config.changed
   tags: [network]
   ansible.builtin.wait_for_connection:
     delay: 10
