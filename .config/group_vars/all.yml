@@ -15,3 +15,11 @@ datetime:
     fallback:
       - ntp.ubuntu.com
       - time.google.com
+
+#
+# Network configuration
+#
+# This is a template for the network configuration.
+# The full schema can be found at: roles/network/vars/schema.yml
+network:
+  static: false

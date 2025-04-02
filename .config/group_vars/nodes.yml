@@ -4,8 +4,6 @@
 datetime:
   timezone: Etc/UTC
 
-# Network Configuration
-network_mtu: 1500
 # Hosts Configuration
 #
 # This key allows you to define the hosts that will be added to the /etc/hosts file.
@@ -42,38 +40,9 @@ network_mtu: 1500
 # Select the Container Runtime
 # The container_runtime key allows you to select the container runtime that will be installed on the nodes.
 container_runtime: docker
+#
 # Tailscale
-# tailscale:
-#   # List of tags to advertise for this device (e.g., ["tag:infra", "tag:gpu"])
-#   tags: []
-
-#   # Enable SSH access to this device (default: false)
-#   ssh: true
-
-#   # Optional prefix to prepend to the hostname (e.g., "node" → "node-host1")
-#   hostname_prefix: "node"
-
-#   # Subnet routes to advertise (e.g., ["192.168.0.0/21"])
-#   advertise_routes: []
-
-#   # Enable subnet routing (usually requires --advertise-routes)
-#   enable_subnet_router: false
-
-#   # Enable MagicDNS (recommended)
-#   magic_dns: true
-
-#   # Accept routes from other nodes (default: true)
-#   accept_routes: true
-
-#   # Optional control server override (enterprise/self-hosted)
-#   control_server: ""
-
-#   # Admin & device API key management
-#   api:
-#     device:
-#       # The device auth key used in `tailscale up` (managed by automation)
-#       # Generate with tailscale-device-key command
-#       key: ""
-
-#   # Name of the Tailscale network
-#   tailnet: ""
+# For tailscale configuration, see the `roles/tailscale/vars/schema.yml` file.
+# The key is a dictionary where the key is the tailscale parameter and the value is the value of the parameter.
+# When set in this file `nodes.yml` it will apply to all nodes in the inventory of the group `nodes`.
+# The defaults are loaded from the `roles/tailscale/defaults/main.yml` file.
