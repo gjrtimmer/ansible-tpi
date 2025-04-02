@@ -11,3 +11,10 @@
     clean: true
     force_apt_get: true
     install_recommends: false
+
+# FIx possible issue with missing cap_net_raw+p capability or setuid
+- name: Fix Packages # noqa:command-instead-of-module
+  tags: [packages]
+  become: true
+  ansible.builtin.command: apt-get reinstall iputils-ping
+  changed_when: true
