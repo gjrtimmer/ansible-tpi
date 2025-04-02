@@ -16,23 +16,13 @@ network:
   # Define all possible cluster network profiles
   profiles:
     home: # Home cluster
-      cidr: "10.10.0.0/24"
-      gateway: "10.10.0.1"
-      dns: "10.10.0.1"
-      bmc: "10.10.0.15"
+      mtu: 1500
+      cidr: "192.168.10.0/24"
+      gateway: "192.168.10.1"
+      dns: "192.168.10.1"
+      bmc: "192.168.10.15"
       nodes:
-        node1: "10.10.0.21"
-        node2: "10.10.0.22"
-        node3: "10.10.0.23"
-        node4: "10.10.0.24"
-
-    academy: # Academy Environment
-      cidr: "10.42.42.0/24"
-      gateway: "10.42.42.1"
-      dns: "10.42.42.1"
-      bmc: "10.42.42.40"
-      nodes:
-        node1: "10.42.42.41"
-        node2: "10.42.42.42"
-        node3: "10.42.42.43"
-        node4: "10.42.42.44"
+        node1: "192.168.10.21"
+        node2: "192.168.10.22"
+        node3: "192.168.10.23"
+        node4: "192.168.10.24"
