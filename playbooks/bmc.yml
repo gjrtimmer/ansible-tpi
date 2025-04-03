@@ -1,0 +1,17 @@
+# code: language=ansible
+---
+- name: Bootstrap
+  hosts: "{{ ansible_limit | default('tpi') }}"
+  gather_facts: false
+  serial: 1
+  tasks:
+    - name: Set hostname
+      ansible.builtin.import_role:
+        name: bmc
+        tasks_from: hostname.yml
+
+    - name: Set BMC Network
+      tags: [network]
+      ansible.builtin.import_role:
+        name: bmc
+        tasks_from: network.yml

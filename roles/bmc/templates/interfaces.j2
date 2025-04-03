@@ -1,0 +1,18 @@
+# ANSIBLE MANAGED
+
+auto lo
+iface lo inet loopback
+
+auto {{ 'br0' if is_bridge_version else 'eth0' }}
+iface {{ 'br0' if is_bridge_version else 'eth0' }} inet {{ 'dhcp' if network is defined and network.static is defined and network.static == false else 'static' }}
+{% if is_bridge_version %}
+  bridge-ports node1 node2 node3 node4 ge0 ge1
+{% endif %}
+{% if network is defined and network.static is defined and network.static == true %}
+  address {{ network.profiles[profile].bmc }}
+  netmask 255.255.255.0
+  gateway {{ network.profiles[profile].gateway }}
+{% endif %}
+  pre-up /etc/network/nfs_check
+  wait-delay 15
+  hostname $(hostname)

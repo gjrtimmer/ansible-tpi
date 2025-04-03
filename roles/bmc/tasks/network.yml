@@ -1,0 +1,26 @@
+# code: language=ansible
+---
+- name: Check Version
+  ansible.builtin.raw: |
+    VERSION="$(tpi info|grep 'version' | grep -v 'build' | awk '{print $3}')"
+    REQUIRED_VERSION="2.1.0"
+    if [[ "$(echo -e "$VERSION\n$REQUIRED_VERSION" | sort -V | head -n1)" == "$REQUIRED_VERSION" ]]; then
+      echo true
+    else
+      echo false
+    fi
+  register: bmc_version
+  changed_when: false
+
+- name: Is Bridge Version
+  when: bmc_version is defined
+  ansible.builtin.set_fact:
+    is_bridge_version: "{{ bmc_version.stdout_lines[0] | bool }}"
+  changed_when: false
+
+- name: Render Network Configuration
+  delegate_to: localhost
+  ansible.builtin.template:
+    src: interfaces.j2
+    dest: /tmp/interfaces
+    mode: "0644"
