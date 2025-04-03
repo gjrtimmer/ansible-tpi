@@ -30,6 +30,7 @@
   hosts: "{{ ansible_limit | default('nodes, tpi') }}"
   gather_facts: false
   serial: 1
+  throttle: 1
   tags: [known_hosts]
   tasks:
     - name: Add known_host {{ inventory_hostname }}
@@ -52,6 +53,7 @@
   hosts: "{{ ansible_limit | default('nodes, tpi') }}"
   gather_facts: false
   serial: 1
+  throttle: 1
   tags: [config]
   tasks:
     - name: Add tpi host {{ inventory_hostname }}
