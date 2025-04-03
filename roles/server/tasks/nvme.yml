@@ -1,0 +1,17 @@
+# code: language=ansible
+---
+- name: Mount options for /
+  tags: [nvme]
+  ansible.posix.mount:
+    path: "/"
+    src: "UUID={{ ansible_mounts | json_query('[?mount == `/`] | [0].uuid') }}"
+    fstype: "ext4"
+    opts: "defaults,noatime,errors=remount-ro,x-systemd.growfs"
+    state: "present"
+  notify: "server : reboot"
+
+- name: Enable FSTrim
+  tags: [nvme]
+  ansible.builtin.service:
+    name: "fstrim"
+    enabled: true
