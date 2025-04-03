@@ -1,0 +1,5 @@
+# code: language=ansible
+---
+- name: network-restart # noqa name[casing]
+  ansible.builtin.raw: /etc/init.d/S40network restart
+  changed_when: false

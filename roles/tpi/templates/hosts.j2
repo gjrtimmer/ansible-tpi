@@ -1,0 +1,5 @@
+127.0.0.1		localhost
+127.0.0.1		{{ inventory_hostname }}
+{% if network is defined and network.static is defined and network.static == true %}
+{{ network.profiles[profile].bmc }}		{{ inventory_hostname }}
+{% endif %}

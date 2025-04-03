@@ -12,6 +12,7 @@ iface {{ 'br0' if is_bridge_version else 'eth0' }} inet {{ 'dhcp' if network is 
   address {{ network.profiles[profile].bmc }}
   netmask 255.255.255.0
   gateway {{ network.profiles[profile].gateway }}
+  dns-nameservers {{ network.profiles[profile].dns }}
 {% endif %}
   pre-up /etc/network/nfs_check
   wait-delay 15

@@ -1,5 +1,8 @@
 # code: language=yaml
 ---
+# Force install client overwrite
+client_overwrite: false
+
 tpi:
   url:
     linux: https://github.com/turing-machines/tpi/releases/latest/download/tpi-{{ architecture }}-unknown-{{ os }}-gnu.tar.gz

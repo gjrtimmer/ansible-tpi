@@ -1,6 +1,7 @@
 # code: language=ansible
 ---
 - name: Check Version
+  tags: [network]
   ansible.builtin.raw: |
     VERSION="$(tpi info|grep 'version' | grep -v 'build' | awk '{print $3}')"
     REQUIRED_VERSION="2.1.0"
@@ -14,13 +15,16 @@
 
 - name: Is Bridge Version
   when: bmc_version is defined
+  tags: [network]
   ansible.builtin.set_fact:
     is_bridge_version: "{{ bmc_version.stdout_lines[0] | bool }}"
   changed_when: false
 
 - name: Render Network Configuration
   delegate_to: localhost
+  tags: [network]
   ansible.builtin.template:
     src: interfaces.j2
     dest: /tmp/interfaces
     mode: "0644"
+  notify: "tpi : network-restart"

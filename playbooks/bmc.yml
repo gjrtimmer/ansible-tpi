@@ -6,12 +6,14 @@
   serial: 1
   tasks:
     - name: Set hostname
+      when: inventory_hostname in groups['tpi']
       ansible.builtin.import_role:
-        name: bmc
+        name: tpi
         tasks_from: hostname.yml
 
     - name: Set BMC Network
+      when: inventory_hostname in groups['tpi']
       tags: [network]
       ansible.builtin.import_role:
-        name: bmc
+        name: tpi
         tasks_from: network.yml
