@@ -3,24 +3,22 @@
 - name: Configure Network
   tags: [network]
   when: >
-    network is defined
+    not inventory_hostname in groups['tpi']
     and
-    network.static is defined
-    and
-    network.profiles is defined
-    and
-    profile is defined
-    and
-    network.profiles[profile] is defined
-    and
-    network.profiles[profile].cidr is defined
-    and
-    network.profiles[profile].gateway is defined
-    and
-    network.profiles[profile].dns is defined
-    and
-    network.profiles[profile].bmc is defined
-    and
-    network.profiles[profile].nodes is defined
+    hostvars[inventory_hostname]['type'] | upper == 'RK1'
   ansible.builtin.include_tasks:
     file: netplan.yml
+
+- name: Configure MulticastDNS
+  tags: [network]
+  when: >
+    not inventory_hostname in groups['tpi']
+    and
+    hostvars[inventory_hostname]['type'] | upper == 'RK1'
+  ansible.builtin.template:
+    src: mdns.j2
+    dest: /etc/systemd/network/10-multicast.network
+    owner: root
+    group: root
+    mode: "0644"
+  notify: "network : netplan-apply"

@@ -1,10 +1,12 @@
 # code: language=ansible
 ---
 - name: Set hostname
+  when: inventory_hostname in groups['tpi']
   ansible.builtin.raw: "echo '{{ inventory_hostname }}' > /etc/hostname && hostname {{ inventory_hostname }}"
   changed_when: true
 
 - name: Render hosts Configuration
+  when: inventory_hostname in groups['tpi']
   delegate_to: localhost
   tags: [network]
   ansible.builtin.template:
@@ -13,6 +15,7 @@
     mode: "0644"
 
 - name: Copy hosts file
+  when: inventory_hostname in groups['tpi']
   tags: [network]
   ansible.builtin.import_tasks:
     file: scp-send.yml
@@ -25,6 +28,7 @@
   notify: network-restart
 
 - name: Set hosts permissions
+  when: inventory_hostname in groups['tpi']
   tags: [network]
   ansible.builtin.raw: chmod 0644 /etc/hosts
   changed_when: true

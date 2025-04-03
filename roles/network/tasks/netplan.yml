@@ -2,13 +2,19 @@
 ---
 - name: Default Config Exists
   tags: [network]
+  when: not inventory_hostname in groups['tpi']
   ansible.builtin.stat:
     path: /etc/netplan/50-cloud-init.yaml
   register: cloud_init_config
   changed_when: false
 
 - name: Remove Cloud Init Default Config
-  when: hostvars[inventory_hostname]['type'] | upper == 'RK1' and cloud_init_config.stat.exists
+  when: >
+    hostvars[inventory_hostname]['type'] | upper == 'RK1'
+    and
+    cloud_init_config.stat.exists
+    and
+    not inventory_hostname in groups['tpi']
   tags: [network]
   ansible.builtin.file:
     path: /etc/netplan/50-cloud-init.yaml
@@ -17,7 +23,10 @@
     - "network : netplan-apply"
 
 - name: Generate Network Config
-  when: hostvars[inventory_hostname]['type'] | upper == 'RK1'
+  when: >
+    hostvars[inventory_hostname]['type'] | upper == 'RK1'
+    and
+    not inventory_hostname in groups['tpi']
   tags: [network]
   ansible.builtin.template:
     src: netplan.yaml.j2
@@ -29,7 +38,10 @@
 
 - name: Set MTU (Nvidia)
   tags: [network]
-  when: hostvars[inventory_hostname]['type'] | upper == 'NVIDIA'
+  when: >
+    hostvars[inventory_hostname]['type'] | upper == 'NVIDIA'
+    and
+    not inventory_hostname in groups['tpi']
   ansible.builtin.shell:
     cmd: nmcli con modify Wired\ connection\ 1 802-3-ethernet.mtu {{ network.mtu }}
     executable: /bin/bash
@@ -42,6 +54,8 @@
     hostvars[inventory_hostname]['type'] | upper == 'RK1'
     and
     netplan_config.changed
+    and
+    not inventory_hostname in groups['tpi']
   tags: [network]
   become: true
   ansible.builtin.command:
@@ -55,6 +69,8 @@
     hostvars[inventory_hostname]['type'] | upper == 'RK1'
     and
     netplan_config.changed
+    and
+    not inventory_hostname in groups['tpi']
   tags: [network]
   ansible.builtin.set_fact:
     ansible_host: "{{ network.profiles[profile].nodes[inventory_hostname] }}"
@@ -65,6 +81,8 @@
     hostvars[inventory_hostname]['type'] | upper == 'RK1'
     and
     netplan_config.changed
+    and
+    not inventory_hostname in groups['tpi']
   tags: [network]
   ansible.builtin.wait_for_connection:
     delay: 10

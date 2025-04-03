@@ -6,7 +6,7 @@
     cmd: netplan apply
     executable: /bin/bash
   changed_when: false
-  async: 30
+  async: 15
   poll: 0
 
 - name: restart-network # noqa name[casing]
@@ -15,3 +15,5 @@
     name: systemd-networkd
     state: restarted
   changed_when: false
+  async: 15
+  poll: 0

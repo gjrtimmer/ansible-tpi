@@ -1,6 +1,7 @@
 # code: language=ansible
 ---
 - name: Check Version
+  when: inventory_hostname in groups['tpi']
   tags: [network]
   ansible.builtin.raw: |
     VERSION="$(tpi info|grep 'version' | grep -v 'build' | awk '{print $3}')"
@@ -14,13 +15,17 @@
   changed_when: false
 
 - name: Is Bridge Version
-  when: bmc_version is defined
+  when: >
+    bmc_version is defined
+    and
+    inventory_hostname in groups['tpi']
   tags: [network]
   ansible.builtin.set_fact:
     is_bridge_version: "{{ bmc_version.stdout_lines[0] | bool }}"
   changed_when: false
 
 - name: Render Network Configuration
+  when: inventory_hostname in groups['tpi']
   delegate_to: localhost
   tags: [network]
   ansible.builtin.template:

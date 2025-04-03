@@ -5,10 +5,10 @@ network:
     en-match:
       match:
         name: "en*"
-      mtu: {{ network.profiles[profile].mtu | default(network.mtu) }}
-      dhcp4: {{ 'false' if network.static else 'true' }}
+      mtu: {{ network.profiles[profile].mtu if network.profiles[profile].mtu is defined else network.mtu | default(network.mtu) }}
+      dhcp4: {{ 'true' if not network.static else 'false' | default(true) }}
       optional: true
-{% if network.static %}
+{% if network.static | default(false) %}
       addresses:
         - {{ network.profiles[profile].nodes[inventory_hostname] }}/{{ network.profiles[profile].cidr.split('/')[1] }}
       gateway4: {{ network.profiles[profile].gateway }}
@@ -19,10 +19,10 @@ network:
     eth-match:
       match:
         name: "eth*"
-      mtu: {{ network.profiles[profile].mtu | default(network.mtu) }}
+      mtu: {{ network.profiles[profile].mtu if network.profiles[profile].mtu is defined else network.mtu | default(network.mtu) }}
       dhcp4: {{ 'false' if network.static else 'true' }}
       optional: true
-{% if network.static %}
+{% if network.static | default(false) %}
       addresses:
         - {{ network.profiles[profile].nodes[inventory_hostname] }}/{{ network.profiles[profile].cidr.split('/')[1] }}
       gateway4: {{ network.profiles[profile].gateway }}

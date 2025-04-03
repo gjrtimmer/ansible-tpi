@@ -1,5 +1,13 @@
 # code: language=ansible
 ---
 - name: network-restart # noqa name[casing]
-  ansible.builtin.raw: /etc/init.d/S40network restart
+  when: inventory_hostname in groups['tpi']
+  delegate_to: localhost
+  ansible.builtin.raw: sshpass -p "{{ bmc_pass }}" ssh {{ bmc_user }}@{{ bmc_host }} "/etc/init.d/S40network restart"
+  register: network_restart
   changed_when: false
+  failed_when: network_restart.rc != 255
+  vars:
+    bmc_host: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
+    bmc_user: "{{ hostvars[inventory_hostname]['ansible_ssh_user'] }}"
+    bmc_pass: "{{ hostvars[inventory_hostname]['ansible_ssh_pass'] }}"
