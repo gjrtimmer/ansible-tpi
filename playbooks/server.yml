@@ -2,7 +2,7 @@
 ---
 - name: Server Configuration
   hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
-  gather_facts: false
+  gather_facts: true
   become: true
   roles:
     - server
