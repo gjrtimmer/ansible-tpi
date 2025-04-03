@@ -10,8 +10,16 @@
     state: "present"
   notify: "server : reboot"
 
-- name: Enable FSTrim
+- name: Enable Weekly filesystem trim
   tags: [nvme]
   ansible.builtin.service:
-    name: "fstrim"
+    name: "fstrim.timer"
     enabled: true
+    state: "restarted"
+
+- name: Enable filesystem trim
+  tags: [nvme]
+  ansible.builtin.service:
+    name: "fstrim.service"
+    enabled: true
+    state: "restarted"
