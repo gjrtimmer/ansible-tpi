@@ -1,0 +1,21 @@
+# code: language=ansible
+---
+- name: "Parition/Format Disk"
+  when: >
+    disk.devices is defined
+    and
+    disk.devices | length > 0
+  tags: [sata]
+  ansible.builtin.include_tasks:
+    file: disk.yml
+
+- name: "RAID Configuration"
+  when: >
+    raid.enabled | bool
+    and
+    raid.disks is defined
+    and
+    raid.disks | length > 0
+  tags: [raid]
+  ansible.builtin.include_tasks:
+    file: raid.yml

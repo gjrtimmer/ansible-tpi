@@ -1,0 +1,22 @@
+# code: lang=yaml
+---
+# Default variables for disk management on SATA devices
+disk:
+  devices:
+    #
+    # - { device: "/dev/sda", mount: {"options": "defaults,noatime,errors=remount-ro,x-systemd.growfs", "path": "/mnt/data"}, filesystem: "ext4" }
+    #
+
+# RAID settings
+raid:
+  # Enable RAID (set to true if RAID is enabled)
+  enabled: false
+
+  # Type of RAID (e.g., RAID0, RAID1)
+  type: "RAID1"
+
+  # The RAID device (e.g., /dev/md0)
+  device: "/dev/md0"
+
+  # Disks involved in RAID setup
+  disks: []

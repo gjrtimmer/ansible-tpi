@@ -1,0 +1,38 @@
+# code: lang=yaml
+---
+# Disk configuration
+disk:
+  # List of devices to initialize and mount
+  devices:
+    # Example device configuration
+    # - device: "sda" (Omit /dev prefix)
+    - device: "string"
+
+      # Filesystem type (e.g., ext4)
+      filesystem: "string"
+
+      # Mount Configuration
+      mount:
+        # Mount point (e.g., /mnt/data)
+        path: "string"
+
+        # Mode for the mount point (e.g., 0755)
+        mode: "string"
+
+        # Mount options (e.g., defaults)
+        options: "defaults,noatime,errors=remount-ro,x-systemd.growfs"
+
+# RAID configuration
+raid:
+  # Whether RAID is enabled (default: false)
+  enabled: "boolean"
+
+  # Type of RAID (e.g., RAID0, RAID1)
+  type: "string"
+
+  # List of disks to be used for RAID
+  disks:
+    - device: "string" # Disk device path for RAID (e.g., /dev/sda)
+
+  # Path to RAID device (e.g., /dev/md0)
+  raid_device: "string"

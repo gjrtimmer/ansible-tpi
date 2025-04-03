@@ -1,0 +1,9 @@
+# code: language=ansible
+---
+- name: Create RAID array (if enabled)
+  when: raid.enabled | bool
+  tags: [raid]
+  ansible.builtin.command: "mdadm --create {{ raid.device }} --level={{ raid.type }} --raid-devices={{ raid.disks | length }} {{ raid.disks | join(' ') }}"
+  changed_when: raid.disks | length > 0
+  register: raid_creation
+  failed_when: raid_creation.rc != 0

@@ -1,0 +1,57 @@
+# code: language=ansible
+---
+- name: Partition Disk
+  when: item.device is defined
+  tags: [sata]
+  ansible.builtin.command:
+    cmd: "parted /dev/{{ item.device }} --script mklabel gpt"
+  args:
+    creates: "/dev/{{ item.device }}1" # Only run partitioning if partition does not exist
+  loop: "{{ disk.devices }}"
+  loop_control:
+    loop_var: item
+
+- name: Create Partition
+  when: item.device is defined
+  tags: [sata]
+  ansible.builtin.command:
+    cmd: "parted /dev/{{ item.device }} --script mkpart primary 0% 100%"
+  args:
+    creates: "/dev/{{ item.device }}1" # Only create partition if it doesn't exist
+  loop: "{{ disk.devices }}"
+  loop_control:
+    loop_var: item
+
+- name: Format Disk
+  when: item.filesystem is defined
+  tags: [sata]
+  community.general.filesystem:
+    fstype: "{{ item.filesystem }}"
+    dev: "/dev/{{ item.device }}1"
+  loop: "{{ disk.devices }}"
+  loop_control:
+    loop_var: item
+
+- name: Create Mount Point
+  when: item.mount.path is defined
+  tags: [sata]
+  ansible.builtin.file:
+    path: "{{ item.mount.path }}"
+    state: directory
+    mode: "{{ item.mount.mode | default('0755') }}"
+  loop: "{{ disk.devices }}"
+  loop_control:
+    loop_var: item
+
+- name: Mount Disk
+  when: item.mount is defined
+  tags: [sata]
+  ansible.posix.mount:
+    path: "{{ item.mount.path }}"
+    src: "/dev/{{ item.device }}1"
+    fstype: "{{ item.filesystem }}"
+    opts: "{{ item.mount.options | default('defaults') }}"
+    state: mounted
+  loop: "{{ disk.devices }}"
+  loop_control:
+    loop_var: item
