@@ -15,6 +15,7 @@ tpi:
       ansible_ssh_user: root
       ansible_ssh_pass: turing # <-- You can encrypt this after setting ansible vault password
       ansible_ssh_prefix: tpi # <-- Prefix for SSH keys
+      gather_facts: false
 
 nodes:
   vars:
