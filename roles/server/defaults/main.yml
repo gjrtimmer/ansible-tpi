@@ -18,6 +18,20 @@ sysctl:
   # Needed for docker / orchastrators
   net.ipv4.ip_forward: 1
 
+  # This sysctl parameter controls whether iptables should be used
+  # to process IPv4 traffic on bridged interfaces. When set to 1,
+  # iptables will inspect and apply iptables rules to bridged network
+  # traffic, allowing containers or network interfaces connected
+  # to the same bridge to properly enforce network policies.
+  net.bridge.bridge-nf-call-iptables: 0
+
+  # Similarly, this sysctl parameter controls whether ip6tables should be used
+  # to process IPv6 traffic on bridged interfaces. When set to 1,
+  # ip6tables will inspect and apply ip6tables rules to bridged network
+  # traffic involving IPv6, ensuring that network policies are enforced
+  # for IPv6 communication between containers or interfaces on the same bridge.
+  net.bridge.bridge-nf-call-ip6tables: 0
+
   # tcp_syncookies
   # This parameter can help to prevent SYN flood DDoS attacks by testing the validity of the SYN packets.
   # For security reasons it is recommended to enable the parameter.
