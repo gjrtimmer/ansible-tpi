@@ -1,0 +1,11 @@
+# code: language=ansible
+# roles/hosts/tasks/main.yml
+---
+- name: Ensure /etc/hosts is correctly populated with template
+  become: true
+  ansible.builtin.template:
+    src: hosts.j2
+    dest: /etc/hosts
+    owner: root
+    group: root
+    mode: "0644"
