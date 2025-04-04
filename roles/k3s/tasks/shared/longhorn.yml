@@ -8,20 +8,30 @@
   changed_when: true
   failed_when: false
 
-- name: Ensure Longhorn data directory exists
+- name: "Create Longhorn data directory /data/{{ profile }}"
+  become: true
   ansible.builtin.file:
-    path: "{{ k3s.longhorn.storage_path }}"
+    path: "/data/{{ profile }}"
     state: directory
-    mode: "0770"
+    mode: "0755"
     owner: root
     group: root
+
+- name: "Install Longhorn via Helm"
   become: true
+  community.kubernetes.helm:
+    name: longhorn
+    chart_ref: longhorn/longhorn
+    release_namespace: longhorn-system
+    create_namespace: true
+    values_files:
+      - roles/k3s/templates/longhorn-values.yaml.j2
 
-- name: Create Longhorn StorageClass (placeholder)
-  ansible.builtin.debug:
-    msg: "Would create StorageClass using path {{ k3s.longhorn.storage_path }}. Integrate Helm chart or manifests here."
-
-- name: Configure Longhorn recurring job (if enabled)
-  when: k3s.longhorn.enable_recurring_jobs
-  ansible.builtin.debug:
-    msg: "Recurring job enabled: {{ k3s.longhorn.enable_recurring_jobs }}. This would set up snapshot/backup policies."
+- name: "Deploy Longhorn recurring job policy"
+  become: true
+  vars:
+    recurring_jobs: "{{ k3s.profiles[profile].longhorn.recurring_jobs }}"
+  kubernetes.core.k8s:
+    state: present
+    namespace: longhorn-system
+    definition: "{{ lookup('template', 'longhorn-recurring-job.yaml.j2') | from_yaml }}"

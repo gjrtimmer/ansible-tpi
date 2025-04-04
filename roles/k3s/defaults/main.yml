@@ -2,34 +2,27 @@
 # roles/k3s/defaults/main.yml
 ---
 k3s:
-  profile: k3s
-  cluster_init_node: node1
   version: v1.28.5+k3s1
   config_dir: /etc/rancher/k3s
   data_dir: /var/lib/rancher/k3s
   disable:
     - traefik
+    - local-storage
+    - servicelb
   args:
-    server: []
-    agent: []
+    server:
+      - --write-kubeconfig-mode 644
+      - --disable-cloud-controller
+    agent:
+      - --write-kubeconfig-mode 644
   profiles:
+    k3s:
+      longhorn:
+        storage_path: /data/global
+        backup_target: nfs://nas.tailscale:/mnt/backups/global
+        recurring_jobs: true
     academy:
       longhorn:
         storage_path: /data/academy
         backup_target: nfs://nas.tailscale:/mnt/backups/academy
-        enable_recurring_jobs: true
-      tailscale:
-        enable_subnet_routes: true
-        enable_magic_dns: true
-        tags:
-          - tag:academy
-    production:
-      longhorn:
-        storage_path: /data/global
-        backup_target: nfs://nas.tailscale:/mnt/backups/global
-        enable_recurring_jobs: true
-      tailscale:
-        enable_subnet_routes: true
-        enable_magic_dns: true
-        tags:
-          - tag:production
+        recurring_jobs: true
