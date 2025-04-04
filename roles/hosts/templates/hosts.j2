@@ -11,7 +11,8 @@ ff02::2     	ip6-allrouters
 ff02::3     	ip6-allhosts
 
 # Cluster nodes
-{% for host in groups[profile] %}
+{% set effective_group = profile if profile in groups else 'nodes' %}
+{% for host in groups[effective_group] %}
   {%- set hostname = host %}
   {%- set dns_entries = [host] %}
   {%- if hostvars[host].tailscale.enabled | default(false) %}
@@ -20,7 +21,16 @@ ff02::3     	ip6-allhosts
   {%- if hostvars[host].network.profiles[profile].fqdn is defined %}
     {%- set dns_entries = dns_entries + [hostname ~ "." ~ hostvars[host].network.profiles[profile].fqdn] %}
   {%- endif %}
-{{ hostvars[host].ip_address }}	{{ dns_entries | join(' ') }}
+  {%- if hostvars[host].ip_address is defined and not ('{{' in hostvars[host].ip_address) %}
+{{ hostvars[host].ip_address }}	{{ dns_entries | join(' ') }}{{ '
+' }}
+  {%- elif network.profiles[profile].nodes[host] is defined %}
+{{ network.profiles[profile].nodes[host] }}	{{ dns_entries | join(' ') }}{{ '
+' }}
+  {%- else %}
+{{ host }}	{{ dns_entries | join(' ') }}{{ '
+' }}
+  {%- endif %}
 {% endfor %}
 
 # Extra infrastructure hosts
