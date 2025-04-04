@@ -18,17 +18,17 @@ ff02::3     ip6-allhosts
   {%- if hostvars[host].tailscale.enabled | default(false) %}
     {%- set dns_entries = dns_entries + [hostname ~ "." ~ hostvars[host].tailscale.tailnet] %}
   {%- endif %}
-  {%- if network.zones is defined %}
-    {%- for zone_name, zone in network.zones.items() if zone.profile == profile %}
-      {%- if host in zone.nodes %}
-        {%- set ip = zone.nodes[host] %}
-        {%- if hostvars[host].network.zones[zone_name].fqdn is defined %}
-          {%- set dns_entries = dns_entries + [hostname ~ '.' ~ hostvars[host].network.zones[zone_name].fqdn] %}
-        {%- endif %}
-{{ ip }}   {{ dns_entries | join(' ') }}{{ '\n' }}
+  {%- set matched = false %}
+  {%- for zone_name, zone in network.zones.items() if zone.profile == profile %}
+    {%- if not matched and host in zone.nodes %}
+      {%- set ip = zone.nodes[host] %}
+      {%- if zone.fqdn is defined %}
+        {%- set dns_entries = dns_entries + [hostname ~ '.' ~ zone.fqdn] %}
       {%- endif %}
-    {%- endfor %}
-  {%- endif %}
+{{ ip }}   {{ dns_entries | join(' ') }}{{ '\n' }}
+      {%- set matched = true %}
+    {%- endif %}
+  {%- endfor %}
 {% endfor %}
 
 # Extra infrastructure hosts
@@ -39,10 +39,10 @@ ff02::3     ip6-allhosts
   {%- if hostvars[primary_host] is defined and hostvars[primary_host].tailscale.enabled | default(false) %}
     {%- set all_dns = all_dns + [primary_host ~ "." ~ hostvars[primary_host].tailscale.tailnet] %}
   {%- endif %}
-  {%- for zone in network.zones.values() %}
+  {%- for zone in network.zones.values() if zone.profile == profile %}
     {%- if primary_host in zone.nodes and zone.fqdn is defined %}
       {%- set all_dns = all_dns + [primary_host ~ '.' ~ zone.fqdn] %}
     {%- endif %}
   {%- endfor %}
 {{ entry.ip }}   {{ all_dns | join(' ') }}
-{%- endfor %}
+{% endfor %}
