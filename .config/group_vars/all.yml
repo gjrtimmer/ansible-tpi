@@ -23,3 +23,9 @@ datetime:
 # The full schema can be found at: roles/network/vars/schema.yml
 network:
   static: false
+
+k3s:
+  profile: academy # Change this to 'production' when switching to production
+
+longhorn:
+  enable_recurring_jobs: true # Enable based on profile needs

@@ -43,3 +43,26 @@ nodes:
       slot: 4
       type: RK1
       root: /dev/nvme0n1
+
+academy:
+  hosts:
+    node1:
+    node2:
+    node3:
+    node4:
+
+k3s:
+  hosts:
+    node1:
+    node2:
+    node3:
+    node4:
+
+k3s_server:
+  hosts:
+    node1:
+    node2:
+    node3:
+
+k3s_agent:
+  node4:
