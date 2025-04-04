@@ -5,3 +5,5 @@ collections:
   - name: community.crypto
   - name: community.general
   - name: community.docker
+  - name: community.kubernetes
+  - name: kubernetes.core
