@@ -1,0 +1,34 @@
+# code: language=ansible
+# roles/k3s/tasks/profiles/academy.yml
+---
+- name: Ensure academy-specific config directory exists
+  become: true
+  ansible.builtin.file:
+    path: "{{ k3s.config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create academy and production data directories for Longhorn
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0770"
+    owner: root
+    group: root
+  loop:
+    - /data/academy
+    - /data/global
+
+- name: Configure Longhorn with academy profile
+  ansible.builtin.debug:
+    msg: "Using Longhorn path: {{ k3s.longhorn.storage_path }} and backup target: {{ k3s.longhorn.backup_target }}"
+
+- name: Tag node with academy label (if needed later)
+  when: inventory_hostname in groups['academy']
+  become: true
+  ignore_errors: true
+  ansible.builtin.shell:
+    cmd: kubectl label node $(hostname) profile=academy --overwrite

@@ -1,0 +1,18 @@
+# code: language=ansible
+# roles/k3s/tasks/backup.yml
+---
+- name: Backup etcd snapshot (if server)
+  when: inventory_hostname in groups['k3s_server']
+  become: true
+  ansible.builtin.command:
+    cmd: k3s etcd-snapshot save
+  register: etcd_backup
+  changed_when: "'Snapshot saved' in etcd_backup.stdout"
+
+- name: Trigger Longhorn backup
+  when: k3s.longhorn.storage_path is defined
+  become: true
+  ansible.builtin.script:
+    cmd: files/longhorn-backup.sh
+  register: longhorn_backup
+  failed_when: longhorn_backup.rc != 0

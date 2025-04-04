@@ -1,0 +1,21 @@
+# code: language=ansible
+# roles/k3s/tasks/mode-switch.yml
+---
+- name: "Step 1: Backup current cluster state before switching"
+  ansible.builtin.import_tasks: backup.yml
+
+- name: "Step 2: Wait for manual confirmation of backup success"
+  ansible.builtin.pause:
+    prompt: "Confirm backups are complete and replicated to NLD. Press Enter to continue with reset."
+
+- name: "Step 3: Reset current node state"
+  ansible.builtin.import_tasks: reset.yml
+
+- name: "Step 4: Set new profile"
+  ansible.builtin.set_fact:
+    k3s:
+      profile: "{{ new_profile }}"
+
+- name: "Step 5: Re-run full k3s role with new profile"
+  ansible.builtin.include_role:
+    name: k3s

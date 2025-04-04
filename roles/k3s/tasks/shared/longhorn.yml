@@ -1,0 +1,27 @@
+# code: language=ansible
+# roles/k3s/tasks/shared/longhorn.yml
+---
+- name: Label node for Longhorn storage
+  ansible.builtin.shell:
+    cmd: kubectl label node $(hostname) longhorn-node=true --overwrite
+  become: true
+  changed_when: true
+  failed_when: false
+
+- name: Ensure Longhorn data directory exists
+  ansible.builtin.file:
+    path: "{{ k3s.longhorn.storage_path }}"
+    state: directory
+    mode: "0770"
+    owner: root
+    group: root
+  become: true
+
+- name: Create Longhorn StorageClass (placeholder)
+  ansible.builtin.debug:
+    msg: "Would create StorageClass using path {{ k3s.longhorn.storage_path }}. Integrate Helm chart or manifests here."
+
+- name: Configure Longhorn recurring job (if enabled)
+  when: k3s.longhorn.enable_recurring_jobs
+  ansible.builtin.debug:
+    msg: "Recurring job enabled: {{ k3s.longhorn.enable_recurring_jobs }}. This would set up snapshot/backup policies."

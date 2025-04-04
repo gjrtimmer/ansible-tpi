@@ -1,0 +1,8 @@
+# code: language=yaml
+---
+write-kubeconfig-mode: "0644"
+disable:
+{% for item in k3s.disable %}
+  - {{ item }}
+{% endfor %}
+data-dir: {{ k3s.data_dir }}

@@ -1,0 +1,15 @@
+# code: language=yaml
+# roles/k3s/templates/longhorn-recurring-job.yaml.j2
+---
+apiVersion: longhorn.io/v1beta1
+kind: RecurringJob
+metadata:
+  name: snapshot-daily
+  namespace: longhorn-system
+spec:
+  cron: "0 2 * * *"
+  task: snapshot
+  groups:
+    - default
+  retain: 7
+  concurrency: 1

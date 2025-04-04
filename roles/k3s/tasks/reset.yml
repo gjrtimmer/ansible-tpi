@@ -1,0 +1,17 @@
+# code: language=ansible
+# roles/k3s/tasks/reset.yml
+---
+- name: Run K3s uninstall script
+  become: true
+  ansible.builtin.command:
+    cmd: /usr/local/bin/k3s-uninstall.sh
+    removes: /usr/local/bin/k3s
+
+- name: Remove K3s config and data directories
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ k3s.config_dir }}"
+    - "{{ k3s.data_dir }}"
