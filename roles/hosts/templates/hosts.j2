@@ -1,10 +1,38 @@
-127.0.0.1 localhost
+# code: language=jinja
+# roles/hosts/templates/hosts.j2
+127.0.0.1   	localhost
 
 # The following lines are desirable for IPv6 capable hosts
-::1 ip6-localhost ip6-loopback
-fe00::0 ip6-localnet
-ff00::0 ip6-mcastprefix
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
-ff02::3 ip6-allhosts
+::1         	ip6-localhost ip6-loopback
+fe00::0     	ip6-localnet
+ff00::0     	ip6-mcastprefix
+ff02::1     	ip6-allnodes
+ff02::2     	ip6-allrouters
+ff02::3     	ip6-allhosts
 
+# Cluster nodes
+{% for host in groups[profile] %}
+  {%- set hostname = host %}
+  {%- set dns_entries = [host] %}
+  {%- if hostvars[host].tailscale.enabled | default(false) %}
+    {%- set dns_entries = dns_entries + [hostname ~ "." ~ hostvars[host].tailscale.tailnet] %}
+  {%- endif %}
+  {%- if hostvars[host].network.profiles[profile].fqdn is defined %}
+    {%- set dns_entries = dns_entries + [hostname ~ "." ~ hostvars[host].network.profiles[profile].fqdn] %}
+  {%- endif %}
+{{ hostvars[host].ip_address }}	{{ dns_entries | join(' ') }}
+{% endfor %}
+
+# Extra infrastructure hosts
+{% for entry in extra_hosts -%}
+  {%- set dns_list = entry.dns %}
+  {%- set primary_host = dns_list[0] %}
+  {%- set all_dns = dns_list %}
+  {%- if hostvars[primary_host] is defined and hostvars[primary_host].tailscale.enabled | default(false) %}
+    {%- set all_dns = all_dns + [primary_host ~ "." ~ hostvars[primary_host].tailscale.tailnet] %}
+  {%- endif %}
+  {%- if hostvars[primary_host].network.profiles[profile].fqdn is defined %}
+    {%- set all_dns = all_dns + [primary_host ~ "." ~ hostvars[primary_host].network.profiles[profile].fqdn] %}
+  {%- endif %}
+{{ entry.ip }}	{{ all_dns | join(' ') }}
+{%- endfor %}

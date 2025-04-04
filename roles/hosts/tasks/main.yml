@@ -3,9 +3,11 @@
 ---
 - name: Ensure /etc/hosts is correctly populated with template
   become: true
+  delegate_to: localhost
   ansible.builtin.template:
     src: hosts.j2
-    dest: /etc/hosts
+    # dest: /etc/hosts
+    dest: "/tmp/hosts"
     owner: root
     group: root
     mode: "0644"
