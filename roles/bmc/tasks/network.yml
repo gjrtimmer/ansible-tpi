@@ -37,4 +37,3 @@
     bmc_host: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
     bmc_user: "{{ hostvars[inventory_hostname]['ansible_ssh_user'] }}"
     bmc_pass: "{{ hostvars[inventory_hostname]['ansible_ssh_pass'] }}"
-  notify: network-restart
