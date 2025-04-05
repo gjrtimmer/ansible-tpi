@@ -15,7 +15,7 @@ network:
 
   # Define all physical/logical zones in the infrastructure
   zones:
-    can:
+    home:
       profile: "academy"
       fqdn: local
       mtu: 1500
