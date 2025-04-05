@@ -2,7 +2,7 @@
 ---
 - name: Default Config Exists
   tags: [network]
-  when: not inventory_hostname in groups['tpi']
+  when: not inventory_hostname in groups['bmc']
   ansible.builtin.stat:
     path: /etc/netplan/50-cloud-init.yaml
   register: cloud_init_config
@@ -14,7 +14,7 @@
     and
     cloud_init_config.stat.exists
     and
-    not inventory_hostname in groups['tpi']
+    not inventory_hostname in groups['bmc']
   tags: [network]
   ansible.builtin.file:
     path: /etc/netplan/50-cloud-init.yaml
@@ -26,7 +26,7 @@
   when: >
     hostvars[inventory_hostname]['type'] | upper == 'RK1'
     and
-    not inventory_hostname in groups['tpi']
+    not inventory_hostname in groups['bmc']
   tags: [network]
   ansible.builtin.template:
     src: netplan.yaml.j2
@@ -41,7 +41,7 @@
   when: >
     hostvars[inventory_hostname]['type'] | upper == 'NVIDIA'
     and
-    not inventory_hostname in groups['tpi']
+    not inventory_hostname in groups['bmc']
   ansible.builtin.shell:
     cmd: nmcli con modify Wired\ connection\ 1 802-3-ethernet.mtu {{ network.mtu }}
     executable: /bin/bash
@@ -55,7 +55,7 @@
     and
     netplan_config.changed
     and
-    not inventory_hostname in groups['tpi']
+    not inventory_hostname in groups['bmc']
   tags: [network]
   become: true
   ansible.builtin.command:
@@ -70,7 +70,7 @@
     and
     netplan_config.changed
     and
-    not inventory_hostname in groups['tpi']
+    not inventory_hostname in groups['bmc']
   tags: [network]
   ansible.builtin.set_fact:
     ansible_host: "{{ network.profiles[profile].nodes[inventory_hostname] }}"
@@ -82,7 +82,7 @@
     and
     netplan_config.changed
     and
-    not inventory_hostname in groups['tpi']
+    not inventory_hostname in groups['bmc']
   tags: [network]
   ansible.builtin.wait_for_connection:
     delay: 10

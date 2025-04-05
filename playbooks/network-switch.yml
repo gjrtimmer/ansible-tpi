@@ -1,36 +1,36 @@
 # code: language=ansible
 ---
 - name: Switch Network Nodes
-  hosts: "{{ ansible_limit | default('!tpi') }}"
+  hosts: "{{ ansible_limit | default('!bmc') }}"
   become: true
   gather_facts: false
   tasks:
     - name: Gather Facts
-      when: inventory_hostname not in groups['tpi']
+      when: inventory_hostname not in groups['bmc']
       ansible.builtin.setup:
 
     - name: Switch Network Nodes
-      when: inventory_hostname not in groups['tpi']
+      when: inventory_hostname not in groups['bmc']
       ansible.builtin.import_role:
         name: network
 
 - name: Switch Network BMC
-  hosts: "{{ ansible_limit | default('tpi') }}"
+  hosts: "{{ ansible_limit | default('bmc') }}"
   gather_facts: false
   tasks:
     - name: Set hostname
-      when: inventory_hostname in groups['tpi']
+      when: inventory_hostname in groups['bmc']
       ansible.builtin.import_role:
-        name: tpi
+        name: bmc
         tasks_from: hostname.yml
       vars:
         ansible_host: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
 
     - name: Set BMC Network
-      when: inventory_hostname in groups['tpi']
+      when: inventory_hostname in groups['bmc']
       tags: [network]
       ansible.builtin.import_role:
-        name: tpi
+        name: bmc
         tasks_from: network.yml
       vars:
         ansible_host: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"

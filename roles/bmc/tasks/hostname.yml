@@ -1,0 +1,8 @@
+# code: language=ansible
+---
+- name: Set hostname
+  when: inventory_hostname in groups['bmc']
+  tags: [hostname]
+  ansible.builtin.raw: "echo '{{ inventory_hostname }}' > /etc/hostname && hostname {{ inventory_hostname }}"
+  changed_when: true
+  notify: "bmc : network-restart"

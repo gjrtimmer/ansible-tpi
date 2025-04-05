@@ -12,6 +12,7 @@ hosts.yml
 hosts
 !hosts/
 !playbooks/hosts.yml
+!roles/bmc/tasks/hosts.yml
 .DS_Store
 host_vars/*
 group_vars/*

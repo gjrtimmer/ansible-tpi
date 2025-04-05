@@ -2,7 +2,7 @@
 ---
 # This playbook is to provision a Nvidia Node
 - name: Upgrade
-  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
+  hosts: "{{ ansible_limit | default('nodes,!bmc') }}"
   gather_facts: true
   become: true
   tags: [upgrade]
@@ -10,7 +10,7 @@
     - upgrade
 
 - name: Server Configuration
-  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
+  hosts: "{{ ansible_limit | default('nodes,!bmc') }}"
   gather_facts: true
   become: true
   tags: [server]
@@ -19,7 +19,7 @@
     - nvidia
 
 - name: Install Container Runtime
-  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
+  hosts: "{{ ansible_limit | default('nodes,!bmc') }}"
   gather_facts: true
   tags: [docker, podman]
   become: true

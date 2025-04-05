@@ -8,11 +8,15 @@ iface {{ 'br0' if is_bridge_version else 'eth0' }} inet {{ 'dhcp' if network is 
 {% if is_bridge_version %}
   bridge-ports node1 node2 node3 node4 ge0 ge1
 {% endif %}
-{% if network is defined and network.static is defined and network.static == true %}
-  address {{ network.profiles[profile].bmc }}
+{% if network is defined and network.static is defined and network.static %}
+{% for zone_name, zone in network.zones.items() %}
+{% if zone.profile == profile and zone.bmc.dns == inventory_hostname %}
+  address {{ zone.bmc.ip }}
   netmask 255.255.255.0
-  gateway {{ network.profiles[profile].gateway }}
-  dns-nameservers {{ network.profiles[profile].dns }}
+  gateway {{ zone.gateway }}
+  dns-nameservers {{ zone.dns }}
+{% endif %}
+{% endfor %}
 {% endif %}
   pre-up /etc/network/nfs_check
   wait-delay 15

@@ -7,7 +7,7 @@ all:
       tailscale:
         enabled: false
 
-tpi:
+bmc:
   vars:
     tailscale:
       enabled: false

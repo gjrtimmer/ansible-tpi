@@ -7,7 +7,7 @@ all:
       tailscale:
         enabled: false
 
-tpi:
+bmc:
   hosts:
     bmc: # Use this value in the node `bmc` key
       # The following keys are used to execute commands on the BMC

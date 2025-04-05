@@ -1,11 +1,11 @@
 # code: language=ansible
 ---
 - name: Power Off
-  hosts: "{{ ansible_limit|default('nodes,!tpi') }}"
+  hosts: "{{ ansible_limit|default('nodes,!bmc') }}"
   gather_facts: false
   tasks:
     - name: Power Off Node
       delegate_to: localhost
       ansible.builtin.import_role:
-        name: tpi
+        name: bmc
         tasks_from: power-off.yml

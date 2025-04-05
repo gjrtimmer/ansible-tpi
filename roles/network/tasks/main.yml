@@ -3,7 +3,7 @@
 - name: Configure Network
   tags: [network]
   when: >
-    not inventory_hostname in groups['tpi']
+    not inventory_hostname in groups['bmc']
     and
     hostvars[inventory_hostname]['type'] | upper == 'RK1'
   ansible.builtin.include_tasks:
@@ -12,7 +12,7 @@
 - name: Configure MulticastDNS
   tags: [network]
   when: >
-    not inventory_hostname in groups['tpi']
+    not inventory_hostname in groups['bmc']
     and
     hostvars[inventory_hostname]['type'] | upper == 'RK1'
   ansible.builtin.template:

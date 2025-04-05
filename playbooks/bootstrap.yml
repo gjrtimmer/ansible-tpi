@@ -1,7 +1,7 @@
 # code: language=ansible
 ---
 - name: Requirements
-  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
+  hosts: "{{ ansible_limit | default('nodes,!bmc') }}"
   gather_facts: false
   tags: [setup]
   serial: 1
@@ -20,7 +20,7 @@
         name: ssh
 
 - name: Bootstrap
-  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
+  hosts: "{{ ansible_limit | default('nodes,!bmc') }}"
   gather_facts: false
   serial: 1
   tags: [bootstrap]
@@ -28,14 +28,14 @@
     - bootstrap
 
 - name: RK1
-  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
+  hosts: "{{ ansible_limit | default('nodes,!bmc') }}"
   gather_facts: true
   tags: [rk1]
   roles:
     - rk1
 
 - name: Wait for Initial Boot/Config
-  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
+  hosts: "{{ ansible_limit | default('nodes,!bmc') }}"
   gather_facts: true
   tags: [tpi]
   tasks:
@@ -45,7 +45,7 @@
         minutes: 3
 
 - name: Server Configuration
-  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
+  hosts: "{{ ansible_limit | default('nodes,!bmc') }}"
   gather_facts: true
   become: true
   tags: [server]
@@ -53,7 +53,7 @@
     - server
 
 - name: Network Configuration
-  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
+  hosts: "{{ ansible_limit | default('nodes,!bmc') }}"
   gather_facts: true
   become: true
   tags: [network]
@@ -61,7 +61,7 @@
     - network
 
 - name: Install Container Runtime
-  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
+  hosts: "{{ ansible_limit | default('nodes,!bmc') }}"
   gather_facts: true
   tags: [docker, podman]
   become: true

@@ -7,7 +7,7 @@
 
 - name: Power Off Node
   ansible.builtin.import_role:
-    name: tpi
+    name: bmc
     tasks_from: power-off.yml
 
 - name: TPI Client Wait

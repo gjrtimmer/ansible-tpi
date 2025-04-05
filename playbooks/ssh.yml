@@ -9,7 +9,7 @@
     - ssh
 
 - name: Install SSH Key to BMC
-  hosts: "{{ ansible_limit | default('tpi') }}"
+  hosts: "{{ ansible_limit | default('bmc') }}"
   gather_facts: false
   serial: 1
   tags: [bmc]

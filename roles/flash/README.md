@@ -56,7 +56,7 @@ Including an example of how to use your role (for instance, with variables passe
 ```yaml
 ---
 - name: Flash nodes
-  hosts: "{{ ansible_limit|default('nodes,!tpi') }}"
+  hosts: "{{ ansible_limit|default('nodes,!bmc') }}"
   gather_facts: false
   remote_user: root
   roles:

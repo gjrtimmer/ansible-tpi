@@ -1,12 +1,12 @@
 # code: language=ansible
 ---
 - name: Power On
-  hosts: "{{ ansible_limit|default('nodes,!tpi') }}"
+  hosts: "{{ ansible_limit|default('nodes,!bmc') }}"
   gather_facts: false
   tasks:
     - name: Power On Node
       ansible.builtin.import_role:
-        name: tpi
+        name: bmc
         tasks_from: power-on.yml
 
     - name: Wait for Power On

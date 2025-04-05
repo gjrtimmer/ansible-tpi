@@ -1,0 +1,20 @@
+127.0.0.1	localhost
+127.0.0.1	{{ inventory_hostname }}
+{% if network is defined %}
+{% for zone_name, zone in network.zones.items() %}
+{%- if zone.profile == profile %}
+
+# BMC
+{{ zone.bmc.ip }}	{{ inventory_hostname }} {{ inventory_hostname }}.{{ zone.fqdn }}
+{% if zone.bmc.ipv6 is defined %}
+{{ zone.bmc.ipv6 }}	{{ inventory_hostname }}.ipv6
+{% endif %}
+
+# Nodes
+{% for node, ip in zone.nodes.items() %}
+{{ ip }}	{{ node }} {{ node }}.{{ zone.fqdn }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+

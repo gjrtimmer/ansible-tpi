@@ -1,7 +1,7 @@
 # code: language=ansible
 ---
 - name: Check Version
-  when: inventory_hostname in groups['tpi']
+  when: inventory_hostname in groups['bmc']
   tags: [network]
   ansible.builtin.raw: |
     VERSION="$(tpi info|grep 'version' | grep -v 'build' | awk '{print $3}')"
@@ -18,18 +18,36 @@
   when: >
     bmc_version is defined
     and
-    inventory_hostname in groups['tpi']
+    inventory_hostname in groups['bmc']
   tags: [network]
   ansible.builtin.set_fact:
     is_bridge_version: "{{ bmc_version.stdout_lines[0] | bool }}"
   changed_when: false
 
 - name: Render Network Configuration
-  when: inventory_hostname in groups['tpi']
+  when: inventory_hostname in groups['bmc']
   delegate_to: localhost
   tags: [network]
   ansible.builtin.template:
     src: interfaces.j2
     dest: /tmp/interfaces
     mode: "0644"
-  notify: "tpi : network-restart"
+
+- name: Copy Network Configuration
+  when: inventory_hostname in groups['bmc']
+  tags: [network]
+  ansible.builtin.import_tasks:
+    file: scp-send.yml
+  vars:
+    src: /tmp/interfaces
+    dest: /etc/network/interfaces
+    bmc_host: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
+    bmc_user: "{{ hostvars[inventory_hostname]['ansible_ssh_user'] }}"
+    bmc_pass: "{{ hostvars[inventory_hostname]['ansible_ssh_pass'] }}"
+  notify: network-restart
+
+- name: Set Permissions
+  when: inventory_hostname in groups['bmc']
+  tags: [network]
+  ansible.builtin.raw: chmod 0644 /etc/network/interfaces
+  changed_when: true

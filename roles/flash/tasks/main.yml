@@ -27,7 +27,7 @@
     (
       inventory_hostname in groups['nodes'] and
       inventory_hostname == hostvars[hostname].inventory_hostname and
-      ansible_limit | default('nodes,!tpi')
+      ansible_limit | default('nodes,!bmc')
     )
   ansible.builtin.include_tasks: tasks/node.yml
   with_items: "{{ groups['nodes'] }}"

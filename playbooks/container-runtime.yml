@@ -1,7 +1,7 @@
 # code: language=ansible
 ---
 - name: Install Container Runtime
-  hosts: "{{ ansible_limit | default('nodes,!tpi') }}"
+  hosts: "{{ ansible_limit | default('nodes,!bmc') }}"
   gather_facts: true
   tags: [docker, podman]
   become: true
