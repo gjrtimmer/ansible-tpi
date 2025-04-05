@@ -18,11 +18,11 @@
     dest: /tmp/{{ src | basename | regex_replace('\.j2$', '') }}
     mode: "0644"
 
-- name: SCP File
+- name: SCP File {{ src }}
   delegate_to: localhost
   ansible.builtin.raw: sshpass -p "{{ bmc_pass }}" scp /tmp/{{ src | basename | regex_replace('\.j2$', '') }} {{ bmc_user }}@{{ bmc_host }}:{{ dest }}
   changed_when: true
 
-- name: Set Permissions
+- name: Set Permissions {{ dest }}
   ansible.builtin.raw: chmod {{ mode }} {{ dest }}
   changed_when: true
