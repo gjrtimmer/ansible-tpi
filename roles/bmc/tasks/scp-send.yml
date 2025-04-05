@@ -1,6 +1,28 @@
 # code: language=ansible
 ---
+- name: Copy File {{ src }}
+  when: type | lower == 'file'
+  delegate_to: localhost
+  tags: [routes]
+  ansible.builtin.copy:
+    src: "{{ src }}"
+    dest: "/tmp/{{ src | basename }}"
+    mode: "0755"
+
+- name: Copy Template {{ src }}
+  when: type | lower == 'template'
+  delegate_to: localhost
+  tags: [routes]
+  ansible.builtin.template:
+    src: "{{ src }}"
+    dest: /tmp/{{ src | basename | regex_replace('\.j2$', '') }}
+    mode: "0644"
+
 - name: SCP File
   delegate_to: localhost
-  ansible.builtin.raw: sshpass -p "{{ bmc_pass }}" scp {{ src }} {{ bmc_user }}@{{ bmc_host }}:{{ dest }}
+  ansible.builtin.raw: sshpass -p "{{ bmc_pass }}" scp /tmp/{{ src | basename | regex_replace('\.j2$', '') }} {{ bmc_user }}@{{ bmc_host }}:{{ dest }}
+  changed_when: true
+
+- name: Set Permissions
+  ansible.builtin.raw: chmod {{ mode }} {{ dest }}
   changed_when: true

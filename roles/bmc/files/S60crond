@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# Init script for BusyBox crond (Buildroot)
+# Should be named S60crond to run after network is up
+
+DAEMON="/usr/sbin/crond"
+CRONTAB_DIR="/var/spool/cron/crontabs"
+LOGFILE="/dev/null"
+
+case "$1" in
+  start)
+    echo "Starting crond..."
+    if [ ! -d "$CRONTAB_DIR" ]; then
+      mkdir -p "$CRONTAB_DIR"
+    fi
+    $DAEMON -b -c "$CRONTAB_DIR" -L "$LOGFILE"
+    ;;
+  stop)
+    echo "Stopping crond..."
+    killall crond
+    ;;
+  restart)
+    $0 stop
+    sleep 1
+    $0 start
+    ;;
+  status)
+    pidof crond >/dev/null && echo "crond is running" || echo "crond is not running"
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|status}"
+    exit 1
+    ;;
+esac
+
+exit 0

@@ -1,0 +1,66 @@
+#!/bin/sh
+
+# Auto-generated one-shot dynamic routing script for BMC
+# This script runs on a BMC node and updates routes based on reachable subnet routers
+
+# Resolve zone for this BMC (dns must match inventory_hostname, and profile must match)
+{% set ns = namespace(my_zone=None) %}
+{% for zone_name, zone in network.zones.items() %}
+  {%- if zone.profile == profile and zone.bmc.dns == inventory_hostname %}
+    {%- set ns.my_zone = zone_name %}
+echo "[INFO] This host is a BMC in zone '{{ zone_name }}' (profile: {{ profile }})"
+  {%- endif %}
+{% endfor %}
+
+{% if ns.my_zone is none %}
+echo "[ERROR] This host is not a BMC in any active zone (profile: {{ profile }}). Exiting."
+exit 0
+{% endif %}
+
+# Discover eligible subnet routers in this zone
+{% set routers = [] %}
+{% for host, ip in network.zones[ns.my_zone].nodes.items() %}
+{%- if hostvars[host].tailscale.enable_subnet_router | default(false) %}
+{%- set _ = routers.append({'host': host, 'ip': ip}) -%}
+echo "[INFO] Subnet router {{ host }} → {{ ip }}"
+{% endif %}
+{% endfor %}
+
+{% if routers | length == 0 %}
+echo "[INFO] No subnet routers enabled in zone {{ ns.my_zone }}"
+exit 0
+{% endif %}
+
+# Iterate over routes to remote zones (zones to route to)
+{% for remote_zone in network.zones[ns.my_zone].routes %}
+  {%- set remote = network.zones.get(remote_zone) %}
+  {%- if not remote %}
+echo "[WARN] Route target zone '{{ remote_zone }}' does not exist. Skipping."
+  {%- else %}
+REMOTE_SUBNET="{{ remote.cidr }}"
+echo "[INFO] Handling route to zone '{{ remote_zone }}' → $REMOTE_SUBNET"
+METRIC=100
+{% for r in routers %}
+ROUTER="{{ r.ip }}"
+EXISTING=$(ip route show "$REMOTE_SUBNET" | grep "via $ROUTER" || true)
+
+ping -c 1 -W 1 "$ROUTER" > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+  if [ -z "$EXISTING" ]; then
+    echo "[ADD] Adding route to $REMOTE_SUBNET via $ROUTER with metric $METRIC"
+    ip route add "$REMOTE_SUBNET" via "$ROUTER" metric $METRIC
+  else
+    echo "[OK] Route already exists to $REMOTE_SUBNET via $ROUTER. Skipping."
+  fi
+else
+  if [ -n "$EXISTING" ]; then
+    echo "[DEL] Router $ROUTER is unreachable. Removing route to $REMOTE_SUBNET"
+    ip route del "$REMOTE_SUBNET" via "$ROUTER"
+  else
+    echo "[SKIP] $ROUTER is unreachable and not in routing table. Skipping."
+  fi
+fi
+METRIC=$((METRIC + 10))
+{% endfor %}
+  {% endif %}
+{% endfor %}

@@ -4,24 +4,5 @@
   hosts: "{{ ansible_limit | default('bmc') }}"
   gather_facts: false
   serial: 1
-  tasks:
-    - name: Set hostname
-      when: inventory_hostname in groups['bmc']
-      tags: [hostname]
-      ansible.builtin.import_role:
-        name: bmc
-        tasks_from: hostname.yml
-
-    - name: Set hosts
-      when: inventory_hostname in groups['bmc']
-      tags: [hosts]
-      ansible.builtin.import_role:
-        name: bmc
-        tasks_from: hosts.yml
-
-    - name: Set BMC Network
-      when: inventory_hostname in groups['bmc']
-      tags: [network]
-      ansible.builtin.import_role:
-        name: bmc
-        tasks_from: network.yml
+  roles:
+    - role: bmc
