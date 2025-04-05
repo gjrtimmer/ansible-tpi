@@ -1,6 +1,6 @@
 # code: language=yaml
+# roles/network/files/schema.yml
 ---
-# vars/schema.yml
 # Active Profile
 profile: "home"
 
@@ -13,9 +13,11 @@ network:
   # If undefined, the system default MTU will be used.
   mtu: 1500
 
-  # Define all possible cluster network profiles
-  profiles:
-    home: # Home cluster
+  # Define all physical/logical zones in the infrastructure
+  zones:
+    can:
+      profile: "academy"
+      fqdn: local
       mtu: 1500
       cidr: "192.168.10.0/24"
       gateway: "192.168.10.1"
