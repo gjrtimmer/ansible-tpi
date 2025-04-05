@@ -1,32 +1,45 @@
-# templates/netplan.yml.j2
+# code: language=jinja
+# roles/network/templates/netplan.yaml.j2
+{{ ansible_managed | comment }}
 network:
   version: 2
   ethernets:
     en-match:
       match:
         name: "en*"
-      mtu: {{ network.profiles[profile].mtu if network.profiles[profile].mtu is defined else network.mtu | default(network.mtu) }}
-      dhcp4: {{ 'true' if not network.static else 'false' | default(true) }}
-      optional: true
-{% if network.static | default(false) %}
+      dhcp4: {{ (not network.static) | string | lower }}
+      {% if network.static %}
+      {%- set matched = false %}
+      {%- for zone_name, zone in network.zones.items() if zone.profile == profile -%}
+        {%- if not matched and inventory_hostname in zone.nodes -%}
       addresses:
-        - {{ network.profiles[profile].nodes[inventory_hostname] }}/{{ network.profiles[profile].cidr.split('/')[1] }}
-      gateway4: {{ network.profiles[profile].gateway }}
+        - {{ zone.nodes[inventory_hostname] }}/{{ zone.cidr.split('/')[1] }}
+      gateway4: {{ zone.gateway }}
       nameservers:
         addresses:
-          - {{ network.profiles[profile].dns }}
-{% endif %}
+          - {{ zone.dns }}
+      mtu: {{ zone.mtu if zone.mtu is defined else network.mtu | default(network.mtu) }}
+      {% set matched = true %}
+        {% endif %}
+      {% endfor %}
+      {% endif %}
+
     eth-match:
       match:
         name: "eth*"
-      mtu: {{ network.profiles[profile].mtu if network.profiles[profile].mtu is defined else network.mtu | default(network.mtu) }}
-      dhcp4: {{ 'false' if network.static else 'true' }}
-      optional: true
-{% if network.static | default(false) %}
+      dhcp4: {{ (not network.static) | string | lower }}
+      {% if network.static %}
+      {%- set matched = false -%}
+      {%- for zone_name, zone in network.zones.items() if zone.profile == profile -%}
+        {%- if not matched and inventory_hostname in zone.nodes -%}
       addresses:
-        - {{ network.profiles[profile].nodes[inventory_hostname] }}/{{ network.profiles[profile].cidr.split('/')[1] }}
-      gateway4: {{ network.profiles[profile].gateway }}
+        - {{ zone.nodes[inventory_hostname] }}/{{ zone.cidr.split('/')[1] }}
+      gateway4: {{ zone.gateway }}
       nameservers:
         addresses:
-          - {{ network.profiles[profile].dns }}
-{% endif %}
+          - {{ zone.dns }}
+      mtu: {{ zone.mtu if zone.mtu is defined else network.mtu | default(network.mtu) }}
+      {% set matched = true %}
+        {% endif %}
+      {% endfor %}
+      {% endif %}
