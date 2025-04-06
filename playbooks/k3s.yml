@@ -1,0 +1,7 @@
+# code: language=ansible
+---
+- name: K3s
+  hosts: "{{ ansible_limit | default('bmc') }}"
+  gather_facts: false
+  roles:
+    - role: k3s

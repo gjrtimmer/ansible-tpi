@@ -1,17 +1,31 @@
 # code: language=ansible
 # roles/k3s/tasks/main.yml
 ---
+- name: Uninstall K3s
+  tags: [uninstall]
+  when: "'uninstall' in ansible_run_tags"
+  ansible.builtin.include_tasks:
+    file: uninstall.yml
+
 - name: Merge selected profile into k3s config
-  ansible.builtin.import_tasks: shared/config.yml
+  ansible.builtin.include_tasks:
+    file: shared/config.yml
+
+- name: Merge selected profile into k3s config
+  ansible.builtin.include_tasks:
+    file: shared/token.yml
 
 - name: Install and configure K3s (shared logic)
-  ansible.builtin.import_tasks: shared/k3s.yml
+  ansible.builtin.include_tasks:
+    file: shared/k3s.yml
 
-- name: Deploy Longhorn to {{ k3s.longhorn.storage_path }}
-  ansible.builtin.import_tasks: shared/longhorn.yml
+# - name: Deploy Longhorn to {{ k3s.longhorn.storage_path }}
+#   ansible.builtin.include_tasks:
+#     file: shared/longhorn.yml
 
-- name: Run profile-specific tasks {{ k3s.profile }}
-  ansible.builtin.import_tasks: "profiles/{{ k3s.profile }}.yml"
-
-- name: Run post-deploy validations
-  ansible.builtin.import_tasks: validate.yml
+- name: Run profile-specific tasks {{ profile }}
+  ansible.builtin.include_tasks:
+    file: "profiles/{{ profile }}.yml"
+# - name: Run post-deploy validations
+#   ansible.builtin.include_tasks:
+#     file: validate.yml

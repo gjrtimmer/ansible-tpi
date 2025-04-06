@@ -19,7 +19,7 @@
 
 - name: "Install Longhorn via Helm"
   become: true
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: longhorn
     chart_ref: longhorn/longhorn
     release_namespace: longhorn-system

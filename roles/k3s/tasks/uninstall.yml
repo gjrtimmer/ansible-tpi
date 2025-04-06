@@ -1,0 +1,19 @@
+# code: language=ansible
+---
+- name: Uninstall K3s
+  tags: [uninstall]
+  when: "'uninstall' in ansible_run_tags"
+  ansible.builtin.stat:
+    path: /usr/local/bin/k3s-uninstall.sh
+  register: k3s_uninstall_script
+
+- name: Uninstall K3s
+  when: >
+    k3s_uninstall_script.stat.exists
+    and
+    "'uninstall' in ansible_run_tags"
+  tags: [uninstall]
+  become: true
+  ansible.builtin.command:
+    cmd: /usr/local/bin/k3s-uninstall.sh
+  changed_when: true

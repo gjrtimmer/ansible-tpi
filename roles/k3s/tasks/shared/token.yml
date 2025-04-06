@@ -4,7 +4,7 @@
 - name: Check if K3s token exists for current profile
   delegate_to: localhost
   ansible.builtin.stat:
-    path: "{{ lookup('env', 'HOME') }}/.tpi/k3s.{{ k3s.profile }}.token"
+    path: "{{ lookup('env', 'HOME') }}/.tpi/k3s.{{ profile }}.token"
   register: k3s_token_stat
 
 - name: Generate K3s token if missing (delegated to localhost)
@@ -14,18 +14,18 @@
   register: k3s_token_gen
   changed_when: false
 
-- name: Save token to local file (~/.tpi/k3s.{{ k3s.profile }}.token) # noqa: name[template]
+- name: Save token to local file (~/.tpi/k3s.{{ profile }}.token) # noqa: name[template]
   when: not k3s_token_stat.stat.exists
   delegate_to: localhost
   ansible.builtin.copy:
     content: "{{ k3s_token_gen.stdout }}"
-    dest: "{{ lookup('env', 'HOME') }}/.tpi/k3s.{{ k3s.profile }}.token"
+    dest: "{{ lookup('env', 'HOME') }}/.tpi/k3s.{{ profile }}.token"
     mode: "0600"
 
 - name: Load K3s token from local file
   delegate_to: localhost
   ansible.builtin.slurp:
-    src: "{{ lookup('env', 'HOME') }}/.tpi/k3s.{{ k3s.profile }}.token"
+    src: "{{ lookup('env', 'HOME') }}/.tpi/k3s.{{ profile }}.token"
   register: k3s_token_file
 
 - name: Set K3s token fact for use in cluster join
