@@ -20,7 +20,9 @@ RUN pipx install --include-deps ansible && \
     pipx inject ansible-lint jmespath && \
     pipx install argcomplete && \
     pipx inject ansible argcomplete && \
-    pipx inject ansible-lint argcomplete
+    pipx inject ansible-lint argcomplete && \
+    pipx install netaddr && \
+    pipx inject ansible netaddr
 
 USER root
 ENV PATH=/home/vscode/.local/bin:/work/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
