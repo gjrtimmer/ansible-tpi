@@ -101,22 +101,6 @@
   args:
     creates: /usr/local/bin/k3s
 
-- name: "Create K3s config directory"
-  become: true
-  ansible.builtin.file:
-    path: "{{ k3s.config_dir }}"
-    state: directory
-    owner: root
-    group: root
-    mode: "0755"
-
-- name: "Write K3s config file"
-  become: true
-  ansible.builtin.template:
-    src: k3s-config.yaml.j2
-    dest: "{{ k3s.config_dir }}/config.yaml"
-    mode: "0644"
-
 - name: "Enable and start K3s service"
   become: true
   ansible.builtin.systemd:
