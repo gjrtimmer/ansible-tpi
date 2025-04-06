@@ -1,34 +1,21 @@
 # code: language=ansible
 # roles/k3s/tasks/profiles/production.yml
 ---
-- name: Ensure production-specific config directory exists
+- name: Create directory for Longhorn
   become: true
   ansible.builtin.file:
-    path: "{{ k3s.config_dir }}"
-    state: directory
-    owner: root
-    group: root
-    mode: "0755"
-
-- name: Create production and academy data directories for Longhorn
-  become: true
-  ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ k3s.longhorn.storage_path }}"
     state: directory
     mode: "0770"
     owner: root
     group: root
-  loop:
-    - /data/global
-    - /data/academy
 
 - name: Configure Longhorn with production profile
   ansible.builtin.debug:
     msg: "Using Longhorn path: {{ k3s.longhorn.storage_path }} and backup target: {{ k3s.longhorn.backup_target }}"
 
-- name: Tag node with production label (if needed later)
-  when: inventory_hostname in groups['production']
+- name: Tag node with {{ profile }} label
   become: true
   ignore_errors: true
   ansible.builtin.shell:
-    cmd: kubectl label node $(hostname) profile=production --overwrite
+    cmd: kubectl label node $(hostname) profile={{ profile }} --overwrite
