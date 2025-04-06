@@ -57,7 +57,15 @@ sysctl:
   # rp_filter
   # This parameter controls reverse path filtering, which tries to ensure packets use legitimate source addresses.
   # When is turned on it can prevent some IP spoofing attacks.
-  net.ipv4.conf.all.rp_filter: 1
+  # Disabled because of tailscale
+  net.ipv4.conf.all.rp_filter: 0
+
+  # icmp_echo_ignore_all
+  # When set to 1, the system will ignore all ICMP Echo requests (ping).
+  # This can enhance security by making the host appear "invisible" to network scans.
+  # However, it also disables standard ping-based diagnostics and monitoring.
+  # Recommended to keep set to 0 unless there's a specific need to block all pings.
+  net.ipv4.icmp_echo_ignore_all: 0
 
   # log_martians
   # The parameter allows to keep track of packets which could potentially indicate an attack on server.
