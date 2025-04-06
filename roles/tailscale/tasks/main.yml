@@ -1,6 +1,7 @@
 # code: language=ansible
 ---
 - name: Assert required Tailscale variables are defined and valid
+  tags: [setup, assert]
   ansible.builtin.assert:
     that:
       - hostvars[inventory_hostname]['tailscale'] is defined
@@ -55,3 +56,12 @@
     {% if tailscale.magic_dns | default(false) %}--accept-dns{% endif %}
     {% if tailscale.accept_routes | default(false) %}--accept-routes{% endif %}
   changed_when: true
+
+- name: Local LAN Fix
+  when:
+    - tailscale.api.device.key is defined
+    - tailscale.api.device.key != ""
+    - tailscale.enable_subnet_router | default(false)
+  tags: [tailscale, lan]
+  ansible.builtin.include_tasks:
+    file: local-lan.yml

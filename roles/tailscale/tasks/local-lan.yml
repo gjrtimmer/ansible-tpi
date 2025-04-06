@@ -1,0 +1,89 @@
+# code: language=ansible
+---
+- name: Detect primary LAN interface with IPv4 (excludes lo, tailscale0, docker0)
+  tags: [lan]
+  ansible.builtin.set_fact:
+    lan_interface: "{{ item }}"
+  loop: "{{ ansible_facts.interfaces | difference(['lo', 'tailscale0', 'docker0']) }}"
+  when:
+    - ansible_facts[item] is defined
+    - ansible_facts[item].ipv4 is defined
+    - ansible_facts[item].ipv4.address is defined
+
+- name: Detect local subnet for {{ lan_interface }} (hardcoded prefix map) # noqa: name[template]
+  tags: [lan]
+  ansible.builtin.set_fact:
+    lan_subnet: >-
+      {{
+        ansible_facts[lan_interface]['ipv4']['network'] ~ '/' ~
+        {
+          '255.0.0.0': 8,
+          '255.255.0.0': 16,
+          '255.255.255.0': 24,
+          '255.255.255.128': 25,
+          '255.255.255.192': 26,
+          '255.255.255.224': 27,
+          '255.255.255.240': 28,
+          '255.255.255.248': 29,
+          '255.255.255.252': 30,
+          '255.255.255.254': 31,
+          '255.255.255.255': 32
+        }[ansible_facts[lan_interface]['ipv4']['netmask']]
+      }}
+
+- name: Disable rp_filter per interface
+  tags: [lan]
+  become: true
+  ansible.posix.sysctl:
+    name: "net.ipv4.conf.{{ item }}.rp_filter"
+    value: "0"
+    sysctl_set: true
+    state: present
+    reload: true
+  loop: "{{ ansible_interfaces }}"
+  when: item.startswith('end')
+
+- name: Add ip rule to ensure LAN routing prefers main table # noqa: risky-shell-pipe
+  tags: [lan]
+  become: true
+  ansible.builtin.shell: |
+    ip rule | grep -q "to {{ lan_subnet }} table main priority 100" || \
+    ip rule add to {{ lan_subnet }} table main priority 100
+  register: ip_rule
+  changed_when: true
+  failed_when: ip_rule.rc != 0 and ip_rule.rc != 2
+
+- name: Show all routing table entries
+  tags: [lan, debug]
+  become: true
+  ansible.builtin.command: ip route show
+  register: routing_table
+  changed_when: false
+
+- name: Print routing table
+  tags: [lan, debug]
+  ansible.builtin.debug:
+    msg: "{{ routing_table.stdout_lines }}"
+
+- name: Fix POSTROUTING (if exists) # noqa: ignore-errors
+  tags: [lan]
+  become: true
+  ansible.builtin.command:
+    cmd: iptables -t nat -D POSTROUTING -s 192.168.10.15 -d 192.168.0.0/24 -j MASQUERADE
+  ignore_errors: true
+  changed_when: false
+
+- name: Fix General NAT rule for POSTROUTING # noqa: ignore-errors
+  tags: [lan]
+  become: true
+  ansible.builtin.command:
+    cmd: iptables -t nat -D POSTROUTING -s 192.168.10.0/24 -d 192.168.0.0/24 -j MASQUERADE
+  ignore_errors: true
+  changed_when: false
+
+- name: Fix Routing
+  tags: [lan]
+  become: true
+  ansible.builtin.command:
+    cmd: iptables -t nat -A POSTROUTING -s 192.168.10.15 -d 192.168.0.0/24 -j MASQUERADE
+  changed_when: true
