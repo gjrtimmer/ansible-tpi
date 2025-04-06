@@ -16,6 +16,10 @@
 
 - name: Tag node with {{ profile }} label
   become: true
-  ignore_errors: true
   ansible.builtin.shell:
     cmd: kubectl label node $(hostname) profile={{ profile }} --overwrite
+
+- name: Tag nodes as workers
+  become: true
+  ansible.builtin.shell:
+    cmd: kubectl label node $(hostname) kubernetes.io/role=worker --overwrite
