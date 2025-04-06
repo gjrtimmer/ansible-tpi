@@ -15,7 +15,7 @@
   tags: [bmc]
   tasks:
     - name: Install SSH Key to BMC
-      when: inventory_hostname in groups.tpi
+      when: inventory_hostname in groups.bmc
       vars:
         prefix: "{{ hostvars[inventory_hostname]['ansible_ssh_prefix'] }}"
         bmc_host: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
@@ -34,7 +34,7 @@
   tags: [known_hosts]
   tasks:
     - name: Add known_host {{ inventory_hostname }}
-      when: inventory_hostname in groups.tpi
+      when: inventory_hostname in groups.bmc
       vars:
         host: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"
       ansible.builtin.include_role:
@@ -57,7 +57,7 @@
   tags: [config]
   tasks:
     - name: Add tpi host {{ inventory_hostname }}
-      when: inventory_hostname in groups.tpi
+      when: inventory_hostname in groups.bmc
       vars:
         host: "{{ inventory_hostname }}"
         hostname: "{{ hostvars[inventory_hostname]['ansible_ssh_host'] }}"

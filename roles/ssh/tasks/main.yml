@@ -1,12 +1,12 @@
 # code: language=ansible
 ---
 - name: Set Prefix TPI
-  when: inventory_hostname in groups.tpi
+  when: inventory_hostname in groups.bmc
   ansible.builtin.set_fact:
     prefix: "{{ hostvars[inventory_hostname]['ansible_ssh_prefix'] }}"
 
 - name: Set Prefix Nodes
-  when: inventory_hostname not in groups.tpi
+  when: inventory_hostname not in groups.bmc
   ansible.builtin.set_fact:
     prefix: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_prefix'] }}"
 
@@ -19,12 +19,12 @@
   ansible.builtin.include_tasks: keys.yml
 
 - name: Set User
-  when: inventory_hostname in groups.tpi
+  when: inventory_hostname in groups.bmc
   ansible.builtin.set_fact:
     user: "{{ inventory_hostname }}"
 
 - name: Set User
-  when: inventory_hostname not in groups.tpi
+  when: inventory_hostname not in groups.bmc
   ansible.builtin.set_fact:
     user: "{{ hostvars[inventory_hostname]['bmc'] }}"
 
