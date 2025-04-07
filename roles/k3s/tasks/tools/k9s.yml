@@ -1,0 +1,67 @@
+# code: language=ansbile
+---
+- name: Delete
+  tags: [k9s]
+  ansible.builtin.file:
+    path: /tmp/k9s.deb
+    state: absent
+
+- name: Download k9s (Nodes)
+  tags: [k9s]
+  ansible.builtin.get_url:
+    url: https://github.com/derailed/k9s/releases/latest/download/k9s_linux_arm64.deb
+    dest: "/tmp/k9s.deb"
+    mode: "0755"
+  changed_when: true
+
+- name: Install k9s (Nodes)
+  tags: [k9s]
+  become: true
+  ansible.builtin.command:
+    cmd: "dpkg -i /tmp/k9s.deb"
+  args:
+    creates: /usr/local/bin/k9s
+  changed_when: true
+
+- name: Delete
+  tags: [k9s]
+  ansible.builtin.file:
+    path: /tmp/k9s.deb
+    state: absent
+
+- name: Delete
+  tags: [k9s]
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: /tmp/k9s.deb
+    state: absent
+  run_once: true
+
+- name: Download k9s (DevContainer)
+  tags: [k9s]
+  delegate_to: localhost
+  ansible.builtin.get_url:
+    url: https://github.com/derailed/k9s/releases/latest/download/k9s_linux_amd64.deb
+    dest: "/tmp/k9s.deb"
+    mode: "0755"
+  changed_when: true
+  run_once: true
+
+- name: Install k9s (DevContainer)
+  delegate_to: localhost
+  tags: [k9s]
+  become: true
+  ansible.builtin.command:
+    cmd: "dpkg -i /tmp/k9s.deb"
+  args:
+    creates: /usr/local/bin/k9s
+  changed_when: true
+  run_once: true
+
+- name: Delete
+  tags: [k9s]
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: /tmp/k9s.deb
+    state: absent
+  run_once: true

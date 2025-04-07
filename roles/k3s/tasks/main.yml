@@ -34,6 +34,11 @@
   ansible.builtin.include_tasks:
     file: tools/arkade.yml
 
+- name: k9s # noqa: name[casing]
+  tags: [k9s]
+  ansible.builtin.include_tasks:
+    file: tools/k9s.yml
+
 # - name: Deploy Longhorn to {{ k3s.longhorn.storage_path }}
 #   ansible.builtin.include_tasks:
 #     file: shared/longhorn.yml
