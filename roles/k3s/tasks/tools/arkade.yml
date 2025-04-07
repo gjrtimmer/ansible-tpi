@@ -1,39 +1,69 @@
 # code: language=ansible
 ---
-- name: Get Arkade
-  tags: [arkade]
-  ansible.builtin.get_url:
-    url: https://get.arkade.dev
-    dest: "/tmp/arkade.sh"
-    mode: "0755"
-  changed_when: true
-
-- name: Get Arkade (Localhost)
-  tags: [arkade]
-  delegate_to: localhost
-  ansible.builtin.get_url:
-    url: https://get.arkade.dev
-    dest: "/tmp/arkade.sh"
-    mode: "0755"
-  changed_when: true
+- name: Delete (Nodes)
+  tags: [helm]
+  ansible.builtin.file:
+    path: /tmp/arkade.sh
+    state: absent
   run_once: true
+
+- name: Get Arkade (Nodes)
+  tags: [arkade]
+  ansible.builtin.get_url:
+    url: https://get.arkade.dev
+    dest: /tmp/arkade.sh
+    mode: "0755"
+  changed_when: true
 
 - name: Install Arkade (Nodes)
   tags: [arkade]
   become: true
   ansible.builtin.command:
-    cmd: "/tmp/arkade.sh"
+    cmd: /tmp/arkade.sh
   args:
     creates: /usr/local/bin/arkade
   changed_when: true
 
-- name: Install Arkade (Localhost)
+- name: Delete (Nodes)
+  tags: [helm]
+  ansible.builtin.file:
+    path: /tmp/arkade.sh
+    state: absent
+  run_once: true
+
+- name: Delete (DevContainer)
+  delegate_to: localhost
+  tags: [helm]
+  ansible.builtin.file:
+    path: /tmp/arkade.sh
+    state: absent
+  run_once: true
+
+- name: Get Arkade (DevContainer)
+  tags: [arkade]
+  delegate_to: localhost
+  ansible.builtin.get_url:
+    url: https://get.arkade.dev
+    dest: /tmp/arkade.sh
+    mode: "0755"
+  changed_when: true
+  run_once: true
+
+- name: Install Arkade (DevContainer)
   delegate_to: localhost
   tags: [arkade]
   become: true
   ansible.builtin.command:
-    cmd: "/tmp/arkade.sh"
+    cmd: /tmp/arkade.sh
   args:
     creates: /usr/local/bin/arkade
   changed_when: true
+  run_once: true
+
+- name: Delete (DevContainer)
+  delegate_to: localhost
+  tags: [helm]
+  ansible.builtin.file:
+    path: /tmp/arkade.sh
+    state: absent
   run_once: true
