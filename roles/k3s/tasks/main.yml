@@ -19,6 +19,11 @@
   ansible.builtin.include_tasks:
     file: shared/k3s.yml
 
+- name: Kube Config
+  tags: [kubeconfig]
+  ansible.builtin.include_tasks:
+    file: shared/kubeconfig.yml
+
 # - name: Deploy Longhorn to {{ k3s.longhorn.storage_path }}
 #   ansible.builtin.include_tasks:
 #     file: shared/longhorn.yml
