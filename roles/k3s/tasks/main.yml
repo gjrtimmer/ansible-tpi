@@ -24,7 +24,7 @@
   ansible.builtin.include_tasks:
     file: shared/kubeconfig.yml
 
-- name: Kube Config
+- name: Helm
   tags: [helm]
   ansible.builtin.include_tasks:
     file: shared/helm.yml
