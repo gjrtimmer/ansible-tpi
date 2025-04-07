@@ -27,12 +27,12 @@
 - name: Helm
   tags: [helm]
   ansible.builtin.include_tasks:
-    file: shared/helm.yml
+    file: tools/helm.yml
 
 - name: Arkade
   tags: [arkade]
   ansible.builtin.include_tasks:
-    file: shared/arkade.yml
+    file: tools/arkade.yml
 
 # - name: Deploy Longhorn to {{ k3s.longhorn.storage_path }}
 #   ansible.builtin.include_tasks:
