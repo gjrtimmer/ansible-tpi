@@ -62,5 +62,6 @@
     "ANSIBLE_ROLES_PATH": "./roles:/work/.ansible/roles:/usr/share/ansible/roles"
   },
   "remoteUser": "vscode",
-  "containerUser": "vscode"
+  "containerUser": "vscode",
+  "forwardPorts": [8000, 8001, 8080, 8443]
 }
