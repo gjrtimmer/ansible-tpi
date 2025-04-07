@@ -37,3 +37,27 @@
     creates: /usr/local/bin/helm
   changed_when: true
   run_once: true
+
+- name: Add Helm repo
+  tags: [helm]
+  when: >
+    k3s.helm.repository is defined
+    and
+    k3s.helm.repository | length > 0
+  ansible.builtin.command:
+    cmd: "helm repo add {{ item.name }} {{ item.url }}"
+  loop: "{{ k3s.helm.repository }}"
+  changed_when: true
+
+- name: Add Helm repo
+  delegate_to: localhost
+  tags: [helm]
+  when: >
+    k3s.helm.repository is defined
+    and
+    k3s.helm.repository | length > 0
+  ansible.builtin.command:
+    cmd: "helm repo add {{ item.name }} {{ item.url }}"
+  loop: "{{ k3s.helm.repository }}"
+  changed_when: true
+  run_once: true
