@@ -1,5 +1,21 @@
 # code: language=ansible
 ---
+- name: Helm Config
+  tags: [helm]
+  ansible.builtin.set_fact:
+    helm_config: "{{ playbook_dir + '/../' + 'helm.yml' }}"
+
+- name: Load helm.yml
+  tags: [helm]
+  ansible.builtin.set_fact:
+    helm: "{{ lookup('file', helm_config) | from_yaml }}"
+
+- name: Load helm.yml
+  delegate_to: localhost
+  tags: [helm]
+  ansible.builtin.set_fact:
+    helm: "{{ lookup('file', helm_config) | from_yaml }}"
+
 - name: Delete (Nodes)
   tags: [helm]
   ansible.builtin.file:
@@ -31,16 +47,17 @@
     path: /tmp/get_helm.sh
     state: absent
   run_once: true
-
 - name: Add Helm Repositories (Nodes)
-  tags: [helm]
   when: >
-    k3s.helm.repository is defined
+    helm.repository is defined
     and
-    k3s.helm.repository | length > 0
+    helm.repository | length > 0
+  tags: [helm]
+  become: true
+  become_user: ubuntu
   ansible.builtin.command:
     cmd: "helm repo add {{ item.name }} {{ item.url }}"
-  loop: "{{ k3s.helm.repository }}"
+  loop: "{{ helm.repository }}"
   changed_when: true
 
 - name: Get Helm (DevContainer)
@@ -76,11 +93,11 @@
   delegate_to: localhost
   tags: [helm]
   when: >
-    k3s.helm.repository is defined
+    helm.repository is defined
     and
-    k3s.helm.repository | length > 0
+    helm.repository | length > 0
   ansible.builtin.command:
     cmd: "helm repo add {{ item.name }} {{ item.url }}"
-  loop: "{{ k3s.helm.repository }}"
+  loop: "{{ helm.repository }}"
   changed_when: true
   run_once: true
