@@ -17,3 +17,14 @@
   ansible.builtin.command:
     cmd: /usr/local/bin/k3s-uninstall.sh
   changed_when: true
+
+- name: Remove K3s config and data directories
+  when: "'uninstall' in ansible_run_tags"
+  tags: [uninstall]
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ k3s.config_dir }}"
+    - "{{ k3s.data_dir }}"
