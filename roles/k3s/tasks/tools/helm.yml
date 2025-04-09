@@ -47,6 +47,7 @@
     path: /tmp/get_helm.sh
     state: absent
   run_once: true
+
 - name: Add Helm Repositories (Nodes)
   when: >
     helm.repository is defined
