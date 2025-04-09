@@ -31,18 +31,6 @@
         }[ansible_facts[lan_interface]['ipv4']['netmask']]
       }}
 
-- name: Disable rp_filter per interface
-  tags: [lan]
-  become: true
-  ansible.posix.sysctl:
-    name: "net.ipv4.conf.{{ item }}.rp_filter"
-    value: "0"
-    sysctl_set: true
-    state: present
-    reload: true
-  loop: "{{ ansible_interfaces }}"
-  when: item.startswith('end')
-
 - name: Add ip rule to ensure LAN routing prefers main table # noqa: risky-shell-pipe
   tags: [lan]
   become: true
