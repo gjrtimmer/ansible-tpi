@@ -45,10 +45,6 @@
   ansible.builtin.set_fact:
     k3s_node_ip_arg: "{{ '--node-ip ' + local_ip if local_ip is defined else '' }}"
 
-- name: Cluster Name
-  ansible.builtin.set_fact:
-    k3s_cluster_name_arg: "{{ '--context ' + k3s.profiles[profile].cluster_name if k3s.profiles[profile].cluster_name is defined else '' }}"
-
 - name: SAN IP
   ansible.builtin.set_fact:
     k3s_san_ip_arg: "{{ '--tls-san ' + k3s.profiles[profile].master.vip }}"
@@ -89,11 +85,6 @@
 - name: Debug
   tags: [debug]
   ansible.builtin.debug:
-    msg: "k3s_cluster_name_arg: {{ k3s_cluster_name_arg }}"
-
-- name: Debug
-  tags: [debug]
-  ansible.builtin.debug:
     msg: "k3s_san_ip_arg: {{ k3s_san_ip_arg }}"
 
 - name: Debug
@@ -112,7 +103,7 @@
     - is_cluster_init_node
   become: true
   ansible.builtin.shell:
-    cmd: curl -sfL https://get.k3s.io | sh -s - server --cluster-init {{ k3s_disable_flags }} {{ k3s_node_ip_arg }} {{ k3s_cluster_name_arg }} {{ k3s_san_ip_arg }} {{ k3s_san_dns_arg }} {{ k3s_san_fqdn_arg }} {{ k3s_server_args }} {{ k3s_data_dir_arg }}
+    cmd: curl -sfL https://get.k3s.io | sh -s - server --cluster-init {{ k3s_disable_flags }} {{ k3s_node_ip_arg }} {{ k3s_san_ip_arg }} {{ k3s_san_dns_arg }} {{ k3s_san_fqdn_arg }} {{ k3s_server_args }} {{ k3s_data_dir_arg }}
   environment:
     INSTALL_K3S_VERSION: "{{ k3s.version }}"
     K3S_TOKEN: "{{ k3s_token }}"
