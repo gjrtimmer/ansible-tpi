@@ -97,7 +97,7 @@
   ansible.builtin.debug:
     msg: "k3s_san_fqdn_arg: {{ k3s_san_fqdn_arg }}"
 
-- name: "Install and configure K3s server (control-plane + worker) - Cluster-init node" # noqa: command-instead-of-module risky-shell-pipe
+- name: "Install/Configure K3s server (control-plane + worker) - Cluster-init node" # noqa: command-instead-of-module risky-shell-pipe
   when:
     - inventory_hostname in (k3s.profiles[profile].control_plane | map(attribute='name') | list)
     - is_cluster_init_node
@@ -110,7 +110,7 @@
   args:
     creates: /usr/local/bin/k3s
 
-- name: "Install and configure K3s server (control-plane) - Join to cluster" # noqa: command-instead-of-module risky-shell-pipe
+- name: "Instal/Configure K3s server (control-plane) - Join to cluster" # noqa: command-instead-of-module risky-shell-pipe
   when:
     - inventory_hostname in (k3s.profiles[profile].control_plane | map(attribute='name') | list)
     - not is_cluster_init_node
@@ -124,7 +124,7 @@
   args:
     creates: /usr/local/bin/k3s
 
-- name: "Join K3s worker node to control-plane" # noqa: command-instead-of-module risky-shell-pipe
+- name: "Join K3s Worker Node" # noqa: command-instead-of-module risky-shell-pipe
   when: inventory_hostname in (k3s.profiles[profile].workers | map(attribute='name') | list)
   become: true
   ansible.builtin.shell:
@@ -136,7 +136,8 @@
   args:
     creates: /usr/local/bin/k3s
 
-- name: "Enable and start K3s service"
+- name: "Enable/Start K3s service"
+  when: inventory_hostname in (k3s.profiles[profile].control_plane | map(attribute='name') | list)
   become: true
   ansible.builtin.systemd:
     name: k3s

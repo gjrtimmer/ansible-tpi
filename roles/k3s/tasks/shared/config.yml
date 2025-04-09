@@ -1,10 +1,10 @@
 # code: language=ansible
 # roles/k3s/tasks/shared/_merge_profile.yml
 ---
-- name: Merge selected profile into top-level k3s config
+- name: Merge k3s config
   ansible.builtin.set_fact:
     k3s: "{{ k3s | combine(k3s.profiles[profile], recursive=True) }}"
 
-- name: Show merged k3s config (debug)
+- name: Show K3s Config
   ansible.builtin.debug:
     var: k3s
