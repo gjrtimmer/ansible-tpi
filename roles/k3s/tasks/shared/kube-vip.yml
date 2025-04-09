@@ -15,11 +15,6 @@
     mode: "0644"
   run_once: true
 
-- name: Get Interface
-  tags: [kube-vip]
-  ansible.builtin.set_fact:
-    interface: "{{ ansible_facts.default_ipv4.interface }}"
-
 - name: Get kube-vip Version # noqa: command-instead-of-module risky-shell-pipe
   delegate_to: localhost
   tags: [kube-vip]
