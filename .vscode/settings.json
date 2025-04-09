@@ -26,6 +26,8 @@
     "**/handlers/*.yml": "ansible",
     "**/meta/*.yml": "ansible",
     "**/roles/**/*.yml": "ansible",
+    "**/templates/**/*.yml": "yaml",
+    "**/templates/**/k3s-*.yml": "yaml",
     "**/playbooks/**/*.yml": "ansible",
     "ansible.cfg": "properties",
     "ansible.yml": "yaml",
@@ -58,5 +60,16 @@
   "prettier.requireConfig": false,
   "ansible.python.interpreterPath": "/usr/bin/python3",
   "markdown.extension.toc.levels": "2..6",
-  "yaml.customTags": ["!vault scalar"]
+  "yaml.customTags": ["!vault scalar"],
+  "vs-kubernetes": {
+    "vs-kubernetes.kubectl-path": "/usr/bin/kubectl",
+    "vs-kubernetes.helm-path": "/usr/local/bin/helm",
+    "vs-kubernetes.kubectlVersioning": "user-provided",
+    "vs-kubernetes.outputFormat": "yaml",
+    "vs-kubernetes.kubeconfig": "~/.kube/config",
+    "vs-kubernetes.autoCleanupOnDebugTerminate": false,
+    "vs-kubernetes.nodejs-autodetect-remote-root": true,
+    "checkForMinikubeUpgrade": false,
+    "imageBuildTool": "Docker"
+  }
 }

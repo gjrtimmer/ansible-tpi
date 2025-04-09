@@ -11,6 +11,7 @@
     "esbenp.prettier-vscode",
     "jlcs-es.x509-parser",
     "aaron-bond.better-comments",
-    "donjayamanne.githistory"
+    "donjayamanne.githistory",
+    "ms-kubernetes-tools.vscode-kubernetes-tools"
   ]
 }

@@ -53,7 +53,8 @@
         "jlcs-es.x509-parser",
         "ms-azuretools.vscode-docker",
         "aaron-bond.better-comments",
-        "donjayamanne.githistory"
+        "donjayamanne.githistory",
+        "ms-kubernetes-tools.vscode-kubernetes-tools"
       ]
     }
   },
