@@ -19,6 +19,11 @@
   ansible.builtin.include_tasks:
     file: shared/k3s.yml
 
+- name: Deploy kube-vip
+  tags: [kube-vip]
+  ansible.builtin.include_tasks:
+    file: shared/kube-vip.yml
+
 - name: Kube Config
   tags: [kubeconfig]
   ansible.builtin.include_tasks:

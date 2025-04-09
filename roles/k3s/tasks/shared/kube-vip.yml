@@ -1,0 +1,44 @@
+# code: language=ansible
+---
+- name: Set Cluster Init Node
+  tags: [kube-vip]
+  ansible.builtin.set_fact:
+    is_cluster_init_node: "{{ inventory_hostname == k3s.profiles[profile].cluster_init_node }}"
+
+- name: Deploy kube-vip RBAC
+  when: is_cluster_init_node
+  tags: [kube-vip]
+  become: true
+  ansible.builtin.template:
+    src: kube-vip/rbac.yml
+    dest: /var/lib/rancher/k3s/server/manifests/kube-vip-rbac.yml
+    mode: "0644"
+  run_once: true
+
+- name: Get Interface
+  tags: [kube-vip]
+  ansible.builtin.set_fact:
+    interface: "{{ ansible_facts.default_ipv4.interface }}"
+
+- name: Get kube-vip Version # noqa: command-instead-of-module risky-shell-pipe
+  delegate_to: localhost
+  tags: [kube-vip]
+  ansible.builtin.shell:
+    cmd: curl -sL https://api.github.com/repos/kube-vip/kube-vip/releases | jq -r ".[0].name"
+  register: kube_vip_version_raw
+  changed_when: false
+  run_once: true
+
+- name: Set kube-vip Version
+  tags: [kube-vip]
+  ansible.builtin.set_fact:
+    kube_vip_version: "{{ kube_vip_version_raw.stdout_lines[0] }}"
+
+- name: Deploy kube-vip Daemonset
+  tags: [kube-vip]
+  become: true
+  ansible.builtin.template:
+    src: kube-vip/kube-vip.yml.j2
+    dest: /var/lib/rancher/k3s/server/manifests/kube-vip.yml
+    mode: "0644"
+  run_once: true

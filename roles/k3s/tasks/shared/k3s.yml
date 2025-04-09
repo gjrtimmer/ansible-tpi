@@ -143,3 +143,10 @@
     enabled: true
     state: started
     daemon_reload: true
+
+- name: Create Manifest Directory
+  become: true
+  ansible.builtin.file:
+    path: /var/lib/rancher/k3s/server/manifests
+    state: directory
+    mode: "0755"
