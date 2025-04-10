@@ -15,7 +15,7 @@
     mode: "0644"
   run_once: true
 
-- name: Get kube-vip Version # noqa: command-instead-of-module risky-shell-pipe
+- name: Get kube-vip version # noqa: command-instead-of-module risky-shell-pipe
   delegate_to: localhost
   tags: [kube-vip]
   ansible.builtin.shell:
@@ -24,7 +24,7 @@
   changed_when: false
   run_once: true
 
-- name: Set kube-vip Version
+- name: Set kube-vip version
   tags: [kube-vip]
   ansible.builtin.set_fact:
     kube_vip_version: "{{ kube_vip_version_raw.stdout_lines[0] }}"
