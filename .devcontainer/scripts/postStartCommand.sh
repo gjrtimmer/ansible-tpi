@@ -23,6 +23,8 @@ sudo chmod 0755 ${HOME}/.ssh/tpi
 sudo chmod 0600 ${HOME}/.ssh/tpi/*.key
 sudo chmod 0755 ${HOME}/.ssh/tpi/*.key.pub
 sudo chown -R vscode:vscode ${HOME}/.ssh/tpi
+sudo chmod 0755 ${HOME}/.kube
+sudo chown -R vscode:vscode ${HOME}/.kube
 
 if [[ ! -f "${DEVCON_DIR}/.bashrc" ]]; then
     ln -sf "${DEVCON_DIR}/.bashrc" "${HOME}/.bashrc"

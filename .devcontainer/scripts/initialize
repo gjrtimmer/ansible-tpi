@@ -14,3 +14,11 @@ fi
 if [[ ! -f "${HOME}/.ssh/.ansible_vault_pass" ]]; then
     touch "${HOME}/.ansible_vault_pass"
 fi
+
+if [[ ! -d "${HOME}/.kube" ]]; then
+    mkdir -p "${HOME}/.kube"
+fi
+
+if [[ ! -f "${HOME}/.kube/config" ]]; then
+    touch "${HOME}/.kube/config"
+fi
