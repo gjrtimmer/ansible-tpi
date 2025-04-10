@@ -7,9 +7,6 @@ set "HOME_DIR=%HOMEDRIVE%%HOMEPATH%"
 :: Set the target directory
 set "SSH_TARGET_DIR=%HOME_DIR%\.ssh\tpi"
 
-:: Set target data directory
-set "DATA_TARGET_DIR=%HOME_DIR%\.tpi"
-
 :: Check if the directory exists
 if not exist "%SSH_TARGET_DIR%" (
     :: Create the directory
@@ -18,6 +15,9 @@ if not exist "%SSH_TARGET_DIR%" (
 ) else (
     echo Directory "%SSH_TARGET_DIR%" already exists.
 )
+
+:: Set target data directory
+set "DATA_TARGET_DIR=%HOME_DIR%\.tpi"
 
 :: Check if the directory exists
 if not exist "%DATA_TARGET_DIR%" (
@@ -38,6 +38,17 @@ if not exist "%VAULT_PASS_FILE%" (
     echo File "%VAULT_PASS_FILE%" created.
 ) else (
     echo File "%VAULT_PASS_FILE%" already exists.
+)
+
+set "KUBE_TARGET_DIR=%HOME_DIR%\.kube"
+
+:: Check if the directory exists
+if not exist "%KUBE_TARGET_DIR%" (
+    :: Create the directory
+    mkdir "%KUBE_TARGET_DIR%"
+    echo Directory "%KUBE_TARGET_DIR%" created.
+) else (
+    echo Directory "%KUBE_TARGET_DIR%" already exists.
 )
 
 endlocal
