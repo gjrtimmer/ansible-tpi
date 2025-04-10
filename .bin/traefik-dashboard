@@ -1,0 +1,12 @@
+#/usr/bin/env bash
+
+NAMESPACE=traefik
+(trap - INT; kubectl -n $NAMESPACE port-forward $(kubectl get pods --selector "app.kubernetes.io/name=traefik" --output=name -n $NAMESPACE|head -n1) 8080:8080 &>/dev/null) &
+trap '' INT
+sleep 2
+code --openExternal http://127.0.0.1:8080/dashboard/
+
+printf "Press CTRL-C to stop the port-forwarding\n"
+wait
+
+printf "\n"
