@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubevip
+  namespace: kube-system
+data:
+  # Allow multiple IPv4 services to share a VIP
+  # When enabled, kube-vip-cloud-provider tries to assign services 
+  # to already used VIPs # if the ports of the services do not overlap. 
+  # If you want to enable VIP-sharing between services, 
+  $ you can set allow-share-namespace to true. 
+  # It follows the same rules as the configuration for global and namespace pools.
+  allow-share-development: true
+  
+  # CIDR-based range which can be used in any Namespace
+  range-global: {{ k3s.profiles[profile].loadbalancer.range.start }}-{{ k3s.profiles[profile].loadbalancer.range.end }}
+
+  # CIDR-based IP range for use in the default Namespace
+  # cidr-default: 192.168.0.200/29
+
+  # Range-based IP range for use in the development Namespace
+  # range-development: 192.168.0.210-192.168.0.219
+
+  # Multiple CIDR-based ranges for use in the finance Namespace
+  # cidr-finance: 192.168.0.220/29,192.168.0.230/29
