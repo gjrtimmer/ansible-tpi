@@ -15,20 +15,6 @@
   ansible.builtin.include_tasks:
     file: shared/token.yml
 
-- name: Install and configure K3s (shared logic)
-  ansible.builtin.include_tasks:
-    file: shared/k3s.yml
-
-- name: Deploy kube-vip
-  tags: [kube-vip]
-  ansible.builtin.include_tasks:
-    file: shared/kube-vip.yml
-
-- name: Kube Config
-  tags: [kubeconfig]
-  ansible.builtin.include_tasks:
-    file: shared/kubeconfig.yml
-
 - name: Helm
   tags: [helm]
   ansible.builtin.include_tasks:
@@ -43,6 +29,20 @@
   tags: [k9s]
   ansible.builtin.include_tasks:
     file: tools/k9s.yml
+
+- name: Install and configure K3s (shared logic)
+  ansible.builtin.include_tasks:
+    file: shared/k3s.yml
+
+- name: Deploy kube-vip
+  tags: [kube-vip]
+  ansible.builtin.include_tasks:
+    file: shared/kube-vip.yml
+
+- name: Kube Config
+  tags: [kubeconfig]
+  ansible.builtin.include_tasks:
+    file: shared/kubeconfig.yml
 
 # - name: Deploy Longhorn to {{ k3s.longhorn.storage_path }}
 #   ansible.builtin.include_tasks:
