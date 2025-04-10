@@ -37,3 +37,37 @@
     dest: /var/lib/rancher/k3s/server/manifests/kube-vip.yml
     mode: "0644"
   run_once: true
+
+- name: Get kube-vip-cloud-provider version # noqa: command-instead-of-module risky-shell-pipe
+  delegate_to: localhost
+  tags: [kube-vip]
+  ansible.builtin.shell:
+    cmd: curl -sL https://api.github.com/repos/kube-vip/kube-vip-cloud-provider/releases | jq -r ".[0].name"
+  register: kube_vip_cloud_provider_version_raw
+  changed_when: false
+  run_once: true
+
+- name: Set kube-vip-cloud-provider version
+  tags: [kube-vip]
+  ansible.builtin.set_fact:
+    kube_vip_cloud_provider_version: "{{ kube_vip_cloud_provider_version_raw.stdout_lines[0] }}"
+
+- name: Configure kube-vip-cloud-provider
+  tags: [kube-vip]
+  become: true
+  ansible.builtin.template:
+    src: kube-vip/kubevip-configmap.yml.j2
+    dest: /var/lib/rancher/k3s/server/manifests/kubevip-configmap.yml
+    mode: "0644"
+  changed_when: true
+  run_once: true
+
+- name: Deploy kube-vip-cloud-provider
+  tags: [kube-vip]
+  become: true
+  ansible.builtin.template:
+    src: kube-vip/kube-vip-cloud-provider.yml.j2
+    dest: /var/lib/rancher/k3s/server/manifests/kube-vip-cloud-provider.yml
+    mode: "0644"
+  changed_when: true
+  run_once: true
