@@ -87,16 +87,6 @@ else
     fi
 fi
 
-if [[ -d /work/.ansible ]] && [[ ! -L /work/.ansible ]]; then
-    mv /work/.ansible "${HOME}/.tpi"
-    ln -s "${HOME}/.tpi/.ansible" "${PROJECT_DIR}/.ansible"
-else
-    if [[ ! -d "${HOME}/.tpi/.ansible" ]]; then
-        cp -r "${PROJECT_DIR}/.config/.ansible" "${HOME}/.tpi"
-        ln -s "${HOME}/.tpi/.ansible" "${PROJECT_DIR}/.ansible"
-    fi
-fi
-
 if [ ! -f "${PROJECT_DIR}/group_vars/nodes.yml" ]; then
     cp "${PROJECT_DIR}/.config/group_vars/nodes.yml" "${PROJECT_DIR}/group_vars/nodes.yml"
 fi
