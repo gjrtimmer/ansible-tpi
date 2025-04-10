@@ -29,13 +29,20 @@
     path: /tmp/k9s.deb
     state: absent
 
+- name: Manually gather facts on localhost
+  tags: [k9s]
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.setup:
+  register: localhost_facts
+
 - name: Set OS-specific facts for K9s
   tags: [k9s]
   delegate_to: localhost
   ansible.builtin.set_fact:
-    k9s_os: "{{ 'darwin' if ansible_system == 'Darwin' else 'linux' }}"
-    k9s_arch: "{{ 'amd64' if ansible_architecture == 'amd64' else 'arm64' }}"
-    k9s_ext: "{{ 'tar.gz' if ansible_system == 'Darwin' else 'deb' }}"
+    k9s_os: "{{ 'darwin' if localhost_facts.ansible_facts['ansible_system'] == 'Darwin' else 'linux' }}"
+    k9s_arch: "{{ 'arm64' if localhost_facts.ansible_facts['ansible_architecture'] in ['aarch64', 'arm64'] else 'amd64' }}"
+    k9s_ext: "{{ 'tar.gz' if localhost_facts.ansible_facts['ansible_system'] == 'Darwin' else 'deb' }}"
   run_once: true
 
 - name: Set OS-specific facts for K9s
