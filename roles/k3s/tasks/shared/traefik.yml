@@ -1,0 +1,4 @@
+# code: language=ansible
+---
+- name: Deploy Traefik
+  tags: [traefik]

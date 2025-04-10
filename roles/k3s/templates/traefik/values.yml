@@ -1,0 +1,44 @@
+---
+additionalArguments:
+  - --global.sendAnonymousUsage=false
+  - --global.checkNewVersion=false
+
+ingressRoute:
+  dashboard:
+    enabled: true
+
+service:
+  spec:
+    externalTrafficPolicy: Local
+  clusterIP: 192.168.10.20
+  externalIPs:
+    - 192.168.10.20
+
+logs:
+  general:
+    level: INFO
+
+hostNetwork: true
+
+deployment:
+  replicas: 1
+
+affinity:
+  # nodeAffinity:
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #       - matchExpressions:
+  #           - key: node-role.kubernetes.io/master
+  #             operator: Exists
+  #         topologyKey: kubernetes.io/hostname
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: '{{ template "traefik.name" . }}'
+            app.kubernetes.io/instance: '{{ .Release.Name }}-{{ include "traefik.namespace" . }}'
+        topologyKey: kubernetes.io/hostname
+
+tolerations:
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
