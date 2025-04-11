@@ -12,7 +12,7 @@ service:
     externalTrafficPolicy: Local
   loadBalancerClass: kube-vip.io/kube-vip-class
   annotations:
-    kube-vip.io/loadbalancerIPs: 192.168.10.50
+    kube-vip.io/loadbalancerIPs: 192.168.10.80
 
 logs:
   general:
