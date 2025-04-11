@@ -1,0 +1,11 @@
+# code: language=ansible
+---
+- name: Install flux # noqa: command-instead-of-module risky-shell-pipe
+  delegate_to: localhost
+  tags: [tools, flux]
+  ansible.builtin.shell:
+    cmd: "curl -s https://fluxcd.io/install.sh | sudo bash"
+  register: flux_install
+  changed_when: flux_install.stdout != ""
+  failed_when: flux_install.rc != 0
+  run_once: true
