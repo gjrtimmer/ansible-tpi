@@ -1,0 +1,39 @@
+---
+additionalArguments:
+  - --global.sendAnonymousUsage=false
+  - --global.checkNewVersion=false
+
+ingressRoute:
+  dashboard:
+    enabled: true
+
+service:
+  spec:
+    externalTrafficPolicy: Local
+  loadBalancerClass: kube-vip.io/kube-vip-class
+  annotations:
+    kube-vip.io/loadbalancerIPs: 192.168.10.60
+
+logs:
+  general:
+    level: INFO
+
+deployment:
+  replicas: 2
+
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: '{{ template "traefik.name" . }}'
+            app.kubernetes.io/instance: '{{ .Release.Name }}-{{ include "traefik.namespace" . }}'
+        topologyKey: kubernetes.io/hostname
+
+topologySpreadConstraints:
+  - labelSelector:
+      matchLabels:
+        app.kubernetes.io/name: '{{ template "traefik.name" . }}'
+    maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: DoNotSchedule
