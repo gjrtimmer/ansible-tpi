@@ -1,13 +1,13 @@
 # code: language=ansbile
 ---
 - name: Delete (Nodes)
-  tags: [k9s]
+  tags: [tools, k9s]
   ansible.builtin.file:
     path: /tmp/k9s.deb
     state: absent
 
 - name: Download k9s (Nodes)
-  tags: [k9s]
+  tags: [tools, k9s]
   ansible.builtin.get_url:
     url: https://github.com/derailed/k9s/releases/latest/download/k9s_linux_arm64.deb
     dest: "/tmp/k9s.deb"
@@ -15,7 +15,7 @@
   changed_when: true
 
 - name: Install k9s (Nodes)
-  tags: [k9s]
+  tags: [tools, k9s]
   become: true
   ansible.builtin.command:
     cmd: "dpkg -i /tmp/k9s.deb"
@@ -24,20 +24,20 @@
   changed_when: true
 
 - name: Delete (Nodes)
-  tags: [k9s]
+  tags: [tools, k9s]
   ansible.builtin.file:
     path: /tmp/k9s.deb
     state: absent
 
 - name: Manually gather facts on localhost
-  tags: [k9s]
+  tags: [tools, k9s]
   delegate_to: localhost
   run_once: true
   ansible.builtin.setup:
   register: localhost_facts
 
 - name: Set OS-specific facts for K9s
-  tags: [k9s]
+  tags: [tools, k9s]
   delegate_to: localhost
   ansible.builtin.set_fact:
     k9s_os: "{{ 'darwin' if localhost_facts.ansible_facts['ansible_system'] == 'Darwin' else 'linux' }}"
@@ -46,14 +46,14 @@
   run_once: true
 
 - name: Set OS-specific facts for K9s
-  tags: [k9s]
+  tags: [tools, k9s]
   delegate_to: localhost
   ansible.builtin.set_fact:
     k9s_dest: "/tmp/k9s.{{ k9s_ext }}"
   run_once: true
 
 - name: Delete (DevContainer)
-  tags: [k9s]
+  tags: [tools, k9s]
   delegate_to: localhost
   ansible.builtin.file:
     path: "{{ k9s_dest }}"
@@ -61,7 +61,7 @@
   run_once: true
 
 - name: Download k9s (DevContainer)
-  tags: [k9s]
+  tags: [tools, k9s]
   delegate_to: localhost
   ansible.builtin.get_url:
     url: "https://github.com/derailed/k9s/releases/latest/download/k9s_{{ k9s_os }}_{{ k9s_arch }}.{{ k9s_ext }}"
@@ -73,7 +73,7 @@
 - name: Install k9s on Linux (DevContainer)
   when: k9s_ext == 'deb'
   delegate_to: localhost
-  tags: [k9s]
+  tags: [tools, k9s]
   become: true
   ansible.builtin.command:
     cmd: "dpkg -i {{ k9s_dest }}"
@@ -85,7 +85,7 @@
 - name: Extract and install k9s on macOS (DevContainer)
   when: k9s_ext == 'tar.gz'
   delegate_to: localhost
-  tags: [k9s]
+  tags: [tools, k9s]
   become: false
   ansible.builtin.unarchive:
     src: "{{ k9s_dest }}"
@@ -98,7 +98,7 @@
   run_once: true
 
 - name: Delete (DevContainer)
-  tags: [k9s]
+  tags: [tools, k9s]
   delegate_to: localhost
   ansible.builtin.file:
     path: "{{ k9s_dest }}"
