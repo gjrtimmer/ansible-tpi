@@ -15,3 +15,5 @@ repository:
     url: https://kubernetes.github.io/dashboard/
   - name: traefik
     url: https://traefik.github.io/charts
+  - name: gitlab
+    url: https://charts.gitlab.io

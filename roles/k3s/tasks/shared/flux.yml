@@ -1,0 +1,60 @@
+# code: language=ansible
+---
+- name: Generate Flux Bootstrap
+  when: >
+    k3s.profiles[profile].flux is defined
+    and
+    k3s.profiles[profile].flux.bootstrap is defined
+    and
+    k3s.profiles[profile].flux.bootstrap.token is defined
+    and
+    k3s.profiles[profile].flux.bootstrap.token | length > 0
+  delegate_to: localhost
+  tags: [flux]
+  ansible.builtin.template:
+    src: flux/bootstrap.sh
+    dest: /tmp/flux-bootstrap.sh
+    mode: "0755"
+  changed_when: true
+  run_once: true
+
+- name: Bootstrap Flux # noqa: command-instead-of-shell
+  when: >
+    k3s.profiles[profile].flux is defined
+    and
+    k3s.profiles[profile].flux.bootstrap is defined
+    and
+    k3s.profiles[profile].flux.bootstrap.token is defined
+    and
+    k3s.profiles[profile].flux.bootstrap.token | length > 0
+  delegate_to: localhost
+  tags: [flux]
+  ansible.builtin.shell:
+    cmd: /tmp/flux-bootstrap.sh
+  changed_when: true
+  run_once: true
+  register: flux_bootstrap
+
+- name: Flux Bootstrap Result
+  when: >
+    k3s.profiles[profile].flux is defined
+    and
+    k3s.profiles[profile].flux.bootstrap is defined
+    and
+    k3s.profiles[profile].flux.bootstrap.token is defined
+    and
+    k3s.profiles[profile].flux.bootstrap.token | length > 0
+  delegate_to: localhost
+  tags: [flux]
+  ansible.builtin.debug:
+    msg: "Flux bootstrap output: {{ flux_bootstrap.stdout }}"
+  run_once: true
+
+- name: Delete Flux Bootstrap Script
+  delegate_to: localhost
+  tags: [flux]
+  ansible.builtin.file:
+    path: /tmp/flux-bootstrap.sh
+    state: absent
+  changed_when: true
+  run_once: true
