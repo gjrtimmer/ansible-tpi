@@ -10,7 +10,7 @@
     and
     k3s.profiles[profile].flux.bootstrap.token | length > 0
   delegate_to: localhost
-  tags: [flux]
+  tags: [flux-system]
   ansible.builtin.template:
     src: flux/bootstrap.sh
     dest: /tmp/flux-bootstrap.sh
@@ -28,7 +28,8 @@
     and
     k3s.profiles[profile].flux.bootstrap.token | length > 0
   delegate_to: localhost
-  tags: [flux]
+  tags: [flux-system]
+
   ansible.builtin.shell:
     cmd: /tmp/flux-bootstrap.sh
   changed_when: true
@@ -45,14 +46,16 @@
     and
     k3s.profiles[profile].flux.bootstrap.token | length > 0
   delegate_to: localhost
-  tags: [flux]
+  tags: [flux-system]
+
   ansible.builtin.debug:
     msg: "Flux bootstrap output: {{ flux_bootstrap.stdout }}"
   run_once: true
 
 - name: Delete Flux Bootstrap Script
   delegate_to: localhost
-  tags: [flux]
+  tags: [flux-system]
+
   ansible.builtin.file:
     path: /tmp/flux-bootstrap.sh
     state: absent

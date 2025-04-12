@@ -55,6 +55,7 @@
     file: shared/kubeconfig.yml
 
 - name: Bootstrap Flux
+  when: "'flux-system' in ansible_run_tags"
   tags: [flux]
   ansible.builtin.include_tasks:
     file: shared/flux.yml
