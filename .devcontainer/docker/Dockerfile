@@ -22,7 +22,9 @@ RUN pipx install --include-deps ansible && \
     pipx inject ansible argcomplete && \
     pipx inject ansible-lint argcomplete && \
     pipx install netaddr && \
-    pipx inject ansible netaddr
+    pipx inject ansible netaddr && \
+    pip install dnspython --break-system-packages && \
+    pipx inject ansible dnspython
 
 USER root
 ENV PATH=/home/vscode/.local/bin:/work/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
