@@ -8,6 +8,8 @@
   ansible.builtin.set_fact:
     resolved_ips: "{{ resolved_ips + [lookup('community.general.dig', client_item)] }}"
   when: (client_item is string) and ('/' not in client_item)
+  delegate_to: localhost
+  run_once: true
 
 - name: Check if Tailscale is enabled for {{ client_item }}
   ansible.builtin.set_fact:
@@ -21,3 +23,5 @@
     - (client_item is string)
     - ('/' not in client_item)
     - (use_tailscale | default(false))
+  delegate_to: localhost
+  run_once: true
