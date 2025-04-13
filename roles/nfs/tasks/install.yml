@@ -11,6 +11,7 @@
     cache_valid_time: 3600
 
 - name: Ensure NFS service is enabled and running
+  become: true
   ansible.builtin.systemd:
     name: nfs-server
     enabled: true

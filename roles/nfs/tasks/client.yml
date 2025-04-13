@@ -11,6 +11,7 @@
     cache_valid_time: 3600
 
 - name: Ensure required kernel modules for NFS are loaded
+  become: true
   community.general.modprobe:
     name: "{{ item }}"
     state: present
@@ -22,6 +23,7 @@
 
 # Optional: add modules to /etc/modules for persistence
 - name: Ensure NFS kernel modules are loaded at boot
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/modules
     line: "{{ item }}"
