@@ -1,0 +1,7 @@
+# code: language=ansible
+---
+# Handlers for NFS server role
+- name: restart-nfs-server # noqa: name[casing]
+  ansible.builtin.systemd:
+    name: nfs-server
+    state: restarted

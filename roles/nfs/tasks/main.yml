@@ -1,0 +1,17 @@
+# code: language=ansible
+---
+# Always run client installation (all hosts may mount NFS)
+- name: Include NFS client tasks
+  ansible.builtin.import_tasks: client.yml
+
+- name: Include NFS install tasks
+  when: nfs.server.enabled | default(false)
+  ansible.builtin.import_tasks: install.yml
+
+- name: Include NFS client resolution task
+  when: nfs.server.enabled | default(false)
+  ansible.builtin.import_tasks: resolve_clients.yml
+
+- name: Include NFS configuration tasks
+  when: nfs.server.enabled | default(false)
+  ansible.builtin.import_tasks: configure.yml

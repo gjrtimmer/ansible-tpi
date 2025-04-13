@@ -1,0 +1,33 @@
+# code: language=ansible
+---
+# Install NFS client packages required for mounting remote exports
+
+- name: Install NFS client packages
+  become: true
+  ansible.builtin.apt:
+    name: nfs-common
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Ensure required kernel modules for NFS are loaded
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - nfs
+    - nfsd
+    - nfsv3
+    - nfsv4
+
+# Optional: add modules to /etc/modules for persistence
+- name: Ensure NFS kernel modules are loaded at boot
+  ansible.builtin.lineinfile:
+    path: /etc/modules
+    line: "{{ item }}"
+    state: present
+  loop:
+    - nfs
+    - nfsd
+    - nfsv3
+    - nfsv4

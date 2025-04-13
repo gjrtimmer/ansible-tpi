@@ -1,0 +1,7 @@
+# code: language=ansible
+---
+- name: NFS
+  hosts: "{{ ansible_limit | default('bmc') }}"
+  gather_facts: true
+  roles:
+    - role: nfs

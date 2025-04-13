@@ -1,0 +1,23 @@
+---
+- name: Check if client is a raw CIDR or IP
+  ansible.builtin.set_fact:
+    resolved_ips: "{{ resolved_ips + [ client_item ] }}"
+  when: (client_item is string) and ('/' in client_item)
+
+- name: Resolve normal IP of {{ client_item }}
+  ansible.builtin.set_fact:
+    resolved_ips: "{{ resolved_ips + [ lookup('ansible.builtin.fqdn', client_item) ] }}"
+  when: (client_item is string) and ('/' not in client_item)
+
+- name: Check if Tailscale is enabled for {{ client_item }}
+  ansible.builtin.set_fact:
+    use_tailscale: "{{ (hostvars[client_item].tailscale.enabled | default(false)) | bool }}"
+  when: (client_item is string) and ('/' not in client_item)
+
+- name: Resolve Tailscale IP of {{ client_item }}
+  ansible.builtin.set_fact:
+    resolved_ips: "{{ resolved_ips + [ lookup('ansible.builtin.fqdn', client_item ~ '.' ~ tailscale.tailnet) ] }}"
+  when:
+    - (client_item is string)
+    - ('/' not in client_item)
+    - (use_tailscale | default(false))

@@ -1,0 +1,10 @@
+---
+- name: Initialize nfs_exports list
+  ansible.builtin.set_fact:
+    nfs_exports: []
+
+- name: Resolve exports one by one
+  ansible.builtin.include_tasks: resolve_single_export.yml
+  loop: "{{ nfs.server.exports }}"
+  loop_control:
+    loop_var: export_item

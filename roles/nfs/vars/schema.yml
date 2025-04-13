@@ -1,0 +1,24 @@
+# Global NFS configuration (host-scoped, defined in host_vars)
+nfs:
+  # Server-specific settings for this host
+  server:
+    # Whether this host should act as an NFS server
+    enabled: true
+
+    # List of NFS exports to provide from this server
+    exports:
+      # Each export defines the server-side path and allowed clients
+      - # Path to be exported (e.g. /mnt/data/backups)
+        path: "/mnt/data/backups"
+
+        # List of clients allowed to access this export
+        # Clients can be:
+        # - Inventory hostnames (resolved via hostvars)
+        # - CIDR IP ranges (e.g., 192.168.20.0/24)
+        clients:
+          - node1
+          - node2
+          - "192.168.20.0/24"
+
+    # Optional: export options to use if not overridden per export
+    default_options: "rw,sync,no_subtree_check,no_root_squash"

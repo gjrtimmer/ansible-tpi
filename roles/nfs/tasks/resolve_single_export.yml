@@ -1,0 +1,16 @@
+---
+- name: Initialize resolved IP list for {{ export_item.path }}
+  ansible.builtin.set_fact:
+    resolved_ips: []
+
+- name: Process each client for {{ export_item.path }}
+  ansible.builtin.include_tasks: resolve_single_client.yml
+  loop: "{{ export_item.clients }}"
+  loop_control:
+    loop_var: client_item
+  vars:
+    export_path: "{{ export_item.path }}"
+
+- name: Append resolved export
+  ansible.builtin.set_fact:
+    nfs_exports: "{{ nfs_exports + [ { 'path': export_item.path, 'ips': resolved_ips | unique } ] }}"

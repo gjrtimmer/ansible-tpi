@@ -1,0 +1,17 @@
+# code: language=ansible
+---
+# Install NFS server components
+
+- name: Install NFS server packages
+  become: true
+  ansible.builtin.apt:
+    name: nfs-kernel-server
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Ensure NFS service is enabled and running
+  ansible.builtin.systemd:
+    name: nfs-server
+    enabled: true
+    state: started
