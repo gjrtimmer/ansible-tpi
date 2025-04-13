@@ -2,6 +2,7 @@
 ---
 # Configure NFS exports and prepare export directories
 - name: Ensure NFS export directories exist
+  become: true
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
@@ -11,6 +12,7 @@
   loop: "{{ nfs.server.exports }}"
 
 - name: Configure /etc/exports from template
+  become: true
   ansible.builtin.template:
     src: exports.j2
     dest: /etc/exports
