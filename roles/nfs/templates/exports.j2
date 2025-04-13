@@ -1,4 +1,4 @@
-{# Clean and newline-separated exports.j2 #}
+{# Safe and newline-separated rendering of /etc/exports #}
 {% for export in nfs_exports %}
 {{ export.path }}{% for ip in export.ips %} {{ ip }}({{ nfs.server.default_options | default("rw,sync,no_subtree_check,no_root_squash") }}){% endfor %}
 {% endfor %}
