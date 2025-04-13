@@ -4,24 +4,92 @@
     resolved_ips: "{{ resolved_ips + [client_item] }}"
   when: (client_item is string) and ('/' in client_item)
 
-- name: Resolve normal IP of {{ client_item }}
-  ansible.builtin.set_fact:
-    resolved_ips: "{{ resolved_ips + [lookup('community.general.dig', client_item)] }}"
+- name: Resolve LAN IP using shell dig
+  ansible.builtin.command: "dig +short {{ client_item }}"
+  register: dig_lan
+  changed_when: false
+  failed_when: false
   when: (client_item is string) and ('/' not in client_item)
   delegate_to: localhost
   run_once: true
 
-- name: Check if Tailscale is enabled for {{ client_item }}
+# - name: Show resolved LAN IP
+#   ansible.builtin.debug:
+#     msg: "{{ client_item }} resolved to LAN IPs: {{ dig_lan.stdout_lines }}"
+#   when:
+#     - dig_lan is defined
+#     - dig_lan.stdout_lines is defined
+#   delegate_to: localhost
+#   run_once: true
+
+- name: Add resolved LAN IP from dig
+  ansible.builtin.set_fact:
+    resolved_ips: "{{ resolved_ips + [dig_lan.stdout_lines[0]] }}"
+  when:
+    - dig_lan.stdout_lines is defined
+    - dig_lan.stdout_lines | length > 0
+
+- name: Build IP map for current profile
+  ansible.builtin.set_fact:
+    profile_node_map: >-
+      {{
+        dict(
+          network.zones
+          | dict2items
+          | selectattr("value.profile", "equalto", profile)
+          | map(attribute="value.nodes")
+          | list
+          | map('dict2items')
+          | sum(start=[])
+          | items2dict
+        )
+      }}
+  when:
+    - dig_lan.stdout_lines is defined
+    - dig_lan.stdout_lines | length == 0
+    - (network is defined)
+
+# - name: Show fallback profile_node_map
+#   ansible.builtin.debug:
+#     var: profile_node_map
+#   when: profile_node_map is defined
+
+- name: Add fallback IP from profile map
+  ansible.builtin.set_fact:
+    resolved_ips: "{{ resolved_ips + [profile_node_map[client_item]] }}"
+  when:
+    - profile_node_map is defined
+    - profile_node_map[client_item] is defined
+
+- name: Check if Tailscale is enabled
   ansible.builtin.set_fact:
     use_tailscale: "{{ (hostvars[client_item].tailscale.enabled | default(false)) | bool }}"
   when: (client_item is string) and ('/' not in client_item)
 
-- name: Resolve Tailscale IP of {{ client_item }}
-  ansible.builtin.set_fact:
-    resolved_ips: "{{ resolved_ips + [ lookup('community.general.dig', client_item ~ '.' ~ tailscale.tailnet) ] }}"
+- name: Resolve Tailscale IP using shell dig
+  ansible.builtin.command: "dig +short {{ client_item }}.{{ tailscale.tailnet }}"
+  register: dig_tail
+  changed_when: false
+  failed_when: false
   when:
     - (client_item is string)
     - ('/' not in client_item)
-    - (use_tailscale | default(false))
+    - use_tailscale | default(false)
   delegate_to: localhost
   run_once: true
+
+# - name: Show Tailscale dig result
+#   ansible.builtin.debug:
+#     msg: "{{ client_item }} Tailscale dig: {{ dig_tail.stdout_lines }}"
+#   when:
+#     - dig_tail is defined
+#     - dig_tail.stdout_lines is defined
+#   delegate_to: localhost
+#   run_once: true
+
+- name: Add resolved Tailscale IP
+  ansible.builtin.set_fact:
+    resolved_ips: "{{ resolved_ips + [dig_tail.stdout_lines[0]] }}"
+  when:
+    - dig_tail.stdout_lines is defined
+    - dig_tail.stdout_lines | length > 0
