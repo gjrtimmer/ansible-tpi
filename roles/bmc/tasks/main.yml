@@ -17,9 +17,9 @@
   tags: [network]
   ansible.builtin.include_tasks:
     file: network.yml
-#
-# - name: Set BMC Network
-#   when: inventory_hostname in groups['bmc']
-#   tags: [routes]
-#   ansible.builtin.include_tasks:
-#     file: routes.yml
+
+- name: Set BMC Network
+  when: inventory_hostname in groups['bmc']
+  tags: [routes]
+  ansible.builtin.include_tasks:
+    file: routes.yml
