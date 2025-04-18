@@ -1,7 +1,39 @@
 # code: language=ansible
 ---
+- name: SSH Bootstrap
+  ansible.builtin.import_playbook: ssh.yml
+
+- name: Provision
+  hosts: "{{ ansible_limit | default('bmc') }}"
+  gather_facts: true
+  tags: [provision]
+  become: true
+  roles:
+    - role: server
+    - role: upgrade
+    - role: network
+    - role: tailscale
+
+- name: SSH
+  ansible.builtin.import_playbook: ssh.yml
+
+- name: Provision
+  hosts: "{{ ansible_limit | default('bmc') }}"
+  gather_facts: true
+  tags: [provision]
+  become: true
+  roles:
+    - role: hosts
+    - role: sata
+    - role: nfs
+
+- name: Reboot
+  ansible.builtin.import_playbook: reboot.yml
+
 - name: K3s
   hosts: "{{ ansible_limit | default('bmc') }}"
   gather_facts: true
+  tags: [k3s]
+  become: true
   roles:
     - role: k3s
