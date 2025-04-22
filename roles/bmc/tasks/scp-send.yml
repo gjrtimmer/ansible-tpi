@@ -24,5 +24,6 @@
   changed_when: true
 
 - name: Set Permissions {{ dest }}
+  delegate_to: "{{ hostvars[inventory_hostname]['bmc'] }}"
   ansible.builtin.raw: chmod {{ mode }} {{ dest }}
   changed_when: true
