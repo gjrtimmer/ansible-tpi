@@ -8,3 +8,4 @@
     ansible_host: "{{ ip_address | default(inventory_hostname) }}"
   roles:
     - tailscale
+    - hosts
