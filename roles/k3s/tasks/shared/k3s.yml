@@ -3,7 +3,7 @@
 ---
 - name: "Set Cluster Init Node"
   ansible.builtin.set_fact:
-    is_cluster_init_node: "{{ inventory_hostname == k3s.profiles[profile].cluster_init_node }}"
+    is_cluster_init_node: "{{ inventory_hostname == k3s.profiles[profile].cluster.init }}"
 
 - name: Find matching zone for local_ip
   ansible.builtin.set_fact:
@@ -120,7 +120,7 @@
   environment:
     INSTALL_K3S_VERSION: "{{ k3s.version }}"
     K3S_TOKEN: "{{ k3s_token }}"
-    K3S_URL: "https://{{ hostvars[k3s.profiles[profile].cluster_init_node].ip_address }}:6443"
+    K3S_URL: "https://{{ hostvars[k3s.profiles[profile].cluster.init].ip_address }}:6443"
   args:
     creates: /usr/local/bin/k3s
 
@@ -132,7 +132,7 @@
     environment:
       INSTALL_K3S_VERSION: "{{ k3s.version }}"
       K3S_TOKEN: "{{ k3s_token }}"
-      K3S_URL: "https://{{ hostvars[k3s.profiles[profile].cluster_init_node].ip_address }}:6443"
+      K3S_URL: "https://{{ hostvars[k3s.profiles[profile].cluster.init].ip_address }}:6443"
   args:
     creates: /usr/local/bin/k3s
 

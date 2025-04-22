@@ -3,7 +3,7 @@
 - name: Set Cluster Init Node
   tags: [kube-vip]
   ansible.builtin.set_fact:
-    is_cluster_init_node: "{{ inventory_hostname == k3s.profiles[profile].cluster_init_node }}"
+    is_cluster_init_node: "{{ inventory_hostname == k3s.profiles[profile].cluster.init }}"
 
 - name: Deploy kube-vip RBAC
   when: is_cluster_init_node
