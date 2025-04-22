@@ -50,6 +50,7 @@
   become: true
   tags: [server]
   roles:
+    - upgrade
     - server
 
 - name: Network Configuration
@@ -59,6 +60,7 @@
   tags: [network]
   roles:
     - network
+    - hosts
 
 - name: Install Container Runtime
   hosts: "{{ ansible_limit | default('nodes,!bmc') }}"
