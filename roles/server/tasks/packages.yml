@@ -18,6 +18,11 @@
       - wireguard
       - ca-certificates
       - open-iscsi
+      - iputils-ping
+      - net-tools
+      - arping
+      - sudo
+      - vim
     state: present
     update_cache: true
     cache_valid_time: 3600
