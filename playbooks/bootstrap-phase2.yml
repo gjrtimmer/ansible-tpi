@@ -1,32 +1,5 @@
 # code: language=ansible
 ---
-- name: Requirements
-  hosts: "{{ ansible_limit | default('nodes,!bmc') }}"
-  gather_facts: false
-  tags: [setup]
-  serial: 1
-  tasks:
-    - name: Install TPI Client
-      delegate_to: localhost
-      tags: [setup]
-      ansible.builtin.import_role:
-        name: tpi
-        tasks_from: client-install.yml
-
-    - name: Generate SSH Keys
-      delegate_to: localhost
-      tags: [setup]
-      ansible.builtin.import_role:
-        name: ssh
-
-- name: Bootstrap
-  hosts: "{{ ansible_limit | default('nodes,!bmc') }}"
-  gather_facts: false
-  serial: 1
-  tags: [bootstrap]
-  roles:
-    - bootstrap
-
 - name: RK1
   hosts: "{{ ansible_limit | default('nodes,!bmc') }}"
   gather_facts: true
