@@ -109,13 +109,13 @@
   #
   # It is advised to rerun the bootstrap after a
   # DHCP reservation has been made.
-- name: Stop
-  when: >
-    hostvars[inventory_hostname]['type'] | upper != 'NVIDIA'
-    and
-    "'stop' in ansible_run_tags"
-  tags: [bootstrap, stop]
-  ansible.builtin.meta: end_play
+# - name: Stop
+#   when: >
+#     hostvars[inventory_hostname]['type'] | upper != 'NVIDIA'
+#     and
+#     "'stop' in ansible_run_tags"
+#   tags: [bootstrap]
+#   ansible.builtin.meta: end_play
 
 - name: Wait on {{ inventory_hostname }}
   when: hostvars[inventory_hostname]['type'] | upper != 'NVIDIA'
