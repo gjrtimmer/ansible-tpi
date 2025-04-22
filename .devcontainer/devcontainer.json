@@ -34,7 +34,7 @@
     "source=${localEnv:HOME}/.ansible_vault_pass,target=/home/vscode/.ansible_vault_pass,type=bind",
     "source=${localEnv:HOME}/.kube,target=/home/vscode/.kube,type=bind",
     "source=${localEnv:HOME}/.tpi,target=/home/vscode/.tpi,type=bind",
-    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,readonly",
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind",
     "source=${localEnv:HOME}/.ssh/config,target=/home/vscode/.ssh/config,type=bind",
     "source=${localEnv:HOME}/.ssh/known_hosts,target=/home/vscode/.ssh/known_hosts,type=bind",
     "source=${localEnv:HOME}/.ssh/tpi/,target=/home/vscode/.ssh/tpi/,type=bind"
