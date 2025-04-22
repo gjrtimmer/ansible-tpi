@@ -2,8 +2,12 @@
 ---
 - name: Install TPI CLI
   hosts: "{{ ansible_limit | default('localhost,nodes,!bmc') }}"
-  gather_facts: true
+  gather_facts: false
   tasks:
+    - name: Gather Facts
+      delegate_to: localhost
+      ansible.builtin.setup:
+
     - name: Install TPI Client
       delegate_to: localhost
       tags: [tpi]
