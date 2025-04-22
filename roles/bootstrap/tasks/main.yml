@@ -24,47 +24,31 @@
     name: bmc
     tasks_from: msd-mount.yml
 
-- name: Generate user-data {{ inventory_hostname }}
-  when: hostvars[inventory_hostname]['type'] | upper != 'NVIDIA'
-  delegate_to: localhost
-  tags: [bootstrap]
-  ansible.builtin.template:
-    src: user-data.j2
-    dest: /tmp/tpi/user-data
-    mode: "0644"
-  vars:
-    prefix: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_prefix'] }}"
-
 - name: Copy user-data to {{ inventory_hostname }}
   when: hostvars[inventory_hostname]['type'] | upper != 'NVIDIA'
   tags: [bootstrap]
   vars:
-    src: /tmp/tpi/user-data
+    type: "template"
+    src: user-data.j2
     dest: /mnt/node/cloud/user-data
+    mode: "0644"
+    prefix: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_prefix'] }}"
     bmc_host: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_host'] }}"
     bmc_user: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_user'] }}"
     bmc_pass: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_pass'] }}"
   ansible.builtin.import_role:
     name: bmc
     tasks_from: scp-send.yml
-
-- name: Generate cloud.cfg {{ inventory_hostname }}
-  when: hostvars[inventory_hostname]['type'] | upper != 'NVIDIA'
-  delegate_to: localhost
-  tags: [bootstrap]
-  ansible.builtin.template:
-    src: cloud.cfg.j2
-    dest: /tmp/tpi/cloud.cfg
-    mode: "0644"
-  vars:
-    prefix: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_prefix'] }}"
 
 - name: Copy cloud.cfg to {{ inventory_hostname }}
   when: hostvars[inventory_hostname]['type'] | upper != 'NVIDIA'
   tags: [bootstrap]
   vars:
-    src: /tmp/tpi/cloud.cfg
+    type: "template"
+    src: cloud.cfg.j2
     dest: /mnt/node/root/etc/cloud/cloud.cfg
+    mode: "0644"
+    prefix: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_prefix'] }}"
     bmc_host: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_host'] }}"
     bmc_user: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_user'] }}"
     bmc_pass: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_pass'] }}"
@@ -72,23 +56,15 @@
     name: bmc
     tasks_from: scp-send.yml
 
-- name: Default Network Config {{ inventory_hostname }}
-  when: hostvars[inventory_hostname]['type'] | upper != 'NVIDIA'
-  delegate_to: localhost
-  tags: [bootstrap]
-  ansible.builtin.copy:
-    src: 50-cloud-init.yaml
-    dest: /tmp/tpi/50-cloud-init.yaml
-    mode: "0700"
-  vars:
-    prefix: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_prefix'] }}"
-
 - name: Copy Default Network Config {{ inventory_hostname }}
   when: hostvars[inventory_hostname]['type'] | upper != 'NVIDIA'
   tags: [bootstrap]
   vars:
-    src: /tmp/tpi/50-cloud-init.yaml
+    type: "file"
+    src: 50-cloud-init.yaml
     dest: /mnt/node/root/etc/netplan/50-cloud-init.yaml
+    mode: "0700"
+    prefix: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_prefix'] }}"
     bmc_host: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_host'] }}"
     bmc_user: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_user'] }}"
     bmc_pass: "{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_pass'] }}"
@@ -133,12 +109,12 @@
   #
   # It is advised to rerun the bootstrap after a
   # DHCP reservation has been made.
-- name: DHCP Reservation
+- name: Stop
   when: >
     hostvars[inventory_hostname]['type'] | upper != 'NVIDIA'
     and
-    dhcp_reservation
-  tags: [bootstrap]
+    "'stop' in ansible_run_tags"
+  tags: [bootstrap, stop]
   ansible.builtin.meta: end_play
 
 - name: Wait on {{ inventory_hostname }}
