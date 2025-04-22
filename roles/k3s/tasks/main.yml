@@ -8,35 +8,37 @@
     file: uninstall.yml
 
 - name: Merge selected profile into k3s config
+  tags: [k3s]
   ansible.builtin.include_tasks:
     file: shared/config.yml
 
 - name: Merge selected profile into k3s config
+  tags: [k3s]
   ansible.builtin.include_tasks:
     file: shared/token.yml
 
 - name: Helm
-  tags: [tools, helm]
+  tags: [k3s, tools, helm]
   ansible.builtin.include_tasks:
     file: tools/helm.yml
 
 - name: Flux
-  tags: [tools, flux]
+  tags: [k3s, tools, flux]
   ansible.builtin.include_tasks:
     file: tools/flux.yml
 
 - name: Arkade
-  tags: [tools, arkade]
+  tags: [k3s, tools, arkade]
   ansible.builtin.include_tasks:
     file: tools/arkade.yml
 
 - name: k9s # noqa: name[casing]
-  tags: [tools, k9s]
+  tags: [k3s, tools, k9s]
   ansible.builtin.include_tasks:
     file: tools/k9s.yml
 
 - name: glab # noqa: name[casing]
-  tags: [tools, glab]
+  tags: [k3s, tools, glab]
   ansible.builtin.include_tasks:
     file: tools/glab.yml
 
@@ -46,12 +48,12 @@
     file: shared/k3s.yml
 
 - name: Deploy kube-vip
-  tags: [kube-vip]
+  tags: [k3s, kube-vip]
   ansible.builtin.include_tasks:
     file: shared/kube-vip.yml
 
 - name: Kube Config
-  tags: [kubeconfig]
+  tags: [k3s, kubeconfig]
   ansible.builtin.include_tasks:
     file: shared/kubeconfig.yml
 
@@ -66,6 +68,7 @@
 #     file: shared/longhorn.yml
 
 - name: Run profile-specific tasks {{ profile }}
+  tags: [k3s]
   ansible.builtin.include_tasks:
     file: "profiles/{{ profile }}.yml"
 # - name: Run post-deploy validations

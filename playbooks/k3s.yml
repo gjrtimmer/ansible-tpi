@@ -4,7 +4,7 @@
   ansible.builtin.import_playbook: ssh.yml
 
 - name: Provision
-  hosts: "{{ ansible_limit | default('bmc') }}"
+  hosts: "{{ ansible_limit | default('nodes') }}"
   gather_facts: true
   tags: [provision]
   become: true
@@ -18,7 +18,7 @@
   ansible.builtin.import_playbook: ssh.yml
 
 - name: Provision
-  hosts: "{{ ansible_limit | default('bmc') }}"
+  hosts: "{{ ansible_limit | default('nodes') }}"
   gather_facts: true
   tags: [provision]
   become: true
@@ -31,9 +31,9 @@
   ansible.builtin.import_playbook: reboot.yml
 
 - name: K3s
-  hosts: "{{ ansible_limit | default('bmc') }}"
+  hosts: "{{ ansible_limit | default('nodes') }}"
   gather_facts: true
-  tags: [k3s]
+  tags: [k3s, uninstall]
   become: true
   roles:
     - role: k3s

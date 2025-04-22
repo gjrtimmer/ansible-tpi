@@ -31,3 +31,11 @@
   loop:
     - "{{ k3s.config_dir }}"
     - "{{ k3s.data_dir }}"
+
+- name: Stop
+  when: >
+    k3s_uninstall_script.stat.exists
+    and
+    "'uninstall' in ansible_run_tags"
+  tags: [uninstall]
+  ansible.builtin.meta: end_play
