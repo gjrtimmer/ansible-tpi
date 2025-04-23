@@ -1,0 +1,52 @@
+---
+- name: Stop and disable Tailscale service (native)
+  when: not tailscale.docker.enabled | default(false) | bool
+  tags: [uninstall, tailscale]
+  become: true
+  ansible.builtin.systemd:
+    name: tailscaled
+    enabled: false
+    state: stopped
+
+- name: Remove Tailscale package (native)
+  when: not tailscale.docker.enabled | default(false) | bool
+  tags: [uninstall, tailscale]
+  become: true
+  ansible.builtin.apt:
+    name: tailscale
+    state: absent
+    purge: true
+
+- name: Delete Tailscale state files (native)
+  when: not tailscale.docker.enabled | default(false) | bool
+  tags: [uninstall, tailscale]
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/systemd/system/tailscaled.service
+    - /etc/systemd/system/tailscaled.service.d
+    - /var/lib/tailscale
+    - /var/run/tailscale
+    - /usr/share/keyrings/tailscale-archive-keyring.gpg
+
+- name: Stop and remove Tailscale Docker container
+  when: tailscale.docker.enabled | default(false) | bool
+  tags: [uninstall, tailscale]
+  community.docker.docker_container:
+    name: tailscale
+    state: absent
+    force_kill: true
+
+- name: Remove Docker Tailscale mount directory
+  when: tailscale.docker.enabled | default(false) | bool
+  tags: [uninstall, tailscale]
+  become: true
+  ansible.builtin.file:
+    path: "{{ tailscale.docker.mount }}"
+    state: absent
+
+- name: Stop
+  tags: [uninstall]
+  ansible.builtin.meta: end_play
