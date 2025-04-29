@@ -18,10 +18,7 @@
   changed_when: true
 
 - name: Remove K3s config and data directories
-  when: >
-    k3s_uninstall_script.stat.exists
-    and
-    "'uninstall' in ansible_run_tags"
+  when: "'uninstall' in ansible_run_tags"
   tags: [uninstall]
   become: true
   ansible.builtin.file:
@@ -40,10 +37,47 @@
     - /opt/containerd
     - /var/lib/kubelet
 
+- name: Force stop and remove lingering kubepods slices
+  when: "'uninstall' in ansible_run_tags"
+  tags: [uninstall]
+  become: true
+  block:
+    - name: List all kubepods slices
+      tags: [uninstall]
+      ansible.builtin.shell: |
+        systemctl list-units --type=slice --no-legend | awk '{print $1}' | grep -i kubepods || true
+      register: kubepods_slices
+      changed_when: true
+
+    - name: Stop all kubepods slices
+      tags: [uninstall]
+      become: true
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: stopped
+        force: true
+      loop: "{{ kubepods_slices.stdout_lines }}"
+      failed_when: false
+      changed_when: true
+
+    - name: Reload systemd manager configuration
+      tags: [uninstall]
+      become: true
+      ansible.builtin.systemd:
+        daemon_reload: true
+      changed_when: true
+
+    - name: Remove lingering kubepods cgroup directories
+      tags: [uninstall]
+      become: true
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /sys/fs/cgroup/kubepods.slice
+        - /sys/fs/cgroup/system.slice/kubepods.slice
+
 - name: Stop
-  when: >
-    k3s_uninstall_script.stat.exists
-    and
-    "'uninstall' in ansible_run_tags"
+  when: "'uninstall' in ansible_run_tags"
   tags: [uninstall]
   ansible.builtin.meta: end_play
