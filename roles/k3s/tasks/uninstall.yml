@@ -31,6 +31,11 @@
   loop:
     - "{{ k3s.config_dir }}"
     - "{{ k3s.data_dir }}"
+    - /var/lib/containerd
+    - /opt/cni
+    - /var/lib/cni
+    - /run/k3s
+    - /etc/rancher
 
 - name: Stop
   when: >
