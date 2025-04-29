@@ -6,16 +6,54 @@
     path: /usr/local/bin/k3s-uninstall.sh
   register: k3s_uninstall_script
 
-- name: Uninstall K3s
-  when: >
-    k3s_uninstall_script.stat.exists
-    and
-    "'uninstall' in ansible_run_tags"
+- name: Run k3s uninstall script if present
+  when: k3s_uninstall_script.stat.exists and "'uninstall' in ansible_run_tags"
   tags: [uninstall]
   become: true
   ansible.builtin.command:
     cmd: /usr/local/bin/k3s-uninstall.sh
   changed_when: true
+
+- name: Stop and disable containerd service if it is active
+  when: "'uninstall' in ansible_run_tags"
+  tags: [uninstall]
+  become: true
+  block:
+    - name: Check if containerd service exists
+      ansible.builtin.systemd:
+        name: containerd
+        enabled: false
+        masked: false
+      check_mode: true
+      register: containerd_check
+      failed_when: false
+      changed_when: false
+
+    - name: Stop containerd service
+      ansible.builtin.systemd:
+        name: containerd
+        state: stopped
+        enabled: false
+        masked: false
+      when: containerd_check is defined
+
+    - name: Remove containerd service file if unmanaged
+      ansible.builtin.file:
+        path: /etc/systemd/system/containerd.service
+        state: absent
+
+    - name: Reload systemd after containerd removal
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Remove containerd runtime directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /run/containerd
+        - /opt/containerd
+        - /var/lib/containerd
 
 - name: Remove K3s config and data directories
   when: "'uninstall' in ansible_run_tags"
@@ -29,13 +67,16 @@
     - "{{ k3s.data_dir }}"
     - /etc/rancher
     - /var/lib/rancher
-    - /var/lib/containerd
     - /var/lib/cni
     - /opt/cni
     - /run/k3s
-    - /run/containerd
-    - /opt/containerd
     - /var/lib/kubelet
+    - /etc/cni
+    - /etc/kubernetes
+    - /var/lib/dockershim
+    - /etc/systemd/system/k3s.service
+    - /etc/systemd/system/k3s.service.d
+    - /etc/systemd/system/multi-user.target.wants/k3s.service
 
 - name: Force stop and remove lingering kubepods slices
   when: "'uninstall' in ansible_run_tags"
@@ -43,39 +84,37 @@
   become: true
   block:
     - name: List all kubepods slices
-      tags: [uninstall]
       ansible.builtin.shell: |
         systemctl list-units --type=slice --no-legend | awk '{print $1}' | grep -i kubepods || true
       register: kubepods_slices
-      changed_when: true
+      changed_when: false
 
     - name: Stop all kubepods slices
-      tags: [uninstall]
-      become: true
       ansible.builtin.systemd:
         name: "{{ item }}"
         state: stopped
         force: true
       loop: "{{ kubepods_slices.stdout_lines }}"
       failed_when: false
-      changed_when: true
+      changed_when: false
 
     - name: Reload systemd manager configuration
-      tags: [uninstall]
-      become: true
       ansible.builtin.systemd:
         daemon_reload: true
-      changed_when: true
+      changed_when: false
 
     - name: Remove lingering kubepods cgroup directories
-      tags: [uninstall]
-      become: true
       ansible.builtin.file:
         path: "{{ item }}"
         state: absent
       loop:
         - /sys/fs/cgroup/kubepods.slice
         - /sys/fs/cgroup/system.slice/kubepods.slice
+
+- name: Reboot node if enabled
+  when: k3s.uninstall_reboot | default(false) and "'uninstall' in ansible_run_tags"
+  tags: [uninstall]
+  ansible.builtin.reboot:
 
 - name: Stop
   when: "'uninstall' in ansible_run_tags"
