@@ -12,7 +12,6 @@
     - role: server
     - role: upgrade
     - role: network
-    - role: tailscale
 
 - name: SSH
   ansible.builtin.import_playbook: ssh.yml
