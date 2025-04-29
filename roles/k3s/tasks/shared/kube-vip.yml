@@ -1,13 +1,13 @@
 # code: language=ansible
 ---
 - name: Set Cluster Init Node
-  tags: [kube-vip]
+  tags: [install, kube-vip]
   ansible.builtin.set_fact:
     is_cluster_init_node: "{{ inventory_hostname == k3s.profiles[profile].cluster.init }}"
 
 - name: Deploy kube-vip RBAC
   when: is_cluster_init_node
-  tags: [kube-vip]
+  tags: [install, kube-vip]
   become: true
   ansible.builtin.template:
     src: kube-vip/rbac.yml
