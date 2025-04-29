@@ -117,7 +117,7 @@
 - name: Debug
   tags: [debug]
   ansible.builtin.debug:
-    msg: "k3s_cluster_domain_arg: {{ k3s_cluster_domain_arg }}"
+    msg: "k3s_cluster_domain_arg: {{ k3s_cluster_domain_arg | default('cluster.local') }}"
 
 - name: "Install/Configure K3s server (control-plane + worker) - Cluster-init node" # noqa: command-instead-of-module risky-shell-pipe
   when:
