@@ -2,6 +2,7 @@
 # roles/k3s/tasks/shared/token.yml
 ---
 - name: Check K3s Token Exists
+  tags: [install]
   delegate_to: localhost
   ansible.builtin.stat:
     path: "{{ lookup('env', 'HOME') }}/.tpi/k3s.{{ profile }}.token"
@@ -9,6 +10,7 @@
 
 - name: Generate K3s token
   when: not k3s_token_stat.stat.exists
+  tags: [install]
   delegate_to: localhost
   ansible.builtin.command: "uuidgen"
   register: k3s_token_gen
@@ -16,6 +18,7 @@
 
 - name: Save Token (~/.tpi/k3s.{{ profile }}.token) # noqa: name[template]
   when: not k3s_token_stat.stat.exists
+  tags: [install]
   delegate_to: localhost
   ansible.builtin.copy:
     content: "{{ k3s_token_gen.stdout }}"
@@ -23,11 +26,13 @@
     mode: "0600"
 
 - name: Load K3s token
+  tags: [install]
   delegate_to: localhost
   ansible.builtin.slurp:
     src: "{{ lookup('env', 'HOME') }}/.tpi/k3s.{{ profile }}.token"
   register: k3s_token_file
 
 - name: Set K3s token
+  tags: [install]
   ansible.builtin.set_fact:
     k3s_token: "{{ k3s_token_file.content | b64decode }}"

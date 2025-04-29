@@ -2,9 +2,11 @@
 # roles/k3s/tasks/shared/_merge_profile.yml
 ---
 - name: Merge k3s config
+  tags: [install]
   ansible.builtin.set_fact:
     k3s: "{{ k3s | combine(k3s.profiles[profile], recursive=True) }}"
 
 - name: Show K3s Config
+  tags: [install]
   ansible.builtin.debug:
     var: k3s

@@ -1,14 +1,14 @@
 # code: language=ansible
 ---
 - name: Delete (Nodes)
-  tags: [tools, arkade]
+  tags: [install, tools, arkade]
   ansible.builtin.file:
     path: /tmp/arkade.sh
     state: absent
   run_once: true
 
 - name: Get Arkade (Nodes)
-  tags: [tools, arkade]
+  tags: [install, tools, arkade]
   ansible.builtin.get_url:
     url: https://get.arkade.dev
     dest: /tmp/arkade.sh
@@ -16,7 +16,7 @@
   changed_when: true
 
 - name: Install Arkade (Nodes)
-  tags: [tools, arkade]
+  tags: [install, tools, arkade]
   become: true
   ansible.builtin.command:
     cmd: /tmp/arkade.sh
@@ -25,7 +25,7 @@
   changed_when: true
 
 - name: Delete (Nodes)
-  tags: [tools, arkade]
+  tags: [install, tools, arkade]
   ansible.builtin.file:
     path: /tmp/arkade.sh
     state: absent
@@ -33,14 +33,14 @@
 
 - name: Delete (DevContainer)
   delegate_to: localhost
-  tags: [tools, arkade]
+  tags: [install, tools, arkade]
   ansible.builtin.file:
     path: /tmp/arkade.sh
     state: absent
   run_once: true
 
 - name: Get Arkade (DevContainer)
-  tags: [tools, arkade]
+  tags: [install, tools, arkade]
   delegate_to: localhost
   ansible.builtin.get_url:
     url: https://get.arkade.dev
@@ -51,7 +51,7 @@
 
 - name: Install Arkade (DevContainer)
   delegate_to: localhost
-  tags: [tools, arkade]
+  tags: [install, tools, arkade]
   become: true
   ansible.builtin.command:
     cmd: /tmp/arkade.sh
@@ -62,7 +62,7 @@
 
 - name: Delete (DevContainer)
   delegate_to: localhost
-  tags: [tools, arkade]
+  tags: [install, tools, arkade]
   ansible.builtin.file:
     path: /tmp/arkade.sh
     state: absent

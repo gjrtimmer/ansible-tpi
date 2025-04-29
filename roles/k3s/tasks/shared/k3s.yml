@@ -2,10 +2,12 @@
 # roles/k3s/tasks/shared/k3s.yml
 ---
 - name: "Set Cluster Init Node"
+  tags: [install]
   ansible.builtin.set_fact:
     is_cluster_init_node: "{{ inventory_hostname == k3s.profiles[profile].cluster.init }}"
 
 - name: Find matching zone for local_ip
+  tags: [install]
   ansible.builtin.set_fact:
     local_ip: "{{ item.value.nodes[inventory_hostname] }}"
     matched_zone: "{{ item.key }}"
@@ -18,42 +20,52 @@
   register: matched_zones
 
 - name: Is Cluster Node
+  tags: [install]
   ansible.builtin.debug:
     var: is_cluster_init_node
 
 - name: Local IP
+  tags: [install]
   ansible.builtin.debug:
     var: local_ip
 
 - name: "Build K3s disable flags from k3s.disable list"
+  tags: [install]
   ansible.builtin.set_fact:
     k3s_disable_flags: "{{ k3s.disable | map('regex_replace', '^', '--disable ') | join(' ') }}"
 
 - name: "Build K3s server-specific arguments from k3s.args.server"
+  tags: [install]
   ansible.builtin.set_fact:
     k3s_server_args: "{{ k3s.args.server | default([]) | join(' ') }}"
 
 - name: "Build K3s agent-specific arguments from k3s.args.agent"
+  tags: [install]
   ansible.builtin.set_fact:
     k3s_agent_args: "{{ k3s.args.agent | default([]) | join(' ') }}"
 
 - name: "Build K3s data-dir argument"
+  tags: [install]
   ansible.builtin.set_fact:
     k3s_data_dir_arg: "{{ '--data-dir ' + k3s.data_dir if k3s.data_dir is defined else '' }}"
 
 - name: "Build K3s node-ip argument"
+  tags: [install]
   ansible.builtin.set_fact:
     k3s_node_ip_arg: "{{ '--node-ip ' + local_ip if local_ip is defined else '' }}"
 
 - name: SAN IP
+  tags: [install]
   ansible.builtin.set_fact:
     k3s_san_ip_arg: "{{ '--tls-san ' + k3s.profiles[profile].master.vip }}"
 
 - name: SAN DNS
+  tags: [install]
   ansible.builtin.set_fact:
     k3s_san_dns_arg: "{{ '--tls-san ' + k3s.profiles[profile].master.dns }}"
 
 - name: SAN FQDN
+  tags: [install]
   ansible.builtin.set_fact:
     k3s_san_fqdn_arg: "{{ '--tls-san ' + k3s.profiles[profile].master.fqdn }}"
 
@@ -101,6 +113,7 @@
   when:
     - inventory_hostname in (k3s.profiles[profile].control_plane | map(attribute='name') | list)
     - is_cluster_init_node
+  tags: [install]
   become: true
   ansible.builtin.shell:
     cmd: curl -sfL https://get.k3s.io | sh -s - server --cluster-init {{ k3s_disable_flags }} {{ k3s_node_ip_arg }} {{ k3s_san_ip_arg }} {{ k3s_san_dns_arg }} {{ k3s_san_fqdn_arg }} {{ k3s_server_args }} {{ k3s_data_dir_arg }}
@@ -114,6 +127,7 @@
   when:
     - inventory_hostname in (k3s.profiles[profile].control_plane | map(attribute='name') | list)
     - not is_cluster_init_node
+  tags: [install]
   become: true
   ansible.builtin.shell:
     cmd: curl -sfL https://get.k3s.io | sh -s - server {{ k3s_disable_flags }} {{ k3s_node_ip_arg }} {{ k3s_server_args }} {{ k3s_data_dir_arg }}
@@ -126,6 +140,7 @@
 
 - name: "Join K3s Worker Node" # noqa: command-instead-of-module risky-shell-pipe
   when: inventory_hostname in (k3s.profiles[profile].workers | map(attribute='name') | list)
+  tags: [install]
   become: true
   ansible.builtin.shell:
     cmd: curl -sfL https://get.k3s.io | sh -s - agent {{ k3s_disable_flags }} {{ k3s_node_ip_arg }} {{ k3s_agent_args }} {{ k3s_data_dir_arg }}
@@ -138,6 +153,7 @@
 
 - name: "Enable/Start K3s service"
   when: inventory_hostname in (k3s.profiles[profile].control_plane | map(attribute='name') | list)
+  tags: [install]
   become: true
   ansible.builtin.systemd:
     name: k3s
@@ -146,6 +162,7 @@
     daemon_reload: true
 
 - name: Create Manifest Directory
+  tags: [install]
   become: true
   ansible.builtin.file:
     path: /var/lib/rancher/k3s/server/manifests

@@ -8,52 +8,52 @@
     file: uninstall.yml
 
 - name: Merge selected profile into k3s config
-  tags: [k3s]
+  tags: [install]
   ansible.builtin.include_tasks:
     file: shared/config.yml
 
 - name: Merge selected profile into k3s config
-  tags: [k3s]
+  tags: [install]
   ansible.builtin.include_tasks:
     file: shared/token.yml
 
 - name: Helm
-  tags: [k3s, tools, helm]
+  tags: [install, tools, helm]
   ansible.builtin.include_tasks:
     file: tools/helm.yml
 
 - name: Flux
-  tags: [k3s, tools, flux]
+  tags: [install, tools, flux]
   ansible.builtin.include_tasks:
     file: tools/flux.yml
 
 - name: Arkade
-  tags: [k3s, tools, arkade]
+  tags: [install, tools, arkade]
   ansible.builtin.include_tasks:
     file: tools/arkade.yml
 
 - name: k9s # noqa: name[casing]
-  tags: [k3s, tools, k9s]
+  tags: [install, tools, k9s]
   ansible.builtin.include_tasks:
     file: tools/k9s.yml
 
 - name: glab # noqa: name[casing]
-  tags: [k3s, tools, glab]
+  tags: [install, tools, glab]
   ansible.builtin.include_tasks:
     file: tools/glab.yml
 
 - name: Install and configure K3s (shared logic)
-  tags: [k3s]
+  tags: [install]
   ansible.builtin.include_tasks:
     file: shared/k3s.yml
 
 - name: Deploy kube-vip
-  tags: [k3s, kube-vip]
+  tags: [install, kube-vip]
   ansible.builtin.include_tasks:
     file: shared/kube-vip.yml
 
 - name: Kube Config
-  tags: [k3s, kubeconfig]
+  tags: [install, kubeconfig]
   ansible.builtin.include_tasks:
     file: shared/kubeconfig.yml
 
@@ -68,7 +68,7 @@
 #     file: shared/longhorn.yml
 
 - name: Run profile-specific tasks {{ profile }}
-  tags: [k3s]
+  tags: [install]
   ansible.builtin.include_tasks:
     file: "profiles/{{ profile }}.yml"
 # - name: Run post-deploy validations

@@ -17,7 +17,7 @@
 
 - name: Get kube-vip version # noqa: command-instead-of-module risky-shell-pipe
   delegate_to: localhost
-  tags: [kube-vip]
+  tags: [install, kube-vip]
   ansible.builtin.shell:
     cmd: curl -sL https://api.github.com/repos/kube-vip/kube-vip/releases | jq -r ".[0].name"
   register: kube_vip_version_raw
@@ -25,12 +25,12 @@
   run_once: true
 
 - name: Set kube-vip version
-  tags: [kube-vip]
+  tags: [install, kube-vip]
   ansible.builtin.set_fact:
     kube_vip_version: "{{ kube_vip_version_raw.stdout_lines[0] }}"
 
 - name: Deploy kube-vip Daemonset
-  tags: [kube-vip]
+  tags: [install, kube-vip]
   become: true
   ansible.builtin.template:
     src: kube-vip/kube-vip.yml.j2
@@ -40,7 +40,7 @@
 
 - name: Get kube-vip-cloud-provider version # noqa: command-instead-of-module risky-shell-pipe
   delegate_to: localhost
-  tags: [kube-vip]
+  tags: [install, kube-vip]
   ansible.builtin.shell:
     cmd: curl -sL https://api.github.com/repos/kube-vip/kube-vip-cloud-provider/releases | jq -r ".[0].name"
   register: kube_vip_cloud_provider_version_raw
@@ -48,12 +48,12 @@
   run_once: true
 
 - name: Set kube-vip-cloud-provider version
-  tags: [kube-vip]
+  tags: [install, kube-vip]
   ansible.builtin.set_fact:
     kube_vip_cloud_provider_version: "{{ kube_vip_cloud_provider_version_raw.stdout_lines[0] }}"
 
 - name: Configure kube-vip-cloud-provider
-  tags: [kube-vip]
+  tags: [install, kube-vip]
   become: true
   ansible.builtin.template:
     src: kube-vip/kubevip-configmap.yml.j2
@@ -63,7 +63,7 @@
   run_once: true
 
 - name: Deploy kube-vip-cloud-provider
-  tags: [kube-vip]
+  tags: [install, kube-vip]
   become: true
   ansible.builtin.template:
     src: kube-vip/kube-vip-cloud-provider.yml.j2
