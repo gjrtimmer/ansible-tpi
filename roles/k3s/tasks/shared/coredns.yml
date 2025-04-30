@@ -1,0 +1,35 @@
+- name: Wait for CoreDNS deployment to exist
+  tags: [install, coredns]
+  ansible.builtin.command: kubectl get deployment coredns -n kube-system -o json
+  register: coredns_status_raw
+  until: coredns_status_raw.rc == 0
+  retries: 30
+  delay: 5
+  changed_when: false
+  failed_when: false
+
+- name: Debug
+  tags: [install, coredns]
+  ansible.builtin.debug:
+    var: coredns_status_raw
+
+- name: Wait for CoreDNS deployment to be ready
+  tags: [install, coredns]
+  ansible.builtin.command: kubectl get deployment coredns -n kube-system -o json
+  register: coredns_ready
+  changed_when: false
+  until: >
+    (coredns_ready.stdout | from_json).status.readyReplicas is defined and
+    (coredns_ready.stdout | from_json).status.replicas is defined and
+    (coredns_ready.stdout | from_json).status.readyReplicas == (coredns_ready.stdout | from_json).status.replicas
+  retries: 30
+  delay: 5
+
+- name: Patch CoreDNS to prefer IPv4 and disable custom imports # noqa: command-instead-of-shell
+  tags: [install, coredns]
+  ansible.builtin.shell: kubectl apply -f -
+  args:
+    stdin: "{{ lookup('ansible.builtin.template', 'coredns.yaml') }}"
+  register: patch_coredns
+  changed_when: "'configured' in patch_coredns.stdout or 'created' in patch_coredns.stdout"
+  run_once: true
