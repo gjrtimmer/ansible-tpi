@@ -47,10 +47,10 @@
   ansible.builtin.include_tasks:
     file: shared/k3s.yml
 
-- name: Patch CoreDNS
-  tags: [install, coredns]
-  ansible.builtin.include_tasks:
-    file: shared/coredns.yml
+# - name: Patch CoreDNS
+#   tags: [install, coredns]
+#   ansible.builtin.include_tasks:
+#     file: shared/coredns.yml
 
 - name: Deploy kube-vip
   tags: [install, kube-vip]
