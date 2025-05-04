@@ -5,6 +5,16 @@
   tags: [install, profile]
   become: true
   ansible.builtin.file:
+    path: "/data"
+    state: directory
+    mode: "0775"
+    owner: root
+    group: root
+
+- name: Create directory for Longhorn
+  tags: [install, profile]
+  become: true
+  ansible.builtin.file:
     path: "{{ k3s.profiles[profile].longhorn.storage_path }}"
     state: directory
     mode: "0775"
