@@ -2,24 +2,23 @@
 # roles/k3s/tasks/profiles/production.yml
 ---
 - name: Create directory for Longhorn
+  tags: [install, profile]
   become: true
   ansible.builtin.file:
-    path: "{{ k3s.longhorn.storage_path }}"
+    path: "{{ k3s.profiles[profile].longhorn.storage_path }}"
     state: directory
-    mode: "0770"
+    mode: "0775"
     owner: root
     group: root
 
-- name: Configure Longhorn
-  ansible.builtin.debug:
-    msg: "Using Longhorn path: {{ k3s.longhorn.storage_path }} and backup target: {{ k3s.longhorn.backup_target }}"
-
 - name: Tag node with {{ profile }} label
+  tags: [install, profile]
   become: true
   ansible.builtin.shell:
     cmd: kubectl label node $(hostname) profile={{ profile }} --overwrite
 
 - name: Tag nodes as workers
+  tags: [install, profile]
   become: true
   ansible.builtin.shell:
     cmd: kubectl label node $(hostname) kubernetes.io/role=worker --overwrite

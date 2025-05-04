@@ -68,14 +68,7 @@
 #   ansible.builtin.include_tasks:
 #     file: shared/flux.yml
 
-# - name: Deploy Longhorn to {{ k3s.longhorn.storage_path }}
-#   ansible.builtin.include_tasks:
-#     file: shared/longhorn.yml
-
 - name: Run profile-specific tasks {{ profile }}
-  tags: [install]
+  tags: [install, profile]
   ansible.builtin.include_tasks:
     file: "profiles/{{ profile }}.yml"
-# - name: Run post-deploy validations
-#   ansible.builtin.include_tasks:
-#     file: validate.yml
