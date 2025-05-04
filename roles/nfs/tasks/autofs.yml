@@ -1,0 +1,80 @@
+---
+- name: Ensure autofs is installed
+  become: true
+  ansible.builtin.apt:
+    name: autofs
+    state: present
+
+- name: Remove deprecated autofs map files
+  become: true
+  ansible.builtin.find:
+    paths: /etc
+    patterns: "auto.nfs.*"
+    excludes: "auto.nfs"
+  register: deprecated_maps
+
+- name: Delete old autofs map files
+  become: true
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ deprecated_maps.files }}"
+
+- name: Create auto.master.d directory if needed
+  become: true
+  ansible.builtin.file:
+    path: /etc/auto.master.d
+    state: directory
+    mode: "0755"
+
+  # Initialize mountlist as an empty list
+- name: Build mount list with fallback name
+  ansible.builtin.set_fact:
+    mountlist: []
+
+- name: Append mount with defaults applied
+  ansible.builtin.set_fact:
+    mountlist: >-
+      {{ mountlist + [{
+        'name': (mount.name | default(mount.local | basename)),
+        'local': mount.local,
+        'remote': mount.remote,
+        'server': server.server,
+        'options': (mount.options | default(server.options | default('rw,sync,nosuid,noatime,vers=4.0,hard,proto=tcp,timeo=30'))),
+        'timeout': (mount.timeout | default(server.timeout | default(60)))
+      }] }}
+  loop: "{{ autofs | subelements('mounts') }}"
+  loop_control:
+    label: "{{ item[1].local }}"
+  vars:
+    server: "{{ item[0] }}"
+    mount: "{{ item[1] }}"
+
+- name: DEBUG final mountlist
+  ansible.builtin.debug:
+    var: mountlist
+
+- name: Configure autofs master map
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/auto.master.d/nfs.autofs
+    content: |
+      /mnt/nfs /etc/auto.nfs --ghost --timeout=3600
+    mode: "0644"
+
+- name: Configure unified auto.nfs map file
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/auto.nfs
+    content: |
+      {% for item in mountlist %}
+      {{ item.name }} -fstype=nfs,{{ item.options }} {{ item.server }}:{{ item.remote }}
+      {% endfor %}
+    mode: "0644"
+
+- name: Restart autofs
+  become: true
+  ansible.builtin.systemd:
+    name: autofs
+    state: restarted
+    enabled: true

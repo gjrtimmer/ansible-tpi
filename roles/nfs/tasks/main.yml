@@ -15,3 +15,6 @@
 - name: Include NFS configuration tasks
   when: nfs.server.enabled | default(false)
   ansible.builtin.import_tasks: configure.yml
+
+- name: Setup AutoFS
+  ansible.builtin.import_tasks: autofs.yml
