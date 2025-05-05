@@ -40,6 +40,7 @@
         'local': mount.local,
         'remote': mount.remote,
         'server': server.server,
+        'label': server.label,
         'options': (mount.options | default(server.options | default('rw,sync,nosuid,noatime,vers=4.0,hard,proto=tcp,timeo=30'))),
         'timeout': (mount.timeout | default(server.timeout | default(60)))
       }] }}
@@ -54,21 +55,24 @@
   ansible.builtin.debug:
     var: mountlist
 
+- name: Generate per-label auto.nfs maps
+  become: true
+  ansible.builtin.copy:
+    dest: "/etc/auto.nfs.{{ item }}"
+    content: |
+      {% for entry in mountlist | selectattr('label', 'equalto', item) %}
+      {{ entry.name }} -fstype=nfs,{{ entry.options }} {{ entry.server }}:{{ entry.remote }}
+      {% endfor %}
+    mode: "0644"
+  loop: "{{ mountlist | map(attribute='label') | unique | list }}"
+
 - name: Configure autofs master map
   become: true
   ansible.builtin.copy:
     dest: /etc/auto.master.d/nfs.autofs
     content: |
-      /mnt/nfs /etc/auto.nfs --ghost --timeout=3600
-    mode: "0644"
-
-- name: Configure unified auto.nfs map file
-  become: true
-  ansible.builtin.copy:
-    dest: /etc/auto.nfs
-    content: |
-      {% for item in mountlist %}
-      {{ item.name }} -fstype=nfs,{{ item.options }} {{ item.server }}:{{ item.remote }}
+      {% for label in mountlist | map(attribute='label') | unique | list %}
+      /mnt/nfs/{{ label }} /etc/auto.nfs.{{ label }} --ghost --timeout=3600
       {% endfor %}
     mode: "0644"
 
