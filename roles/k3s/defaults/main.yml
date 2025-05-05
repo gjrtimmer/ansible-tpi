@@ -18,11 +18,11 @@ k3s:
   profiles:
     k3s:
       longhorn:
-        storage_path: /data/global
+        storage_path: /data/shared
         backup_target: nfs://nas.tailscale:/mnt/backups/global
         recurring_jobs: true
     academy:
       longhorn:
-        storage_path: /data/academy
+        storage_path: /data/local
         backup_target: nfs://nas.tailscale:/mnt/backups/academy
         recurring_jobs: true
