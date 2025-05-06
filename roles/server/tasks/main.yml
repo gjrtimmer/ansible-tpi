@@ -5,6 +5,11 @@
   ansible.builtin.import_tasks:
     file: sysctl.yml
 
+- name: Configure Modules
+  tags: [modules]
+  ansible.builtin.import_tasks:
+    file: modules.yml
+
 - name: COnfdigure NVMe
   when: hostvars[inventory_hostname]['root'] is search('nvme')
   tags: [nvme]

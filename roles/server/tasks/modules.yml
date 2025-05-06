@@ -1,0 +1,23 @@
+# code: language=ansible
+---
+- name: Ensure Modules
+  tags: [modules]
+  become: true
+  block:
+    - name: Load encryption modules immediately
+      community.general.modprobe:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - dm_crypt
+
+    - name: Ensure Modules at Boot
+      ansible.builtin.lineinfile:
+        path: /etc/modules-load.d/encryption.conf
+        create: true
+        line: "{{ item }}"
+        state: present
+        insertafter: EOF
+        mode: "0644"
+      loop:
+        - dm_crypt
