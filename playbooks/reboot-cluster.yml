@@ -1,0 +1,50 @@
+- name: Reboot Cluster Nodes
+  hosts: "{{ ansible_limit | default('nodes') }}"
+  serial: 1
+  gather_facts: false
+  vars:
+    kubeconfig: "~/.kube/config"
+  tasks:
+    - name: Cordon node via kubectl
+      delegate_to: localhost
+      ansible.builtin.command: >
+        kubectl cordon {{ inventory_hostname }}
+        --kubeconfig {{ kubeconfig }}
+      changed_when: true
+
+    - name: Drain node via kubectl
+      delegate_to: localhost
+      ansible.builtin.command: >
+        kubectl drain {{ inventory_hostname }}
+        --ignore-daemonsets
+        --delete-emptydir-data
+        --timeout=120s
+        --grace-period=30
+        --kubeconfig {{ kubeconfig }}
+      changed_when: true
+
+    - name: Reboot node
+      become: true
+      ansible.builtin.reboot:
+        reboot_timeout: 300
+
+    - name: Wait for SSH
+      ansible.builtin.wait_for:
+        host: "{{ inventory_hostname }}"
+        port: 22
+        delay: 10
+        timeout: 300
+
+    - name: Wait for node to become Ready
+      delegate_to: localhost
+      ansible.builtin.command: >
+        kubectl wait --for=condition=Ready node/{{ inventory_hostname }}
+        --timeout=300s --kubeconfig {{ kubeconfig }}
+      changed_when: false
+
+    - name: Uncordon node via kubectl
+      delegate_to: localhost
+      ansible.builtin.command: >
+        kubectl uncordon {{ inventory_hostname }}
+        --kubeconfig {{ kubeconfig }}
+      changed_when: true
