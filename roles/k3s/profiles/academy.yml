@@ -32,3 +32,28 @@
   become: true
   ansible.builtin.shell:
     cmd: kubectl label node $(hostname) kubernetes.io/role=worker --overwrite
+
+- name: Configure multipath to blacklist Longhorn devices
+  tags: [install, profile]
+  become: true
+  block:
+    - name: Ensure multipath.conf exists
+      ansible.builtin.file:
+        path: /etc/multipath.conf
+        state: touch
+        mode: "0644"
+
+    - name: Add blacklist configuration for Longhorn devices
+      ansible.builtin.blockinfile:
+        path: /etc/multipath.conf
+        block: |
+          blacklist {
+              devnode "^sd[a-z0-9]+"
+          }
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - Longhorn Multipath Blacklist"
+        insertafter: EOF
+
+    - name: Restart multipathd service
+      ansible.builtin.service:
+        name: multipathd
+        state: restarted
