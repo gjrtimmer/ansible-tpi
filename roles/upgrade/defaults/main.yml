@@ -12,13 +12,7 @@ upgrade:
       - "Tailscale:${distro_codename}"
 
     # List of packages to exclude from unattended upgrades
-    blacklist:
-      - docker-ce
-      - docker-ce-cli
-      - containerd.io
-      - docker-buildx-plugin
-      - docker-compose-plugin
-      - tailscale
+    blacklist: []
 
     # Automatically reboot after upgrade if required
     automatic_reboot: false # true or false
