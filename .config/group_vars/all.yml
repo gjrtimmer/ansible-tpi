@@ -1,12 +1,16 @@
 # code: language=yaml
 ---
-ssh:
-  bitsize: 4096
-  path: ~/.ssh/tpi
-
 users:
   default: ubuntu
   provision: ansible
+
+ansible_connection: ssh
+ansible_ssh_user: "{{ users.provision }}"
+ansible_ssh_private_key_file: "{{ ssh.path }}/{{ hostvars[hostvars[inventory_hostname]['bmc']]['ansible_ssh_prefix'] }}.ansible.key"
+
+ssh:
+  bitsize: 4096
+  path: ~/.ssh/tpi
 
 datetime:
   timezone: Etc/UTC
@@ -16,6 +20,8 @@ datetime:
       - ntp.ubuntu.com
       - time.google.com
 
+profile: sandbox
+
 #
 # Network configuration
 #
@@ -23,9 +29,64 @@ datetime:
 # The full schema can be found at: roles/network/vars/schema.yml
 network:
   static: false
+  zones:
+    sandbox:
+      profile: sandbox
+      fqdn: lan
+      mtu: 1500
+      cidr: "192.168.0.0/24"
+      gateway: "192.168.0.1"
+      dns: "192.168.0.1"
+      bmc:
+        dns: bmc
+        ip: "192.168.0.11"
+      nodes:
+        node1: "192.168.0.21"
+        node2: "192.168.0.22"
+        node3: "192.168.0.23"
+        node4: "192.168.0.24"
+      # Routes to other zones; use the key name of the zone as value
+      routes: []
+
+tailscale:
+  enabled: false
+  api:
+    admin:
+      key: "tskey-api-*******************"
+  ssh: true
+  magic_dns: true
+  tailnet: "tail*******.ts.net"
 
 k3s:
-  profile: academy # Change this to 'production' when switching to production
-
-longhorn:
-  enable_recurring_jobs: true # Enable based on profile needs
+  profile: sandbox # Change this to 'production' when switching to production
+  k3s:
+  version: v1.28.5+k3s1
+  profiles:
+    k3s:
+      cluster:
+        init: node1
+        domain: k3s.internal
+      master:
+        vip: "192.168.0.20"
+        dns: master
+        fqdn: master.lan
+      loadbalancer:
+        range:
+          start: "192.168.0.60"
+          end: "192.168.0.80"
+        internal: 192.168.0.60
+        external: 192.168.0.80
+      control_plane:
+        - name: node1
+          taints: []
+        - name: node2
+          taints: []
+        - name: node3
+          taints: []
+      workers:
+        - name: node8
+          taints: []
+      longhorn:
+        storage_path: /data/shared
+        backup_target: nfs://storage{{ '.' ~ tailscale.tailnet if tailscale.enabled else '' }}:/mnt/backups/global
+        enable_recurring_jobs: true
