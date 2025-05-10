@@ -71,5 +71,6 @@
     "vs-kubernetes.nodejs-autodetect-remote-root": true,
     "checkForMinikubeUpgrade": false,
     "imageBuildTool": "Docker"
-  }
+  },
+  "ansible.lightspeed.enabled": false
 }
