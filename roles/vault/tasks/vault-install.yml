@@ -1,0 +1,56 @@
+# code: language=ansible
+---
+- name: Check vault
+  tags: [install]
+  ansible.builtin.package_facts:
+    manager: apt
+
+- name: Configure Hashicorp Repository
+  tags: [install]
+  when: "'vault' not in ansible_facts.packages"
+  block:
+    - name: Configure Hashicorp Repository
+      block:
+        - name: Hashicorp Repository Key
+          ansible.builtin.get_url:
+            url: https://apt.releases.hashicorp.com/gpg
+            dest: /tmp/hashicorp-archive-keyring.gpg
+            mode: "0755"
+
+        - name: De-Armor Hashicorp GPG Key
+          ansible.builtin.command: "gpg --yes -o /usr/share/keyrings/hashicorp-archive-keyring.gpg --dearmor /tmp/hashicorp-archive-keyring.gpg"
+          changed_when: true
+          no_log: true
+
+        - name: Get OS architecture
+          ansible.builtin.command: dpkg --print-architecture
+          changed_when: false
+          register: os_arch
+
+        - name: Hashicorp Repository
+          ansible.builtin.apt_repository:
+            repo: "deb [arch={{ os_arch.stdout }} signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
+            update_cache: true
+            state: present
+
+        - name: Delete download
+          ansible.builtin.file:
+            path: /tmp/hashicorp-archive-keyring.gpg
+            state: absent
+
+    - name: Install vault
+      ansible.builtin.apt:
+        name:
+          - vault
+        state: present
+        cache_valid_time: 3600
+        update_cache: true
+        clean: true
+        force_apt_get: true
+        install_recommends: false
+
+    - name: Mark Vault with Hold
+      when: vault.hold | default(true)
+      ansible.builtin.dpkg_selections:
+        name: vault
+        selection: hold

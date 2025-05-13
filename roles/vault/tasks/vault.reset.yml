@@ -1,0 +1,48 @@
+# code: language=ansible
+---
+- name: Stop and disable Vault
+  ansible.builtin.service:
+    name: vault
+    enabled: false
+    state: stopped
+    daemon_reload: true
+
+- name: Remove Data
+  ansible.builtin.file:
+    path: "{{ vault.data_dir }}"
+    state: absent
+
+- name: Collect Configuration Files
+  ansible.builtin.find:
+    paths: /etc/vault.d
+    patterns: "*.hcl"
+  register: files_rm
+
+- name: Remove Configuration Files
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ files_rm.files }}"
+  loop_control:
+    label: "{{ item.path }}"
+
+- name: Remove Bootstrap Marker
+  ansible.builtin.file:
+    path: /etc/vault.d/.bootstrap
+    state: absent
+
+- name: Remove Vault TLS From Profile
+  ansible.builtin.blockinfile:
+    path: /home/ubuntu/.profile
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: VAULT TLS"
+    state: absent
+
+- name: Remove Vault ACL from Profile
+  ansible.builtin.blockinfile:
+    path: /home/ubuntu/.profile
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: VAULT ACL"
+    state: absent
+
+- name: Stop
+  ansible.builtin.meta:
+    end_play: true

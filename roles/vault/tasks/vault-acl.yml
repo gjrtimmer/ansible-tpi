@@ -1,0 +1,149 @@
+# code: language=ansible
+---
+- name: Check Bootstrapped
+  ansible.builtin.stat:
+    path: /etc/vault.d/.bootstrap
+  register: bootstrapped
+
+- name: Bootstrap Vault
+  when: inventory_hostname == vault_init_node and not bootstrapped.stat.exists
+  environment:
+    VAULT_ADDR: "{{ 'https' if vault.tls.enabled else 'http' }}://127.0.0.1:8200"
+    VAULT_CACERT: "{{ vault.tls.ca if vault.tls.enabled else '' }}"
+    VAULT_CLIENT_CERT: "{{ vault.tls.crt if vault.tls.enabled else '' }}"
+    VAULT_CLIENT_KEY: "{{ vault.tls.key if vault.tls.enabled else '' }}"
+  block:
+    - name: Initialize Vault
+      ansible.builtin.shell:
+        cmd: vault operator init -format=yaml
+        executable: /bin/bash
+      register: vault_init_raw
+      changed_when: true
+
+    - name: Write Init
+      ansible.builtin.copy:
+        content: "{{ vault_init_raw.stdout }}"
+        dest: /etc/vault.d/.bootstrap
+        owner: root
+        group: root
+        mode: "0644"
+      changed_when: true
+
+    - name: Ensure Directory
+      become: false
+      delegate_to: localhost
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'PWD') }}/.bootstrap"
+        state: directory
+        mode: "0755"
+
+    - name: Ensure Directory
+      become: false
+      delegate_to: localhost
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'PWD') }}/.vault"
+        state: directory
+        mode: "0755"
+
+    - name: Fetch Bootstrap
+      ansible.builtin.fetch:
+        src: /etc/vault.d/.bootstrap
+        dest: "{{ lookup('env', 'PWD') }}/.bootstrap/vault.yml"
+        flat: true
+
+    - name: Remove Bootstrap File
+      ansible.builtin.file:
+        path: /etc/vault.d/.bootstrap
+        state: absent
+
+    - name: Store Init
+      ansible.builtin.set_fact:
+        vault_init: "{{ vault_init_raw.stdout | from_yaml }}"
+
+    - name: Set Tokens
+      ansible.builtin.set_fact:
+        root_token: "{{ vault_init.root_token }}"
+        unseal_keys: "{{ vault_init.unseal_keys_b64 }}"
+
+    - name: Unseal Vault
+      ansible.builtin.shell:
+        cmd: vault operator unseal {{ item }}
+        executable: /bin/bash
+      loop: "{{ unseal_keys[:3] }}"
+      loop_control:
+        label: "*** MASKED ***"
+      changed_when: true
+
+    - name: Write Root Token
+      become: true
+      ansible.builtin.copy:
+        content: "{{ root_token }}"
+        dest: /etc/vault.d/root.token
+        owner: root
+        group: root
+        mode: "0600"
+
+    - name: Fetch Root Token
+      become: true
+      ansible.builtin.fetch:
+        src: /etc/vault.d/root.token
+        dest: "{{ lookup('env', 'PWD') }}/.vault/root.token"
+        flat: true
+
+    - name: Remove Root Token
+      ansible.builtin.file:
+        path: /etc/vault.d/.bootstrap
+        state: absent
+
+- name: Set Unseal Keys on Nodes
+  throttle: 1
+  ansible.builtin.set_fact:
+    root_token: "{{ hostvars[vault_init_node].root_token }}"
+    unseal_keys: "{{ hostvars[vault_init_node].unseal_keys }}"
+
+- name: Restart Vault
+  throttle: 1
+  when: inventory_hostname != vault_init_node
+  block:
+    - name: Start Node
+      ansible.builtin.service:
+        name: vault
+        state: restarted
+        enabled: true
+
+    - name: Unseal Vault
+      ansible.builtin.shell:
+        cmd: vault operator unseal {{ item }}
+        executable: /bin/bash
+      environment:
+        VAULT_ADDR: "{{ 'https' if vault.tls.enabled else 'http' }}://127.0.0.1:8200"
+        VAULT_CACERT: "{{ vault.tls.ca if vault.tls.enabled else '' }}"
+        VAULT_CLIENT_CERT: "{{ vault.tls.crt if vault.tls.enabled else '' }}"
+        VAULT_CLIENT_KEY: "{{ vault.tls.key if vault.tls.enabled else '' }}"
+      loop: "{{ unseal_keys[:3] }}"
+      loop_control:
+        label: "*** Masked ***"
+      changed_when: true
+
+- name: Remove Tokens
+  ansible.builtin.blockinfile:
+    path: /home/ubuntu/.profile
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: VAULT ACL"
+    block: ""
+
+- name: Set Token for User
+  ansible.builtin.blockinfile:
+    path: /home/ubuntu/.profile
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: VAULT ACL"
+    append_newline: true
+    prepend_newline: true
+    block: |
+      export VAULT_TOKEN={{ root_token }}
+
+- name: Mark Bootstrap Done
+  ansible.builtin.copy:
+    content: ""
+    dest: /etc/vault.d/.bootstrap
+    owner: root
+    group: root
+    mode: "0555"

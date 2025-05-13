@@ -1,0 +1,6 @@
+# code: language=ansible
+---
+- name: daemon-reload # noqa name[casing]
+  ansible.builtin.systemd:
+    name: vault
+    daemon_reload: true

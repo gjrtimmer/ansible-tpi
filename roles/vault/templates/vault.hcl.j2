@@ -1,0 +1,35 @@
+ui              = true
+cluster_name    = "Vault"
+cluster_addr    = "https://{{ host_fqdn }}:8201"
+api_addr        = "https://{{ host_fqdn }}:8200"
+disable_mlock   = true
+
+storage "raft" {
+    path        = "{{ vault.data_dir }}"
+    node_id     = "{{ inventory_hostname }}"
+
+{% for host in groups['vault'] | reject('==', inventory_hostname) %}
+    retry_join {
+        leader_api_addr         = "https://{{ hostvars[host]['ansible_default_ipv4']['address'] }}:8200"
+{% if vault.tls.enabled %}
+        leader_ca_cert_file     = "{{ vault.tls.ca }}"
+        leader_client_cert_file = "{{ vault.tls.crt }}"
+        leader_client_key_file  = "{{ vault.tls.key }}"
+{% endif %}
+    }
+{% endfor %}
+}
+
+listener "tcp" {
+    address             = "0.0.0.0:8200"
+{% if vault.tls.enabled | default(False) %}
+    tls_cert_file       = "{{ vault.tls.crt }}"
+    tls_key_file        = "{{ vault.tls.key }}"
+    tls_client_ca_file  = "{{ vault.tls.ca }}"
+{% endif %}
+}
+
+telemetry {
+  disable_hostname = true
+  prometheus_retention_time = "336h"
+}

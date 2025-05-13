@@ -1,0 +1,18 @@
+# code: language=ansible
+---
+- name: Create vault.service.d directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/vault.service.d/
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Copy vault.service override
+  ansible.builtin.template:
+    src: vault.service.j2
+    dest: /etc/systemd/system/vault.service.d/override.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: "vault : daemon-reload"

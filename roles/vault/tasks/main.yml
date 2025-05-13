@@ -1,0 +1,43 @@
+# code: language=ansible
+---
+- name: Install vault
+  tags: [install]
+  ansible.builtin.import_tasks:
+    file: vault-install.yml
+
+- name: Reset Vault
+  tags: [reset]
+  when: "'reset' in ansible_run_tags"
+  ansible.builtin.import_tasks:
+    file: vault-reset.yml
+
+- name: Configure Vault
+  tags: [config]
+  ansible.builtin.import_tasks:
+    file: vault-config.yml
+
+- name: Configure TLS
+  when: vault.tls.enabled
+  tags: [config]
+  ansible.builtin.import_tasks:
+    file: vault-tls.yml
+
+- name: Initialize Vault
+  when: inventory_hostname == vault_init_node
+  tags: [config]
+  ansible.builtin.service:
+    name: vault
+    state: restarted
+    enabled: true
+
+- name: Configure ACL
+  tags: [bootstrap]
+  ansible.builtin.import_tasks:
+    file: vault-acl.yml
+
+- name: Restart Vault
+  tags: [config]
+  ansible.builtin.service:
+    name: vault
+    state: restarted
+    enabled: true

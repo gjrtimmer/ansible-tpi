@@ -1,0 +1,22 @@
+# code: language=ansible
+---
+- name: Configure Directories
+  tags: [config]
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: vault
+    group: vault
+    mode: "0770"
+  with_items:
+    - "{{ vault.data_dir }}"
+    - /etc/vault.d
+
+- name: Copy Configuration
+  tags: [config]
+  ansible.builtin.template:
+    src: vault.hcl.j2
+    dest: /etc/vault.d/vault.hcl
+    owner: vault
+    group: vault
+    mode: "0770"

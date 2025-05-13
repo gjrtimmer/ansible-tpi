@@ -1,0 +1,9 @@
+# code: language=yaml
+vault:
+  hold: true
+  data_dir: /opt/vault
+  tls:
+    enabled: false
+    ca: /etc/vault.d/chain.crt
+    crt: /etc/vault.d/server.crt
+    key: /etc/vault.d/server.key

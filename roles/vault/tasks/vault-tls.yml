@@ -1,0 +1,19 @@
+# code: language=ansible
+---
+- name: Remove Vault TLS Profile
+  ansible.builtin.blockinfile:
+    path: /home/ubuntu/.profile
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: VAULT TLS"
+    block: ""
+
+- name: Configure Vault TLS Profile
+  ansible.builtin.blockinfile:
+    path: /home/ubuntu/.profile
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: VAULT TLS"
+    append_newline: true
+    prepend_newline: true
+    block: |
+      export VAULT_ADDR="{{ 'https' if vault.tls.enabled else 'http' }}://127.0.0.1:8200"
+      export VAULT_CACERT="{{ vault.tls.ca if vault.tls.enabled else '' }}"
+      export VAULT_CLIENT_CERT="{{ vault.tls.crt if vault.tls.enabled else '' }}"
+      export VAULT_CLIENT_KEY="{{ vault.tls.key if vault.tls.enabled else '' }}"
