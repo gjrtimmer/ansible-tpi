@@ -70,6 +70,13 @@
     path: /etc/vault.d/vault-unseal.yaml
     state: absent
 
+- name: Remove vault-unseal config file
+  tags: [uninstall]
+  become: true
+  ansible.builtin.file:
+    path: /etc/vault.d/vault-unseal.yml
+    state: absent
+
 - name: Remove root.token
   tags: [uninstall]
   become: true
