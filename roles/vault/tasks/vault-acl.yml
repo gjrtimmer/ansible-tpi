@@ -65,11 +65,6 @@
         root_token: "{{ vault_init.root_token }}"
         unseal_keys: "{{ vault_init.unseal_keys_b64 }}"
 
-    - name: Split unseal_keys into individual facts
-      ansible.builtin.set_fact:
-        "{{ 'unseal_key_' ~ ansible_loop.index }}": "{{ item }}"
-      loop: "{{ unseal_keys }}"
-
     - name: Unseal Vault
       ansible.builtin.shell:
         cmd: vault operator unseal {{ item }}
@@ -105,6 +100,13 @@
   ansible.builtin.set_fact:
     root_token: "{{ hostvars[vault_init_node].root_token }}"
     unseal_keys: "{{ hostvars[vault_init_node].unseal_keys }}"
+
+- name: Split unseal_keys into individual facts
+  ansible.builtin.set_fact:
+    "{{ 'unseal_key_' ~ ansible_loop.index }}": "{{ item }}"
+  loop: "{{ unseal_keys }}"
+  loop_control:
+    extended: true
 
 - name: Restart Vault
   throttle: 1
