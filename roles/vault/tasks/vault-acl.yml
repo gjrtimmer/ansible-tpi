@@ -107,6 +107,7 @@
   loop: "{{ unseal_keys }}"
   loop_control:
     extended: true
+    label: "*** MASKED ***"
 
 - name: Restart Vault
   throttle: 1
