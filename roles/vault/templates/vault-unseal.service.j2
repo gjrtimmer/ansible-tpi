@@ -1,0 +1,13 @@
+# roles/vault/templates/vault-unseal.service.j2
+
+[Unit]
+Requires=network-online.target
+Wants=vault.service
+After=vault.service
+
+[Service]
+ExecStart=/usr/bin/vault-unseal --config=/etc/vault.d/vault-unseal.yaml
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

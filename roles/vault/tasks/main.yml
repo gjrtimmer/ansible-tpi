@@ -35,6 +35,12 @@
   ansible.builtin.include_tasks:
     file: vault-acl.yml
 
+- name: Configure Auto-Unseal
+  when: vault.auto-unseal | default(false)
+  tags: [config]
+  ansible.builtin.include_tasks:
+    file: auto-unseal.yml
+
 - name: Restart Vault
   tags: [config]
   ansible.builtin.service:

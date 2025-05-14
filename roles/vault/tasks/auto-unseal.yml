@@ -1,0 +1,75 @@
+# roles/vault/tasks/auto-unseal.yml
+---
+- name: Fetch latest vault-unseal release info
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/lrstanley/vault-unseal/releases/latest
+    return_content: true
+  register: vault_unseal_release
+
+- name: Set vault_unseal_version fact
+  ansible.builtin.set_fact:
+    vault_unseal_version: "{{ vault_unseal_release.json.tag_name }}"
+
+- name: Map ansible_facts.architecture to Debian package arch
+  ansible.builtin.set_fact:
+    deb_arch: >-
+      {{ 'arm64' if ansible_facts.architecture in ['aarch64','arm64'] else
+         'amd64' if ansible_facts.architecture in ['x86_64','amd64'] else
+         ansible_facts.architecture }}
+
+- name: Download vault-unseal .deb package
+  ansible.builtin.get_url:
+    url: >-
+      https://github.com/lrstanley/vault-unseal/releases/download/{{ vault_unseal_version }}/vault-unseal_{{ vault_unseal_version }}_linux_{{ deb_arch }}.deb
+    dest: "/tmp/vault-unseal_{{ vault_unseal_version }}_linux_{{ deb_arch }}.deb"
+    mode: "0644"
+
+- name: Install vault-unseal package
+  ansible.builtin.apt:
+    deb: "/tmp/vault-unseal_{{ vault_unseal_version }}_linux_{{ deb_arch }}.deb"
+    state: present
+
+- name: Remove downloaded .deb package
+  ansible.builtin.file:
+    path: "/tmp/vault-unseal_{{ vault_unseal_version }}_linux_{{ deb_arch }}.deb"
+    state: absent
+
+- name: Determine this host's index in vault group
+  ansible.builtin.set_fact:
+    vault_node_index: "{{ groups['vault'].index(inventory_hostname) }}"
+
+- name: Set vault_unseal_tokens for this host
+  ansible.builtin.set_fact:
+    vault_unseal_tokens:
+      - "{{ hostvars[inventory_hostname]['unseal_key_' ~ ((vault_node_index + 1) | string)] }}"
+      - "{{ hostvars[inventory_hostname]['unseal_key_' ~ ((vault_node_index + 2) | string)] }}"
+
+- name: Determine vault scheme
+  ansible.builtin.set_fact:
+    vault_scheme: "{{ 'https' if vault.tls.enabled | default(false) else 'http' }}"
+
+- name: Deploy vault-unseal configuration
+  ansible.builtin.template:
+    src: vault-unseal.yaml.j2
+    dest: /etc/vault.d/vault-unseal.yaml
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Deploy systemd service unit
+  ansible.builtin.template:
+    src: vault-unseal.service.j2
+    dest: /etc/systemd/system/vault-unseal.service
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Enable and start vault-unseal service
+  ansible.builtin.systemd:
+    name: vault-unseal
+    enabled: true
+    state: started
