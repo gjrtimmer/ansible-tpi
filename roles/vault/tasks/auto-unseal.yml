@@ -33,9 +33,11 @@
     return_content: true
   register: vault_unseal_release
 
-- name: Set vault_unseal_version fact
+- name: Strip leading “v” from tag and set version
   ansible.builtin.set_fact:
-    vault_unseal_version: "{{ vault_unseal_release.json.tag_name }}"
+    vault_unseal_version: >-
+      {{ vault_unseal_release.json.tag_name
+         | regex_replace('^v','') }}
 
 - name: Map ansible_facts.architecture to Debian package arch
   ansible.builtin.set_fact:
@@ -46,8 +48,7 @@
 
 - name: Download vault-unseal .deb package
   ansible.builtin.get_url:
-    url: >-
-      https://github.com/lrstanley/vault-unseal/releases/download/{{ vault_unseal_version }}/vault-unseal_{{ vault_unseal_version }}_linux_{{ deb_arch }}.deb
+    url: https://github.com/lrstanley/vault-unseal/releases/download/v{{ vault_unseal_version }}/vault-unseal_{{ vault_unseal_version }}_linux_{{ deb_arch }}.deb
     dest: "/tmp/vault-unseal_{{ vault_unseal_version }}_linux_{{ deb_arch }}.deb"
     mode: "0644"
 
