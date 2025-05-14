@@ -27,13 +27,15 @@
     enabled: false
   ignore_errors: true
 
-- name: Remove hold on Vault
+- name: Remove hold on Vault # noqa: ignore-errors
   when: vault.hold | default(true)
   ansible.builtin.dpkg_selections:
     name: vault
     selection: install
+  ignore_errors: true
 
-- name: Purge vault and vault-unseal packages
+- name: Purge vault and vault-unseal packages # noqa:ignore-errors
+  when: vault.hold | default(true)
   tags: [uninstall]
   become: true
   ansible.builtin.apt:
@@ -42,6 +44,7 @@
       - vault-unseal
     state: absent
     purge: true
+  ignore_errors: true
 
 - name: Find Vault HCL config files
   tags: [uninstall]
