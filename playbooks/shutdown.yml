@@ -1,7 +1,7 @@
 # code: language=ansible
 ---
 - name: Power Off
-  hosts: "{{ ansible_limit | default('nodes,!bmc') }}"
+  hosts: "{{ ansible_limit | default('none,!bmc') }}"
   gather_facts: false
   become: true
   tasks:

@@ -1,7 +1,7 @@
 # code: language=ansible
 ---
 - name: Reboot Node
-  hosts: "{{ ansible_limit | default('nodes') }}"
+  hosts: "{{ ansible_limit | default('none') }}"
   gather_facts: true
   tasks:
     - name: Check Pre Reboot Tasks

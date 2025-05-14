@@ -1,5 +1,5 @@
 - name: Reboot Cluster Nodes
-  hosts: "{{ ansible_limit | default('nodes') }}"
+  hosts: "{{ ansible_limit | default('none') }}"
   serial: 1
   gather_facts: false
   vars:
