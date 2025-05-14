@@ -67,6 +67,20 @@
     path: /etc/vault.d/vault-unseal.yaml
     state: absent
 
+- name: Remove root.token
+  tags: [uninstall]
+  become: true
+  ansible.builtin.file:
+    path: /etc/vault.d/root.token
+    state: absent
+
+- name: Remove .bootstrap
+  tags: [uninstall]
+  become: true
+  ansible.builtin.file:
+    path: /etc/vault.d/.bootstrap
+    state: absent
+
 - name: Remove Vault data directory
   tags: [uninstall]
   become: true
