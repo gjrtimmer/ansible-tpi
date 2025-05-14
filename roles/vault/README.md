@@ -13,6 +13,8 @@ vault:
     node3:
     node4:
   vars:
+    # Domain suffix for vault nodes
+    domain: local
     vault_init_node: node1
 ```
 

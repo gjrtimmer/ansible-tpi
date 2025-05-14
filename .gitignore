@@ -44,3 +44,6 @@ tmp/
 # Ignore Site.yml
 site.yml
 !/.config/site.yml
+
+# Ignore Vault
+.bootstrap

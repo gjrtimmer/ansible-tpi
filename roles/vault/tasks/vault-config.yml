@@ -7,7 +7,7 @@
     state: directory
     owner: vault
     group: vault
-    mode: "0770"
+    mode: "0755"
   with_items:
     - "{{ vault.data_dir }}"
     - /etc/vault.d
@@ -19,4 +19,4 @@
     dest: /etc/vault.d/vault.hcl
     owner: vault
     group: vault
-    mode: "0770"
+    mode: "0755"
