@@ -1,5 +1,32 @@
 # roles/vault/tasks/auto-unseal.yml
 ---
+- name: Read bootstrap vault.yml from controller
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.slurp:
+    src: "{{ lookup('env', 'PWD') }}/.bootstrap/vault.yml"
+  register: vault_bootstrap_raw
+
+- name: Parse bootstrap variables
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.set_fact:
+    vault_bootstrap: "{{ vault_bootstrap_raw.content | b64decode | from_yaml }}"
+
+- name: Set Unseal Keys on Nodes
+  throttle: 1
+  ansible.builtin.set_fact:
+    root_token: "{{ vault_bootstrap.root_token }}"
+    unseal_keys: "{{ vault_bootstrap.unseal_keys_b64 }}"
+
+- name: Split unseal_keys into individual facts
+  ansible.builtin.set_fact:
+    "{{ 'unseal_key_' ~ ansible_loop.index }}": "{{ item }}"
+  loop: "{{ unseal_keys }}"
+  loop_control:
+    extended: true
+    label: "*** MASKED ***"
+
 - name: Fetch latest vault-unseal release info
   ansible.builtin.uri:
     url: https://api.github.com/repos/lrstanley/vault-unseal/releases/latest
@@ -57,12 +84,22 @@
     mode: "0600"
 
 - name: Deploy systemd service unit
-  ansible.builtin.template:
-    src: vault-unseal.service.j2
-    dest: /etc/systemd/system/vault-unseal.service
-    owner: root
-    group: root
-    mode: "0644"
+  block:
+    - name: Create override directory for vault-unseal service
+      ansible.builtin.file:
+        path: /etc/systemd/system/vault-unseal.service.d
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Deploy vault-unseal service override
+      ansible.builtin.template:
+        src: vault-unseal.service.j2
+        dest: /etc/systemd/system/vault-unseal.service.d/override.conf
+        owner: root
+        group: root
+        mode: "0644"
 
 - name: Reload systemd daemon
   ansible.builtin.systemd:
