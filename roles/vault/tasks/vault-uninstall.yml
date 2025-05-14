@@ -1,0 +1,80 @@
+# code: language=ansible
+# roles/vault/tasks/uninstall.yml
+---
+- name: Stop and disable vault-unseal service (if present) # noqa:ignore-errors
+  tags: [uninstall]
+  become: true
+  ansible.builtin.systemd:
+    name: vault-unseal
+    state: stopped
+    enabled: false
+  ignore_errors: true
+
+- name: Remove vault-unseal systemd unit file
+  tags: [uninstall]
+  become: true
+  ansible.builtin.file:
+    path: /etc/systemd/system/vault-unseal.service
+    state: absent
+    force: true
+
+- name: Stop and disable Vault service # noqa:ignore-errors
+  tags: [uninstall]
+  become: true
+  ansible.builtin.systemd:
+    name: vault
+    state: stopped
+    enabled: false
+  ignore_errors: true
+
+- name: Purge vault and vault-unseal packages
+  tags: [uninstall]
+  become: true
+  ansible.builtin.apt:
+    name:
+      - vault
+      - vault-unseal
+    state: absent
+    purge: true
+
+- name: Find Vault HCL config files
+  tags: [uninstall]
+  become: true
+  ansible.builtin.find:
+    paths: /etc/vault.d
+    patterns: "*.hcl"
+    file_type: file
+  register: vault_hcl_files
+
+- name: Remove Vault HCL config files
+  tags: [uninstall]
+  become: true
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ vault_hcl_files.files }}"
+
+- name: Remove vault-unseal config file
+  tags: [uninstall]
+  become: true
+  ansible.builtin.file:
+    path: /etc/vault.d/vault-unseal.yaml
+    state: absent
+
+- name: Remove Vault data directory
+  tags: [uninstall]
+  become: true
+  ansible.builtin.file:
+    path: /opt/vault
+    state: absent
+    force: true
+
+- name: Reload systemd daemon
+  tags: [uninstall]
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Stop
+  tags: [uninstall]
+  ansible.builtin.meta: end_play

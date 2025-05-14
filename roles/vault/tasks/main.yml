@@ -1,5 +1,11 @@
 # code: language=ansible
 ---
+- name: Uninstall Vault
+  tags: [uninstall]
+  when: "'uninstall' in ansible_run_tags"
+  ansible.builtin.import_tasks:
+    file: vault-uninstall.yml
+
 - name: Install vault
   tags: [install]
   ansible.builtin.include_tasks:
