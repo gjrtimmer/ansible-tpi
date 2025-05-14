@@ -43,7 +43,7 @@
 
 - name: Configure Auto-Unseal
   when: vault.auto_unseal | default(false)
-  tags: [config]
+  tags: [confi, auto_unseal]
   ansible.builtin.include_tasks:
     file: auto-unseal.yml
 

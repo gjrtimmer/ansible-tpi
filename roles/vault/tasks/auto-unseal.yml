@@ -3,6 +3,7 @@
 - name: Read bootstrap vault.yml from controller
   delegate_to: localhost
   run_once: true
+  tags: [auto_unseal]
   ansible.builtin.slurp:
     src: "{{ lookup('env', 'PWD') }}/.bootstrap/vault.yml"
   register: vault_bootstrap_raw
@@ -10,16 +11,19 @@
 - name: Parse bootstrap variables
   delegate_to: localhost
   run_once: true
+  tags: [auto_unseal]
   ansible.builtin.set_fact:
     vault_bootstrap: "{{ vault_bootstrap_raw.content | b64decode | from_yaml }}"
 
 - name: Set Unseal Keys on Nodes
   throttle: 1
+  tags: [auto_unseal]
   ansible.builtin.set_fact:
     root_token: "{{ vault_bootstrap.root_token }}"
     unseal_keys: "{{ vault_bootstrap.unseal_keys_b64 }}"
 
 - name: Split unseal_keys into individual facts
+  tags: [auto_unseal]
   ansible.builtin.set_fact:
     "{{ 'unseal_key_' ~ ansible_loop.index }}": "{{ item }}"
   loop: "{{ unseal_keys }}"
@@ -28,18 +32,21 @@
     label: "*** MASKED ***"
 
 - name: Fetch latest vault-unseal release info
+  tags: [auto_unseal]
   ansible.builtin.uri:
     url: https://api.github.com/repos/lrstanley/vault-unseal/releases/latest
     return_content: true
   register: vault_unseal_release
 
 - name: Strip leading “v” from tag and set version
+  tags: [auto_unseal]
   ansible.builtin.set_fact:
     vault_unseal_version: >-
       {{ vault_unseal_release.json.tag_name
          | regex_replace('^v','') }}
 
 - name: Map ansible_facts.architecture to Debian package arch
+  tags: [auto_unseal]
   ansible.builtin.set_fact:
     deb_arch: >-
       {{ 'arm64' if ansible_facts.architecture in ['aarch64','arm64'] else
@@ -47,44 +54,57 @@
          ansible_facts.architecture }}
 
 - name: Download vault-unseal .deb package
+  tags: [auto_unseal]
   ansible.builtin.get_url:
     url: https://github.com/lrstanley/vault-unseal/releases/download/v{{ vault_unseal_version }}/vault-unseal_{{ vault_unseal_version }}_linux_{{ deb_arch }}.deb
     dest: "/tmp/vault-unseal_{{ vault_unseal_version }}_linux_{{ deb_arch }}.deb"
     mode: "0644"
 
 - name: Install vault-unseal package
+  tags: [auto_unseal]
   ansible.builtin.apt:
     deb: "/tmp/vault-unseal_{{ vault_unseal_version }}_linux_{{ deb_arch }}.deb"
     state: present
 
 - name: Remove downloaded .deb package
+  tags: [auto_unseal]
   ansible.builtin.file:
     path: "/tmp/vault-unseal_{{ vault_unseal_version }}_linux_{{ deb_arch }}.deb"
     state: absent
 
 - name: Determine this host's index in vault group
+  tags: [auto_unseal]
   ansible.builtin.set_fact:
     vault_node_index: "{{ groups['vault'].index(inventory_hostname) }}"
 
-- name: Set vault_unseal_tokens for this host
+- name: Assign exactly two unseal keys to this host
+  tags: [auto_unseal]
   ansible.builtin.set_fact:
-    vault_unseal_tokens:
-      - "{{ hostvars[inventory_hostname]['unseal_key_' ~ ((vault_node_index + 1) | string)] }}"
-      - "{{ hostvars[inventory_hostname]['unseal_key_' ~ ((vault_node_index + 2) | string)] }}"
+    vault_unseal_tokens: >-
+      {{
+        unseal_keys[
+          (vault_node_index | int)
+          :
+          ((vault_node_index | int) + 2)
+        ]
+      }}
 
 - name: Determine vault scheme
+  tags: [auto_unseal]
   ansible.builtin.set_fact:
     vault_scheme: "{{ 'https' if vault.tls.enabled | default(false) else 'http' }}"
 
 - name: Deploy vault-unseal configuration
+  tags: [auto_unseal]
   ansible.builtin.template:
-    src: vault-unseal.yaml.j2
-    dest: /etc/vault.d/vault-unseal.yaml
+    src: vault-unseal.yml.j2
+    dest: /etc/vault.d/vault-unseal.yml
     owner: root
     group: root
     mode: "0600"
 
 - name: Deploy systemd service unit
+  tags: [auto_unseal]
   block:
     - name: Create override directory for vault-unseal service
       ansible.builtin.file:
@@ -103,11 +123,13 @@
         mode: "0644"
 
 - name: Reload systemd daemon
+  tags: [auto_unseal]
   ansible.builtin.systemd:
     daemon_reload: true
 
 - name: Enable and start vault-unseal service
+  tags: [auto_unseal]
   ansible.builtin.systemd:
     name: vault-unseal
     enabled: true
-    state: started
+    state: restarted

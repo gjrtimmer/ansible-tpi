@@ -8,4 +8,5 @@ After=vault.service
 [Service]
 User=root
 Group=root
-ExecStart=/usr/bin/vault-unseal --config /etc/vault.d/vault-unseal.yaml
+ExecStart=
+ExecStart=/usr/bin/vault-unseal --config /etc/vault.d/vault-unseal.yml
