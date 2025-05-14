@@ -65,6 +65,11 @@
         root_token: "{{ vault_init.root_token }}"
         unseal_keys: "{{ vault_init.unseal_keys_b64 }}"
 
+    - name: Split unseal_keys into individual facts
+      ansible.builtin.set_fact:
+        "{{ 'unseal_key_' ~ ansible_loop.index }}": "{{ item }}"
+      loop: "{{ unseal_keys }}"
+
     - name: Unseal Vault
       ansible.builtin.shell:
         cmd: vault operator unseal {{ item }}
