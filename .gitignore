@@ -47,3 +47,4 @@ site.yml
 
 # Ignore Vault
 .bootstrap
+.vault
