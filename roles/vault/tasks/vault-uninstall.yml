@@ -27,6 +27,12 @@
     enabled: false
   ignore_errors: true
 
+- name: Remove hold on Vault
+  when: vault.hold | default(true)
+  ansible.builtin.dpkg_selections:
+    name: vault
+    selection: install
+
 - name: Purge vault and vault-unseal packages
   tags: [uninstall]
   become: true
