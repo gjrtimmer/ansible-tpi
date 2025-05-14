@@ -25,6 +25,7 @@ These are the defaults:
 
 ```yaml
 vault:
+  auto_unseal: false
   data_dir: /opt/vault
   tls:
     enabled: false

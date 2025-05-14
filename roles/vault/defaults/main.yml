@@ -2,7 +2,7 @@
 vault:
   hold: true
   data_dir: /opt/vault
-  auto-unseal: false
+  auto_unseal: false
   tls:
     enabled: false
     ca: /etc/vault.d/chain.crt

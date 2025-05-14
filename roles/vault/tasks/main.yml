@@ -42,7 +42,7 @@
     file: vault-acl.yml
 
 - name: Configure Auto-Unseal
-  when: vault.auto-unseal | default(false)
+  when: vault.auto_unseal | default(false)
   tags: [config]
   ansible.builtin.include_tasks:
     file: auto-unseal.yml
