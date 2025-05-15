@@ -48,21 +48,10 @@ network:
       # Routes to other zones; use the key name of the zone as value
       routes: []
 
-tailscale:
-  enabled: false
-  api:
-    admin:
-      key: "tskey-api-*******************"
-  ssh: true
-  magic_dns: true
-  tailnet: "tail*******.ts.net"
-
 k3s:
-  profile: sandbox # Change this to 'production' when switching to production
-  k3s:
   version: v1.28.5+k3s1
   profiles:
-    k3s:
+    sandbox:
       cluster:
         init: node1
         domain: k3s.internal
@@ -87,6 +76,18 @@ k3s:
         - name: node8
           taints: []
       longhorn:
-        storage_path: /data/shared
-        backup_target: nfs://storage{{ '.' ~ tailscale.tailnet if tailscale.enabled else '' }}:/mnt/backups/global
-        enable_recurring_jobs: true
+        storage_path: /data/local
+
+tailscale:
+  enabled: false
+  api:
+    admin:
+      key: "tskey-api-*******************"
+  ssh: true
+  magic_dns: true
+  tailnet: "tail*******.ts.net"
+
+vault:
+  auto_unseal: true
+  tls:
+    enabled: true
