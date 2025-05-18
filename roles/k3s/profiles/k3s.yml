@@ -54,10 +54,19 @@
         marker: "# {mark} ANSIBLE MANAGED BLOCK - Longhorn Multipath Blacklist"
         insertafter: EOF
 
+    - name: Check if myservice exists
+      ansible.builtin.shell: |
+        systemctl list-unit-files | grep -q '^myservice\.service'
+      register: multipathd_exists
+      changed_when: false
+      failed_when: false
+
     - name: Restart multipathd service
+      when: multipathd_exists.rc == 0
       ansible.builtin.service:
         name: multipathd
         state: restarted
+      ignore_errors: true
 
     - name: Annotate node to disable Longhorn multipath check
       ansible.builtin.command: >
@@ -66,6 +75,7 @@
 - name: Disable and mask multipathd service
   tags: [install, profile]
   become: true
+  when: multipathd_exists.rc == 0
   ansible.builtin.systemd:
     name: multipathd
     state: stopped
