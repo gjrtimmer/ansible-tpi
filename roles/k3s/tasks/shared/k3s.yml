@@ -153,7 +153,7 @@
   tags: [install]
   become: true
   ansible.builtin.shell:
-    cmd: curl -sfL https://get.k3s.io | sh -s - agent {{ k3s_disable_flags }} {{ k3s_node_ip_arg }} {{ k3s_agent_args }} {{ k3s_san_ip_arg }} {{ k3s_san_dns_arg }} {{ k3s_san_fqdn_arg }} {{ k3s_server_args }} {{ k3s_data_dir_arg }} {{ k3s_cluster_domain_arg }}
+    cmd: curl -sfL https://get.k3s.io | sh -s - agent {{ k3s_node_ip_arg }} {{ k3s_agent_args }} {{ k3s_san_ip_arg }} {{ k3s_data_dir_arg }}
   environment:
     INSTALL_K3S_VERSION: "{{ k3s.version }}"
     K3S_TOKEN: "{{ k3s_token }}"

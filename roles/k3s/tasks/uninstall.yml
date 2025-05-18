@@ -6,12 +6,27 @@
     path: /usr/local/bin/k3s-uninstall.sh
   register: k3s_uninstall_script
 
+- name: Uninstall K3s Agent
+  tags: [uninstall]
+  when: "'uninstall' in ansible_run_tags"
+  ansible.builtin.stat:
+    path: /usr/local/bin/k3s-agent-uninstall.sh
+  register: k3s_agent_uninstall_script
+
 - name: Run k3s uninstall script if present
   when: k3s_uninstall_script.stat.exists and "'uninstall' in ansible_run_tags"
   tags: [uninstall]
   become: true
   ansible.builtin.command:
     cmd: /usr/local/bin/k3s-uninstall.sh
+  changed_when: true
+
+- name: Run k3s agent uninstall script if present
+  when: k3s_agent_uninstall_script.stat.exists and "'uninstall' in ansible_run_tags"
+  tags: [uninstall]
+  become: true
+  ansible.builtin.command:
+    cmd: /usr/local/bin/k3s-agent-uninstall.sh
   changed_when: true
 
 - name: Stop and disable containerd service if it is active
@@ -77,13 +92,16 @@
     - /etc/systemd/system/k3s.service
     - /etc/systemd/system/k3s.service.d
     - /etc/systemd/system/multi-user.target.wants/k3s.service
+    - /etc/systemd/system/k3s-agent.service
+    - /etc/systemd/system/k3s-agent.service.d
+    - /etc/systemd/system/multi-user.target.wants/k3s-agent.service
 
 - name: Force stop and remove lingering kubepods slices
   when: "'uninstall' in ansible_run_tags"
   tags: [uninstall]
   become: true
   block:
-    - name: List all kubepods slices
+    - name: List all kubepods slices # noqa: command-instead-of-module risky-shell-pipe
       ansible.builtin.shell: |
         systemctl list-units --type=slice --no-legend | awk '{print $1}' | grep -i kubepods || true
       register: kubepods_slices

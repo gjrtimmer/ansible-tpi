@@ -13,8 +13,7 @@ k3s:
     server:
       - --write-kubeconfig-mode 644
       - --disable-cloud-controller
-    agent:
-      - --write-kubeconfig-mode 644
+    agent: []
   profiles:
     k3s:
       longhorn:
