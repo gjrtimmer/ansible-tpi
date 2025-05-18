@@ -27,10 +27,10 @@
 #   ansible.builtin.include_tasks:
 #     file: tools/flux.yml
 
-- name: Arkade
-  tags: [install, tools, arkade]
-  ansible.builtin.include_tasks:
-    file: tools/arkade.yml
+# - name: Arkade
+#   tags: [install, tools, arkade]
+#   ansible.builtin.include_tasks:
+#     file: tools/arkade.yml
 
 - name: k9s # noqa: name[casing]
   tags: [install, tools, k9s]
