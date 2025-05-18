@@ -24,6 +24,7 @@
 - name: Tag node with {{ profile }} label
   tags: [install, profile]
   become: true
+  become_user: ubuntu
   ignore_errors: true
   ansible.builtin.shell:
     cmd: kubectl label node $(hostname) profile={{ profile }} --overwrite
@@ -31,6 +32,7 @@
 - name: Tag nodes as workers
   tags: [install, profile]
   become: true
+  become_user: ubuntu
   ansible.builtin.shell:
     cmd: kubectl label node $(hostname) kubernetes.io/role=worker --overwrite
 
@@ -69,6 +71,7 @@
       ignore_errors: true
 
     - name: Annotate node to disable Longhorn multipath check
+      become_user: ubuntu
       ansible.builtin.command: >
         kubectl annotate node {{ inventory_hostname }} longhorn.io/disable-multipath-check=true --overwrite
 
