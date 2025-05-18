@@ -171,6 +171,16 @@
     state: started
     daemon_reload: true
 
+- name: "Enable/Start K3s Agent service"
+  when: inventory_hostname in (k3s.profiles[profile].workers | map(attribute='name') | list)
+  tags: [install]
+  become: true
+  ansible.builtin.systemd:
+    name: k3s-agent
+    enabled: true
+    state: started
+    daemon_reload: true
+
 - name: Create Manifest Directory
   tags: [install]
   become: true
