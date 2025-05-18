@@ -22,10 +22,10 @@
   ansible.builtin.include_tasks:
     file: tools/helm.yml
 
-- name: Flux
-  tags: [install, tools, flux]
-  ansible.builtin.include_tasks:
-    file: tools/flux.yml
+# - name: Flux
+#   tags: [install, tools, flux]
+#   ansible.builtin.include_tasks:
+#     file: tools/flux.yml
 
 - name: Arkade
   tags: [install, tools, arkade]
