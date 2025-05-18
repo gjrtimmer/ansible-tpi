@@ -121,13 +121,14 @@
         daemon_reload: true
       changed_when: false
 
-    - name: Remove lingering kubepods cgroup directories
+    - name: Remove lingering kubepods cgroup directories # noqa: ignore-errors
       ansible.builtin.file:
         path: "{{ item }}"
         state: absent
       loop:
         - /sys/fs/cgroup/kubepods.slice
         - /sys/fs/cgroup/system.slice/kubepods.slice
+      ignore_errors: true
 
 - name: Reboot node if enabled
   when: k3s.uninstall_reboot | default(false) and "'uninstall' in ansible_run_tags"
