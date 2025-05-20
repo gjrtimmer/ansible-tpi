@@ -24,7 +24,12 @@ RUN pipx install --include-deps ansible && \
     pipx install netaddr && \
     pipx inject ansible netaddr && \
     pip install dnspython --break-system-packages && \
-    pipx inject ansible dnspython
+    pipx inject ansible dnspython && \
+    pip install kubernetes --break-system-packages && \
+    pipx inject ansible kubernetes && \
+    curl -fsSL -o /tmp/helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && \
+    chmod 700 /tmp/helm.sh && \
+    /tmp/helm.sh
 
 USER root
 ENV PATH=/home/vscode/.local/bin:/work/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
