@@ -29,46 +29,46 @@
     cmd: /usr/local/bin/k3s-agent-uninstall.sh
   changed_when: true
 
-- name: Stop and disable containerd service if it is active
-  when: "'uninstall' in ansible_run_tags"
-  tags: [uninstall]
-  become: true
-  block:
-    - name: Check if containerd service exists
-      ansible.builtin.systemd:
-        name: containerd
-        enabled: false
-        masked: false
-      check_mode: true
-      register: containerd_check
-      failed_when: false
-      changed_when: false
+# - name: Stop and disable containerd service if it is active
+#   when: "'uninstall' in ansible_run_tags"
+#   tags: [uninstall]
+#   become: true
+#   block:
+#     - name: Check if containerd service exists
+#       ansible.builtin.systemd:
+#         name: containerd
+#         enabled: false
+#         masked: false
+#       check_mode: true
+#       register: containerd_check
+#       failed_when: false
+#       changed_when: false
 
-    - name: Stop containerd service
-      ansible.builtin.systemd:
-        name: containerd
-        state: stopped
-        enabled: false
-        masked: false
-      when: containerd_check is defined
+#     - name: Stop containerd service
+#       ansible.builtin.systemd:
+#         name: containerd
+#         state: stopped
+#         enabled: false
+#         masked: false
+#       when: containerd_check is defined
 
-    - name: Remove containerd service file if unmanaged
-      ansible.builtin.file:
-        path: /etc/systemd/system/containerd.service
-        state: absent
+#     - name: Remove containerd service file if unmanaged
+#       ansible.builtin.file:
+#         path: /etc/systemd/system/containerd.service
+#         state: absent
 
-    - name: Reload systemd after containerd removal
-      ansible.builtin.systemd:
-        daemon_reload: true
+#     - name: Reload systemd after containerd removal
+#       ansible.builtin.systemd:
+#         daemon_reload: true
 
-    - name: Remove containerd runtime directories
-      ansible.builtin.file:
-        path: "{{ item }}"
-        state: absent
-      loop:
-        - /run/containerd
-        - /opt/containerd
-        - /var/lib/containerd
+#     - name: Remove containerd runtime directories
+#       ansible.builtin.file:
+#         path: "{{ item }}"
+#         state: absent
+#       loop:
+#         - /run/containerd
+#         - /opt/containerd
+#         - /var/lib/containerd
 
 - name: Remove K3s config and data directories
   when: "'uninstall' in ansible_run_tags"
