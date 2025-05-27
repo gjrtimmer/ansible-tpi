@@ -1,11 +1,13 @@
 ---
 - name: Ensure autofs is installed
+  tags: [autofs]
   become: true
   ansible.builtin.apt:
     name: autofs
     state: present
 
 - name: Remove deprecated autofs map files
+  tags: [autofs]
   become: true
   ansible.builtin.find:
     paths: /etc
@@ -14,6 +16,7 @@
   register: deprecated_maps
 
 - name: Delete old autofs map files
+  tags: [autofs]
   become: true
   ansible.builtin.file:
     path: "{{ item.path }}"
@@ -21,6 +24,7 @@
   loop: "{{ deprecated_maps.files }}"
 
 - name: Create auto.master.d directory if needed
+  tags: [autofs]
   become: true
   ansible.builtin.file:
     path: /etc/auto.master.d
@@ -29,10 +33,12 @@
 
   # Initialize mountlist as an empty list
 - name: Build mount list with fallback name
+  tags: [autofs]
   ansible.builtin.set_fact:
     mountlist: []
 
 - name: Append mount with defaults applied
+  tags: [autofs]
   ansible.builtin.set_fact:
     mountlist: >-
       {{ mountlist + [{
@@ -41,7 +47,7 @@
         'remote': mount.remote,
         'server': server.server,
         'label': server.label,
-        'options': (mount.options | default(server.options | default('rw,sync,nosuid,noatime,vers=4.0,hard,proto=tcp,timeo=30'))),
+        'options': (mount.options | default(server.options | default('rw,sync,nosuid,noatime,vers=4,hard,proto=tcp,timeo=30'))),
         'timeout': (mount.timeout | default(server.timeout | default(60)))
       }] }}
   loop: "{{ autofs | subelements('mounts') }}"
@@ -52,10 +58,12 @@
     mount: "{{ item[1] }}"
 
 - name: DEBUG final mountlist
+  tags: [autofs]
   ansible.builtin.debug:
     var: mountlist
 
 - name: Generate per-label auto.nfs maps
+  tags: [autofs]
   become: true
   ansible.builtin.copy:
     dest: "/etc/auto.nfs.{{ item }}"
@@ -67,6 +75,7 @@
   loop: "{{ mountlist | map(attribute='label') | unique | list }}"
 
 - name: Configure autofs master map
+  tags: [autofs]
   become: true
   ansible.builtin.copy:
     dest: /etc/auto.master.d/nfs.autofs
@@ -77,6 +86,7 @@
     mode: "0644"
 
 - name: Restart autofs
+  tags: [autofs]
   become: true
   ansible.builtin.systemd:
     name: autofs
