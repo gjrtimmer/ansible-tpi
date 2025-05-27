@@ -12,7 +12,7 @@
 
 - name: Configure NVMe
   when: >
-    hostvars[inventory_hostname]['root'] is search('nvme')
+    hostvars[inventory_hostname]['root'] | default('mmc') is search('nvme')
     or
     hostvars[inventory_hostname]['type'] == 'NVIDIA'
   tags: [nvme]
