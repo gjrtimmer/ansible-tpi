@@ -10,8 +10,11 @@
   ansible.builtin.import_tasks:
     file: modules.yml
 
-- name: COnfdigure NVMe
-  when: hostvars[inventory_hostname]['root'] is search('nvme')
+- name: Configure NVMe
+  when: >
+    hostvars[inventory_hostname]['root'] is search('nvme')
+    or
+    hostvars[inventory_hostname]['type'] == 'NVIDIA'
   tags: [nvme]
   ansible.builtin.import_tasks:
     file: nvme.yml
