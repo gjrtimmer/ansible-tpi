@@ -2,6 +2,7 @@
 ---
 # Always run client installation (all hosts may mount NFS)
 - name: Include NFS client tasks
+  tags: [install]
   ansible.builtin.import_tasks: client.yml
 
 - name: Include NFS install tasks

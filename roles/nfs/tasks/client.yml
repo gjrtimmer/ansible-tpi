@@ -3,6 +3,7 @@
 # Install NFS client packages required for mounting remote exports
 
 - name: Install NFS client packages
+  tags: [install]
   become: true
   ansible.builtin.apt:
     name: nfs-common
@@ -11,6 +12,7 @@
     cache_valid_time: 3600
 
 - name: Ensure required kernel modules for NFS are loaded
+  tags: [install]
   become: true
   community.general.modprobe:
     name: "{{ item }}"
@@ -23,6 +25,7 @@
 
 # Optional: add modules to /etc/modules for persistence
 - name: Ensure NFS kernel modules are loaded at boot
+  tags: [install]
   become: true
   ansible.builtin.lineinfile:
     path: /etc/modules
