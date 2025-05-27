@@ -24,6 +24,7 @@
       - sudo
       - vim
       - nfs-common
+      - cifs-utils
     state: present
     update_cache: true
     cache_valid_time: 3600
