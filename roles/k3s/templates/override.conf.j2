@@ -1,0 +1,6 @@
+[Unit]
+After=vault.service
+Requires=vault.service
+
+[Service]
+ExecStartPre=/usr/local/bin/wait-for-vault.sh

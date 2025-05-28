@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -e
+
+VAULT_ADDR="https://127.0.0.1:8200"
+
+echo "[wait-for-vault] Waiting for Vault to be initialized and unsealed..."
+
+until curl -sk "$VAULT_ADDR/v1/sys/health" | jq -e '.initialized == true and .sealed == false' >/dev/null; do
+  sleep 2
+done
+
+echo "[wait-for-vault] Vault is initialized and unsealed."

@@ -1,0 +1,48 @@
+# code: language=ansible
+---
+- name: Ensure systemd override dir exists for k3s
+  tags: [vault]
+  ansible.builtin.file:
+    path: /etc/systemd/system/k3s.service.d
+    state: directory
+    mode: "0755"
+
+- name: Create systemd override for k3s to wait for vault
+  tags: [vault]
+  ansible.builtin.template:
+    dest: /etc/systemd/system/k3s.service.d/override.conf
+    src: override.conf.j2
+    mode: "0644"
+
+- name: Copy wait-for-vault script
+  tags: [vault]
+  ansible.builtin.template:
+    dest: /usr/local/bin/wait-for-vault.sh
+    src: wait-for-vault.sh.j2
+    mode: "0755"
+
+- name: Reload systemd to apply override
+  tags: [vault]
+  ansible.builtin.systemd:
+    daemon_reexec: true
+    daemon_reload: true
+
+- name: "Enable/Start K3s service"
+  when: inventory_hostname in (k3s.profiles[profile].control_plane | map(attribute='name') | list)
+  tags: [install]
+  become: true
+  ansible.builtin.systemd:
+    name: k3s
+    enabled: true
+    state: restarted
+    daemon_reload: true
+
+- name: "Enable/Start K3s Agent service"
+  when: inventory_hostname in (k3s.profiles[profile].workers | map(attribute='name') | list)
+  tags: [install]
+  become: true
+  ansible.builtin.systemd:
+    name: k3s-agent
+    enabled: true
+    state: restarted
+    daemon_reload: true

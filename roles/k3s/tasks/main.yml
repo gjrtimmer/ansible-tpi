@@ -72,3 +72,13 @@
   tags: [install, profile]
   ansible.builtin.include_tasks:
     file: "profiles/{{ profile }}.yml"
+
+- name: Gather installed packages
+  tags: [vault]
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Include Vault-related tasks only if Vault is installed via apt
+  tags: [vault]
+  ansible.builtin.include_tasks: vault.yml
+  when: "'vault' in ansible_facts.packages"
