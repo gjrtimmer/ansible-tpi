@@ -1,7 +1,7 @@
 # code: language=ansible
 ---
 - name: Ensure systemd override dir exists for k3s service
-  when: inventory_hostname in (k3s.profiles[profile].workers | map(attribute='name') | list)
+  when: inventory_hostname in (k3s.profiles[profile].control_plane | map(attribute='name') | list)
   tags: [vault]
   ansible.builtin.file:
     path: /etc/systemd/system/k3s.service.d
@@ -17,7 +17,7 @@
     mode: "0755"
 
 - name: Create systemd override for k3s to wait for vault
-  when: inventory_hostname in (k3s.profiles[profile].workers | map(attribute='name') | list)
+  when: inventory_hostname in (k3s.profiles[profile].control_plane | map(attribute='name') | list)
   tags: [vault]
   ansible.builtin.template:
     dest: /etc/systemd/system/k3s.service.d/override.conf
@@ -46,7 +46,7 @@
     daemon_reload: true
 
 - name: "Enable/Start K3s service"
-  when: inventory_hostname in (k3s.profiles[profile].workers | map(attribute='name') | list)
+  when: inventory_hostname in (k3s.profiles[profile].control_plane | map(attribute='name') | list)
   tags: [install]
   become: true
   ansible.builtin.systemd:
