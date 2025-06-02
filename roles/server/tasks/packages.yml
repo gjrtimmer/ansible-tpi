@@ -25,6 +25,14 @@
       - vim
       - nfs-common
       - cifs-utils
+      - screen
+      - util-linux
+      - lsof
+      - rsync
+      - htop
+      - iftop
+      - nload
+      - tcpdump
     state: present
     update_cache: true
     cache_valid_time: 3600
