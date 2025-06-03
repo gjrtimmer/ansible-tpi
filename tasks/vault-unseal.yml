@@ -1,0 +1,25 @@
+---
+- name: Read Keys
+  ansible.builtin.include_vars:
+    file: "{{ lookup('env', 'PWD') }}/.bootstrap/vault.yml"
+    name: unseal
+
+- name: Wait for Vault
+  ansible.builtin.wait_for:
+    host: "{{ inventory_hostname }}"
+    port: 8200
+    delay: 10
+    sleep: 5
+    state: started
+
+- name: Unseal vault
+  throttle: 1
+  vars:
+    ukeys: "{{ unseal.unseal_keys_b64 | shuffle }}"
+  ansible.builtin.shell:
+    cmd: vault operator unseal {{ item }}
+    executable: /bin/bash
+  loop: "{{ ukeys[:3] }}"
+  loop_control:
+    label: "*** Masked ***"
+  changed_when: false

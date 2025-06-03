@@ -1,0 +1,10 @@
+# code: language=ansible
+---
+- name: Vault Unseal Nodes
+  hosts: "{{ ansible_limit | default('all,!bmc,!router,!localhost') }}"
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Import Unseal
+      ansible.builtin.import_tasks:
+        file: ../tasks/vault-unseal.yml
