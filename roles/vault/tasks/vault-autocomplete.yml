@@ -1,0 +1,8 @@
+# code: language=ansible
+---
+- name: Enable Vault autocomplete
+  become: true
+  tags: [config, autocomplete]
+  ansible.builtin.command: vault -autocomplete-install
+  args:
+    creates: /etc/bash_completion.d/vault

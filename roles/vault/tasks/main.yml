@@ -22,6 +22,11 @@
   ansible.builtin.include_tasks:
     file: vault-config.yml
 
+- name: Configure Vault Autocomplete
+  tags: [config, autocomplete]
+  ansible.builtin.include_tasks:
+    file: vault-autocomplete.yml
+
 - name: Configure TLS
   when: vault.tls.enabled
   tags: [config]
