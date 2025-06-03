@@ -2,6 +2,7 @@
 ---
 - name: Enable Vault autocomplete
   become: true
+  become_user: ubuntu
   tags: [config, autocomplete]
   ansible.builtin.command: vault -autocomplete-install
   args:
