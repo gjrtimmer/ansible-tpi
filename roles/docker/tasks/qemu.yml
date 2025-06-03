@@ -23,7 +23,7 @@
   tags: [docker]
   become: true
   ansible.builtin.shell:
-    cmd: docker run --privileged --rm tonistiigi/binfmt --install all
+    cmd: docker run --privileged --rm --network=none tonistiigi/binfmt --install all
     executable: /bin/bash
   changed_when: true
   notify: "docker : restart"
