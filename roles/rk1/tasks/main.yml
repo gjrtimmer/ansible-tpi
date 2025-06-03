@@ -28,6 +28,9 @@
 
 - name: Instal-2-NVMe
   tags: [rk1]
-  when: root_is_mmc and nvme_dev is defined
+  when: >
+    hostvars[inventory_hostname]['type'] | upper == "RK1"
+    and
+    root_is_mmc and nvme_dev is defined
   ansible.builtin.include_tasks:
     file: install.yml
