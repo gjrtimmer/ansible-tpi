@@ -81,7 +81,7 @@
   become: true
   ansible.posix.authorized_key:
     user: ansible
-    key: "{{ lookup('file', ansible_ssh_public_key_file) }}"
+    key: "{{ lookup('file', '~/.ssh/tpi/tpi.ansible.key.pub') }}"
     state: present
 
 - name: Check if user 'ubuntu' exists
