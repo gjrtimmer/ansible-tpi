@@ -16,6 +16,8 @@
   tags: [server]
   roles:
     - server
+    - network
+    - hosts
     - nvidia
 
 - name: Install Container Runtime
