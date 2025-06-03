@@ -3,6 +3,7 @@
 - name: Ensure Modules
   tags: [modules]
   become: true
+  when: hostvars[inventory_hostname]['type'] | upper != "NVIDIA"
   block:
     - name: Load encryption modules immediately
       community.general.modprobe:
