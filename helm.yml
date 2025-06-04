@@ -7,8 +7,6 @@ repository:
     url: https://charts.longhorn.io
   - name: jetstack
     url: https://charts.jetstack.io
-  - name: metallb
-    url: https://metallb.github.io/metallb
   - name: ingress-nginx
     url: https://kubernetes.github.io/ingress-nginx
   - name: kubernetes-dashboard
