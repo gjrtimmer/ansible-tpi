@@ -1,30 +1,30 @@
 # code: language=ansible
 ---
 - name: Helm Config
-  tags: [install, tools, helm]
+  tags: [install, tools, helm, repair]
   ansible.builtin.set_fact:
     helm_config: "{{ playbook_dir + '/../' + 'helm.yml' }}"
 
 - name: Load helm.yml
-  tags: [install, tools, helm]
+  tags: [install, tools, helm, repair]
   ansible.builtin.set_fact:
     helm: "{{ lookup('file', helm_config) | from_yaml }}"
 
 - name: Load helm.yml
   delegate_to: localhost
-  tags: [install, tools, helm]
+  tags: [install, tools, helm, repair]
   ansible.builtin.set_fact:
     helm: "{{ lookup('file', helm_config) | from_yaml }}"
 
 - name: Delete (Nodes)
-  tags: [install, tools, helm]
+  tags: [install, tools, helm, repair]
   ansible.builtin.file:
     path: /tmp/get_helm.sh
     state: absent
   run_once: true
 
 - name: Get Helm
-  tags: [install, tools, helm]
+  tags: [install, tools, helm, repair]
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
     dest: /tmp/get_helm.sh
@@ -32,7 +32,7 @@
   changed_when: true
 
 - name: Install Helm (Nodes)
-  tags: [install, tools, helm]
+  tags: [install, tools, helm, repair]
   become: true
   ansible.builtin.command:
     cmd: /tmp/get_helm.sh
@@ -42,7 +42,7 @@
 
 - name: Delete (Nodes)
   delegate_to: localhost
-  tags: [install, tools, helm]
+  tags: [install, tools, helm, repair]
   ansible.builtin.file:
     path: /tmp/get_helm.sh
     state: absent
@@ -53,7 +53,7 @@
     helm.repository is defined
     and
     helm.repository | length > 0
-  tags: [install, tools, helm]
+  tags: [install, tools, helm, repair]
   become: true
   become_user: ubuntu
   ansible.builtin.command:
@@ -62,7 +62,7 @@
   changed_when: true
 
 - name: Get Helm (DevContainer)
-  tags: [install, tools, helm]
+  tags: [install, tools, helm, repair]
   delegate_to: localhost
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
@@ -73,7 +73,7 @@
 
 - name: Install Helm (DevContainer)
   delegate_to: localhost
-  tags: [install, tools, helm]
+  tags: [install, tools, helm, repair]
   become: true
   ansible.builtin.command:
     cmd: "/tmp/get_helm.sh"
@@ -84,7 +84,7 @@
 
 - name: Delete (DevContainer)
   delegate_to: localhost
-  tags: [install, tools, helm]
+  tags: [install, tools, helm, repair]
   ansible.builtin.file:
     path: /tmp/get_helm.sh
     state: absent
@@ -92,7 +92,7 @@
 
 - name: Add Helm Repositories (DevContainer)
   delegate_to: localhost
-  tags: [install, tools, helm]
+  tags: [install, tools, helm, repair]
   when: >
     helm.repository is defined
     and

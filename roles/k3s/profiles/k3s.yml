@@ -2,7 +2,7 @@
 # roles/k3s/tasks/profiles/production.yml
 ---
 - name: Create directory for Longhorn
-  tags: [install, profile]
+  tags: [install, profile, repair]
   become: true
   ansible.builtin.file:
     path: "/data"
@@ -12,7 +12,7 @@
     group: root
 
 - name: Create directory for Longhorn
-  tags: [install, profile]
+  tags: [install, profile, repair]
   become: true
   ansible.builtin.file:
     path: "{{ k3s.profiles[profile].longhorn.storage_path }}"
@@ -22,7 +22,7 @@
     group: root
 
 - name: Tag node with {{ profile }} label
-  tags: [install, profile]
+  tags: [install, profile, repair]
   become: true
   become_user: ubuntu
   ignore_errors: true
@@ -30,14 +30,14 @@
     cmd: kubectl label node $(hostname) profile={{ profile }} --overwrite
 
 - name: Tag nodes as workers
-  tags: [install, profile]
+  tags: [install, profile, repair]
   become: true
   become_user: ubuntu
   ansible.builtin.shell:
     cmd: kubectl label node $(hostname) kubernetes.io/role=worker --overwrite
 
 - name: Configure multipath to blacklist Longhorn devices
-  tags: [install, profile]
+  tags: [install, profile, repair]
   become: true
   block:
     - name: Ensure multipath.conf exists
@@ -76,7 +76,7 @@
         kubectl annotate node {{ inventory_hostname }} longhorn.io/disable-multipath-check=true --overwrite
 
 - name: Disable and mask multipathd service
-  tags: [install, profile]
+  tags: [install, profile, repair]
   become: true
   when: multipathd_exists.rc == 0
   ansible.builtin.systemd:

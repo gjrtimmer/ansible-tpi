@@ -2,7 +2,7 @@
 ---
 - name: Get Version # noqa: command-instead-of-module risky-shell-pipe
   delegate_to: localhost
-  tags: [install, tools, glab]
+  tags: [install, tools, glab, repair]
   ansible.builtin.shell:
     cmd: curl -s "https://gitlab.com/api/v4/projects/34675721/repository/tags" | jq -r '.[0].name'
   register: glab_version_raw
@@ -11,7 +11,7 @@
 
 - name: Set Version
   delegate_to: localhost
-  tags: [install, tools, glab]
+  tags: [install, tools, glab, repair]
   ansible.builtin.set_fact:
     glab_version: "{{ glab_version_raw.stdout_lines[0] }}"
   changed_when: false
@@ -19,21 +19,21 @@
 
 - name: Set Version File
   delegate_to: localhost
-  tags: [install, tools, glab]
+  tags: [install, tools, glab, repair]
   ansible.builtin.set_fact:
     glab_version_file: "{{ glab_version_raw.stdout_lines[0] | regex_replace('^v', '') }}"
   changed_when: false
   run_once: true
 
 - name: Manually gather facts on localhost
-  tags: [install, tools, glab]
+  tags: [install, tools, glab, repair]
   delegate_to: localhost
   run_once: true
   ansible.builtin.setup:
   register: localhost_facts
 
 - name: Set OS-specific facts for glab
-  tags: [install, tools, glab]
+  tags: [install, tools, glab, repair]
   delegate_to: localhost
   ansible.builtin.set_fact:
     glab_os: "{{ 'darwin' if localhost_facts.ansible_facts['ansible_system'] == 'Darwin' else 'linux' }}"
@@ -42,14 +42,14 @@
   run_once: true
 
 - name: Set OS-specific facts for glab
-  tags: [install, tools, glab]
+  tags: [install, tools, glab, repair]
   delegate_to: localhost
   ansible.builtin.set_fact:
     glab_dest: "/tmp/k9s.{{ glab_ext }}"
   run_once: true
 
 - name: Download glab (DevContainer)
-  tags: [install, tools, glab]
+  tags: [install, tools, glab, repair]
   delegate_to: localhost
   ansible.builtin.get_url:
     url: "https://gitlab.com/gitlab-org/cli/-/releases/{{ glab_version }}/downloads/glab_{{ glab_version_file }}_{{ glab_os }}_{{ glab_arch }}.{{ glab_ext }}"
@@ -61,7 +61,7 @@
 - name: Install glab on Linux (DevContainer)
   when: glab_ext == 'deb'
   delegate_to: localhost
-  tags: [install, tools, glab]
+  tags: [install, tools, glab, repair]
   become: true
   ansible.builtin.command:
     cmd: "dpkg -i {{ glab_dest }}"
@@ -73,7 +73,7 @@
 - name: Extract and install glab on macOS (DevContainer)
   when: glab_ext == 'tar.gz'
   delegate_to: localhost
-  tags: [install, tools, glab]
+  tags: [install, tools, glab, repair]
   become: false
   ansible.builtin.unarchive:
     src: "{{ glab_dest }}"

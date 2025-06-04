@@ -2,7 +2,7 @@
 ---
 - name: Ensure systemd override dir exists for k3s service
   when: inventory_hostname in (k3s.profiles[profile].control_plane | map(attribute='name') | list)
-  tags: [vault]
+  tags: [vault, repair]
   ansible.builtin.file:
     path: /etc/systemd/system/k3s.service.d
     state: directory
@@ -10,7 +10,7 @@
 
 - name: Ensure systemd override dir exists for k3s agent
   when: inventory_hostname in (k3s.profiles[profile].workers | map(attribute='name') | list)
-  tags: [vault]
+  tags: [vault, repair]
   ansible.builtin.file:
     path: /etc/systemd/system/k3s-agent.service.d
     state: directory
@@ -18,7 +18,7 @@
 
 - name: Create systemd override for k3s to wait for vault
   when: inventory_hostname in (k3s.profiles[profile].control_plane | map(attribute='name') | list)
-  tags: [vault]
+  tags: [vault, repair]
   ansible.builtin.template:
     dest: /etc/systemd/system/k3s.service.d/override.conf
     src: override.conf.j2
@@ -26,21 +26,21 @@
 
 - name: Create systemd override for k3s to wait for vault
   when: inventory_hostname in (k3s.profiles[profile].workers | map(attribute='name') | list)
-  tags: [vault]
+  tags: [vault, repair]
   ansible.builtin.template:
     dest: /etc/systemd/system/k3s-agent.service.d/override.conf
     src: override.conf.j2
     mode: "0644"
 
 - name: Copy wait-for-vault script
-  tags: [vault]
+  tags: [vault, repair]
   ansible.builtin.template:
     dest: /usr/local/bin/wait-for-vault.sh
     src: wait-for-vault.sh.j2
     mode: "0755"
 
 - name: Reload systemd to apply override
-  tags: [vault]
+  tags: [vault, repair]
   ansible.builtin.systemd:
     daemon_reexec: true
     daemon_reload: true
