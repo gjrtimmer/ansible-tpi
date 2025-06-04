@@ -2,7 +2,7 @@
 # roles/k3s/defaults/main.yml
 ---
 k3s:
-  version: v1.28.5+k3s1
+  version: v1.32.5+k3s1
   config_dir: /etc/rancher/k3s
   data_dir: /var/lib/rancher/k3s
   disable:
