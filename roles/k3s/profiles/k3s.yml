@@ -21,6 +21,16 @@
     owner: root
     group: root
 
+- name: Create directory for local data
+  tags: [install, profile, repair]
+  become: true
+  ansible.builtin.file:
+    path: "/data/local"
+    state: directory
+    mode: "0775"
+    owner: root
+    group: root
+
 - name: Tag node with {{ profile }} label
   tags: [install, profile, repair]
   become: true
