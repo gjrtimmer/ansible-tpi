@@ -34,7 +34,7 @@
   become: true
   become_user: ubuntu
   ansible.builtin.shell:
-    cmd: kubectl label node $(hostname) kubernetes.io/role=worker --overwrite
+    cmd: kubectl label node $(hostname) node-role.kubernetes.io/worker="" --overwrite
 
 - name: Configure multipath to blacklist Longhorn devices
   tags: [install, profile, repair]
