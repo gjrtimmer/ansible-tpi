@@ -12,7 +12,7 @@
       loop:
         - dm_crypt
 
-    - name: Ensure Modules at Boot
+    - name: Ensure encyption modules at Boot
       ansible.builtin.lineinfile:
         path: /etc/modules-load.d/encryption.conf
         create: true
@@ -22,3 +22,14 @@
         mode: "0644"
       loop:
         - dm_crypt
+
+    - name: Ensure wireguard at Boot
+      ansible.builtin.lineinfile:
+        path: /etc/modules-load.d/wireguard.conf
+        create: true
+        line: "{{ item }}"
+        state: present
+        insertafter: EOF
+        mode: "0644"
+      loop:
+        - wireguard
