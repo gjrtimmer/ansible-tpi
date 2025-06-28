@@ -1,0 +1,5 @@
+---
+- hosts: "{{ ansible_limit|default('nodes,!bmc') }}"
+  become: true
+  roles:
+    - qemu

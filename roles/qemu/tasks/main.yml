@@ -1,0 +1,76 @@
+---
+- name: Package Check
+  ansible.builtin.package_facts:
+    manager: apt
+
+- name: Add Debian sid repository for QEMU 10
+  become: true
+  block:
+    - name: Add sid repository to sources list
+      ansible.builtin.copy:
+        dest: /etc/apt/sources.list.d/debian-sid.list
+        content: "deb [arch=arm64] http://deb.debian.org/debian sid main\n"
+        mode: "0644"
+
+    - name: Add APT preferences to pin sid packages
+      ansible.builtin.copy:
+        dest: /etc/apt/preferences.d/qemu-sid
+        content: |
+          Package: qemu-user-static
+          Pin: release a=sid
+          Pin-Priority: 1001
+
+          Package: binfmt-support
+          Pin: release a=sid
+          Pin-Priority: 1001
+
+          Package: *
+          Pin: release a=sid
+          Pin-Priority: 1
+        mode: "0644"
+
+    - name: Add Debian archive key to trusted.gpg.d
+      become: true
+      ansible.builtin.get_url:
+        url: https://ftp-master.debian.org/keys/archive-key-12.asc
+        dest: /etc/apt/trusted.gpg.d/debian-archive-key-12.asc
+        mode: "0644"
+
+# - name: Configure qemu package
+#   become: true
+#   block:
+#     # Install QEMU 10+ from Debian sid
+#     - name: Install qemu packages
+#       ansible.builtin.apt:
+#         name:
+#           - binfmt-support
+#           - qemu-user-static
+#         state: present
+#         update_cache: true
+#         cache_valid_time: 3600
+#         default_release: sid
+
+# - name: Register Architectures
+#   become: true
+#   ansible.builtin.shell:
+#     cmd: docker run --privileged --rm --network=none tonistiigi/binfmt --install all
+#     executable: /bin/bash
+#   changed_when: true
+
+- name: Remove Debian sid sources list
+  become: true
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/debian-sid.list
+    state: absent
+
+- name: Remove APT pinning for sid
+  become: true
+  ansible.builtin.file:
+    path: /etc/apt/preferences.d/qemu-sid
+    state: absent
+
+- name: Remove sid GPG key file
+  become: true
+  ansible.builtin.file:
+    path: /etc/apt/trusted.gpg.d/debian-archive-key-12.asc
+    state: absent

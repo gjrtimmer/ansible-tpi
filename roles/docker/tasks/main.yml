@@ -102,11 +102,6 @@
     group: docker
     mode: "0770"
 
-- name: Enable docker qemu
-  tags: [docker]
-  ansible.builtin.include_tasks:
-    file: qemu.yml
-
 - name: Configure Nvidia Runtime
   when: hostvars[inventory_hostname]['type'] | upper == 'NVIDIA'
   tags: [docker, nvidia]
