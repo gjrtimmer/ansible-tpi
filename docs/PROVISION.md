@@ -36,7 +36,9 @@ Run the following command to bootstrap a server, replace `{LIMIT}` with either a
 or specific server from the inventory.
 
 ```shell
-ansible-playbook -l {LIMIT} playbooks/bootstrap.yml
+ansible-playbook -l {LIMIT} playbooks/bootstrap-phase1.yml
+ansible-playbook -l {LIMIT} playbooks/bootstrap-ansible.yml
+ansible-playbook -l {LIMIT} playbooks/bootstrap-phase2.yml
 ```
 
 ### Login
