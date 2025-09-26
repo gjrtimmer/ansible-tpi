@@ -40,4 +40,4 @@ to control the workflow on how to configure a node. DHCP is such an use-case.
 3. Configure DHCP reservation in your router
 4. Power Off node
 
-From this point on, you can continue with the bootstrap of your node [here](./PROVISION.md#bootstrap-server).
+From this point on, you can continue with the [bootstrap](./PROVISION.md#bootstrap-server) of your node.

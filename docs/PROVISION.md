@@ -27,7 +27,7 @@ The following additional users are created.
 To flash a node use the following command.
 
 ```shell
-ansible-playground -l {LIMIT} playbooks/flash.yml -e flash_node=true
+ansible-playbook -l {LIMIT} playbooks/flash.yml -e flash_node=true
 ```
 
 ## Bootstrap Server
