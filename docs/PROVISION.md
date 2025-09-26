@@ -37,7 +37,8 @@ or specific server from the inventory.
 
 ```shell
 ansible-playbook -l {LIMIT} playbooks/bootstrap-phase1.yml
-ansible-playbook -l {LIMIT} playbooks/bootstrap-ansible.yml
+# Ansible Configuration only needed in special cases.
+# ansible-playbook -l {LIMIT} playbooks/bootstrap-ansible-user.yml
 ansible-playbook -l {LIMIT} playbooks/bootstrap-phase2.yml
 ```
 
