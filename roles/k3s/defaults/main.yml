@@ -13,7 +13,18 @@ k3s:
     server:
       - --write-kubeconfig-mode 644
       - --disable-cloud-controller
-    agent: []
+      - --kube-apiserver-arg=feature-gates=InPlacePodVerticalScaling=true
+      - --kube-apiserver-arg=anonymous-auth=true
+      - --kube-controller-manager-arg=feature-gates=InPlacePodVerticalScaling=true
+      - --kube-controller-manager-arg=bind-address=0.0.0.0
+      - --kube-scheduler-arg=feature-gates=InPlacePodVerticalScaling=true
+      - --kube-scheduler-arg=bind-address=0.0.0.0
+      - --kubelet-arg=feature-gates=InPlacePodVerticalScaling=true
+      - --kube-proxy-arg=feature-gates=InPlacePodVerticalScaling=true
+      - --etcd-expose-metrics=true
+    agent:
+      - --kubelet-arg=feature-gates=InPlacePodVerticalScaling=true
+      - --kube-proxy-arg=feature-gates=InPlacePodVerticalScaling=true
   profiles:
     k3s:
       longhorn:
