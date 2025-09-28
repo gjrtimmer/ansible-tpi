@@ -20,8 +20,8 @@ k3s:
         storage_path: /data/shared
         backup_target: nfs://nas.tailscale:/mnt/backups/global
         recurring_jobs: true
-    academy:
+    lab:
       longhorn:
         storage_path: /data/local
-        backup_target: nfs://nas.tailscale:/mnt/backups/academy
+        backup_target: nfs://nas.tailscale:/mnt/backups/lab
         recurring_jobs: true
