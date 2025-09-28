@@ -17,10 +17,10 @@
   ansible.builtin.include_tasks:
     file: shared/token.yml
 
-- name: Helm
-  tags: [install, tools, helm, repair]
-  ansible.builtin.include_tasks:
-    file: tools/helm.yml
+# - name: Helm
+#   tags: [install, tools, helm, repair]
+#   ansible.builtin.include_tasks:
+#     file: tools/helm.yml
 
 # - name: Flux
 #   tags: [install, tools, flux]
