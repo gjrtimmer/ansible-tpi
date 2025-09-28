@@ -20,3 +20,8 @@
     group: root
     mode: "0644"
   notify: "nfs : restart-nfs-server"
+
+- name: Fix file permissions # noqa: no-changed-when
+  become: true
+  ansible.builtin.command: "chmod 0644 /etc/exports"
+  notify: "nfs : restart-nfs-server"
