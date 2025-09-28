@@ -16,7 +16,7 @@ network:
   # Define all physical/logical zones in the infrastructure
   zones:
     home:
-      profile: "academy"
+      profile: "lab"
       fqdn: local
       mtu: 1500
       cidr: "192.168.10.0/24"
