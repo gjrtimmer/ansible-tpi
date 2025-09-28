@@ -54,7 +54,7 @@ production:
     node3:
     node4:
 
-academy:
+lab:
   hosts:
     node1:
     node2:

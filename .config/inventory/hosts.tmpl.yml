@@ -44,7 +44,7 @@ nodes:
       type: RK1
       root: /dev/nvme0n1
 
-academy:
+lab:
   hosts:
     node1:
     node2:
