@@ -6,7 +6,7 @@ This role configures an NFS server using dynamic exports based on zone-aware hos
 
 ## ✅ Features
 
-- Profile-aware dynamic NFS exports (e.g., `academy`, `production`)
+- Profile-aware dynamic NFS exports (e.g., `lab`, `production`)
 - DNS and Tailscale-based IP resolution
 - Static IP fallback from `network.zones`
 - Correct `/etc/exports` rendering (one line per export)
@@ -66,7 +66,7 @@ nfs:
 ## Required Group/Global Vars
 
 ```yaml
-profile: academy
+profile: lab
 
 tailscale:
   tailnet: tail504865.ts.net
@@ -74,7 +74,7 @@ tailscale:
 network:
   zones:
     can:
-      profile: academy
+      profile: lab
       nodes:
         node1: "192.168.10.21"
         node2: "192.168.10.22"
