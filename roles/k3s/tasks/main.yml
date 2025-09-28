@@ -32,10 +32,10 @@
 #   ansible.builtin.include_tasks:
 #     file: tools/arkade.yml
 
-- name: k9s # noqa: name[casing]
-  tags: [install, tools, k9s, repair]
-  ansible.builtin.include_tasks:
-    file: tools/k9s.yml
+# - name: k9s # noqa: name[casing]
+#   tags: [install, tools, k9s, repair]
+#   ansible.builtin.include_tasks:
+#     file: tools/k9s.yml
 
 - name: glab # noqa: name[casing]
   tags: [install, tools, glab, repair]
