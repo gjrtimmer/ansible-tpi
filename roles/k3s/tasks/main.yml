@@ -37,10 +37,10 @@
 #   ansible.builtin.include_tasks:
 #     file: tools/k9s.yml
 
-- name: glab # noqa: name[casing]
-  tags: [install, tools, glab, repair]
-  ansible.builtin.include_tasks:
-    file: tools/glab.yml
+# - name: glab # noqa: name[casing]
+#   tags: [install, tools, glab, repair]
+#   ansible.builtin.include_tasks:
+#     file: tools/glab.yml
 
 - name: Install and configure K3s (shared logic)
   tags: [install, repair]
