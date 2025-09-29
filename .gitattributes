@@ -1,2 +1,8 @@
 * text eol=lf
 *.cmd eol=crlf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.cfg text eol=lf
+*.ini text eol=lf
+*.sh text eol=lf
+*.py text eol=lf
