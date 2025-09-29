@@ -50,7 +50,7 @@ nfs:
   server:
     enabled: true
     exports:
-      - path: "/mnt/data/backups"
+      - path: "/mnt/data/backup"
         clients:
           - node1
           - node2
@@ -87,7 +87,7 @@ network:
 /etc/fstab
 
 ```shell
-node3:/mnt/data/backups /mnt/backups nfs4 defaults,_netdev,vers=4,timeo=30,nosuid,noatime 0 0
+node3:/mnt/data/backup /mnt/backup nfs4 defaults,_netdev,vers=4,timeo=30,nosuid,noatime 0 0
 ```
 
 ## Recommended Server Export Options

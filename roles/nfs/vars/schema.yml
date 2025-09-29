@@ -8,8 +8,8 @@ nfs:
     # List of NFS exports to provide from this server
     exports:
       # Each export defines the server-side path and allowed clients
-      - # Path to be exported (e.g. /mnt/data/backups)
-        path: "/mnt/data/backups"
+      - # Path to be exported (e.g. /mnt/data/backup)
+        path: "/mnt/data/backup"
 
         # List of clients allowed to access this export
         # Clients can be:
